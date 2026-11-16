@@ -224,15 +224,22 @@ input[type=range]{accent-color:var(--paka);height:22px}
 .dl-tl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 .dl-tl button{font-size:16px;padding:9px 20px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+.jazyk{display:inline-flex;border:1px solid var(--hrana);border-radius:5px;overflow:hidden}
+.jazyk button{border:0;border-radius:0;background:transparent;padding:5px 10px;color:var(--tlum);font-size:14px}
+.jazyk button + button{border-left:1px solid var(--hrana)}
+.jazyk button[aria-pressed="true"]{background:var(--deska-2);color:#EEF1EA}
 </style>
 </head>
 <body>
 
 <div class="lista">
-  <h1>SBusSound <span>nastavení karty</span></h1>
-  <div class="stav" id="stav">Otevři SD kartu, nebo začni s výchozím nastavením.</div>
+  <h1>SBusSound <span data-i18n="podtitul">nastavení karty</span></h1>
+  <div class="stav" id="stav"></div>
   <div class="akce">
-    <button id="btnOtevrit">Otevřít SD kartu</button>
+    <div class="jazyk" role="group" aria-label="Jazyk / Language">
+      <button data-jazyk="cz" lang="cs">CZ</button><button data-jazyk="en" lang="en">EN</button>
+    </div>
+    <button id="btnOtevrit" data-i18n="otevrit">Otevřít SD kartu</button>
     <button id="btnUlozit" class="hlavni">Uložit na kartu</button>
   </div>
   <input type="file" id="slozka" webkitdirectory hidden>
@@ -241,9 +248,8 @@ input[type=range]{accent-color:var(--paka);height:22px}
 <main>
 
 <section id="kanaly">
-  <h2>Kanály a zvuky</h2>
-  <p class="pozn">Číslo kanálu vysílače pro každou funkci, jak ho vidíš na monitoru kanálů ve vysílači.
-  Zvuk může být v jakémkoli běžném formátu, při uložení se převede na 44100 Hz, 16 bit, mono.</p>
+  <h2 data-i18n="kanalyNadpis">Kanály a zvuky</h2>
+  <p class="pozn" data-i18n="kanalyPozn"></p>
   <div id="funkce"></div>
   <p class="upozorneni" id="dupl"></p>
   <input type="file" id="soubor" accept="audio/*,.wav,.mp3,.m4a,.aac,.flac,.ogg,.oga,.opus,.aif,.aiff,.caf,.webm" hidden>
@@ -251,109 +257,109 @@ input[type=range]{accent-color:var(--paka);height:22px}
 
 <div class="prava">
 <section id="vystup">
-  <h2>Výstup</h2>
-  <div class="radek"><label>Zvuk jde do</label>
+  <h2 data-i18n="vystupNadpis">Výstup</h2>
+  <div class="radek"><label data-i18n="zvukJdeDo">Zvuk jde do</label>
     <div class="prepinac" id="zarizeni">
-      <button data-v="i2s">modulu PCM5102</button><button data-v="jack">jacku na desce</button>
+      <button data-v="i2s" data-i18n="i2s">modulu PCM5102</button><button data-v="jack" data-i18n="jack">jacku na desce</button>
     </div></div>
-  <div class="radek"><label>Reproduktor</label>
+  <div class="radek"><label data-i18n="reproduktor">Reproduktor</label>
     <div class="prepinac" id="reproduktor">
-      <button data-v="oba">oba kanály</button><button data-v="levy">levý</button><button data-v="pravy">pravý</button>
+      <button data-v="oba" data-i18n="oba">oba kanály</button><button data-v="levy" data-i18n="levy">levý</button><button data-v="pravy" data-i18n="pravy">pravý</button>
     </div></div>
-  <div class="radek"><label for="hlasitost">Celková hlasitost</label>
+  <div class="radek"><label for="hlasitost" data-i18n="celkHlas">Celková hlasitost</label>
     <div class="posuv"><input type="range" id="hlasitost" min="0" max="100" step="1"><span class="hodnota" id="vHlasitost"></span></div></div>
-  <p class="pozn" style="margin:4px 0 0">Za jízdy se hlasitost dál řídí ovladačem na vysílači.</p>
+  <p class="pozn" style="margin:4px 0 0" data-i18n="hlasPozn"></p>
 </section>
 
 <section id="kalibrace">
-  <h2>Kalibrace</h2>
-  <p class="pozn">Rozsah hodnot, které posílá vysílač. FrSky typicky 172 až 1811.</p>
+  <h2 data-i18n="kalNadpis">Kalibrace</h2>
+  <p class="pozn" data-i18n="kalPozn"></p>
   <div class="kal">
-    <label>minimum<input class="cislo" type="number" id="kMin" min="0" max="2047"></label>
-    <label>střed<input class="cislo" type="number" id="kStred" min="0" max="2047"></label>
-    <label>maximum<input class="cislo" type="number" id="kMax" min="0" max="2047"></label>
+    <label><span data-i18n="minimum">minimum</span><input class="cislo" type="number" id="kMin" min="0" max="2047"></label>
+    <label><span data-i18n="stred">střed</span><input class="cislo" type="number" id="kStred" min="0" max="2047"></label>
+    <label><span data-i18n="maximum">maximum</span><input class="cislo" type="number" id="kMax" min="0" max="2047"></label>
   </div>
-  <div class="volitelne"><input type="checkbox" id="chPlyn"><label for="chPlyn">Vlastní střed páky plynu</label>
+  <div class="volitelne"><input type="checkbox" id="chPlyn"><label for="chPlyn" data-i18n="stredPlyn"></label>
     <input class="cislo" type="number" id="kPlyn" min="0" max="2047"></div>
-  <div class="volitelne"><input type="checkbox" id="chVez"><label for="chVez">Vlastní střed páky věže</label>
+  <div class="volitelne"><input type="checkbox" id="chVez"><label for="chVez" data-i18n="stredVez"></label>
     <input class="cislo" type="number" id="kVez" min="0" max="2047"></div>
   <p class="upozorneni" id="kalChyba"></p>
 </section>
 </div>
 
 <section id="prevod">
-  <h2>Převodovka</h2>
-  <p class="pozn">Posuvníky rovnou slyšíš v simulátoru vpravo. Simulátor hraje zvuky motoru vybrané nahoře.</p>
+  <h2 data-i18n="prevNadpis">Převodovka</h2>
+  <p class="pozn" data-i18n="prevPozn"></p>
   <div class="prevod-obal">
     <div class="parametry" id="parametry"></div>
     <div class="sim">
       <div class="sim-horni">
-        <canvas id="budik" width="132" height="132" aria-label="Otáčkoměr"></canvas>
+        <canvas id="budik" width="132" height="132" data-i18n-aria="otackomer"></canvas>
         <div class="ukazatele">
-          <div class="stupen"><div class="c" id="sStupen">–</div><div class="p" id="sPopis">motor stojí</div></div>
-          <div class="pruh" id="pRychlost"><div class="h"><span>rychlost</span><span id="tRychlost">0 %</span></div><div class="d"><div class="v" id="vRychlost"></div></div></div>
-          <div class="pruh"><div class="h"><span>rychlost přehrávání</span><span id="tRate">–</span></div><div class="d"><div class="v" id="vRate" style="background:var(--paka)"></div></div></div>
+          <div class="stupen"><div class="c" id="sStupen">–</div><div class="p" id="sPopis"></div></div>
+          <div class="pruh" id="pRychlost"><div class="h"><span data-i18n="rychlost">rychlost</span><span id="tRychlost">0 %</span></div><div class="d"><div class="v" id="vRychlost"></div></div></div>
+          <div class="pruh"><div class="h"><span data-i18n="rychlostPrehr">rychlost přehrávání</span><span id="tRate">–</span></div><div class="d"><div class="v" id="vRate" style="background:var(--paka)"></div></div></div>
         </div>
       </div>
       <div class="paka-plynu ne" id="pakaObal">
-        <input type="range" id="plyn" min="-100" max="100" value="0" aria-label="Páka plynu">
-        <div class="sk"><span>zpátečka</span><span>neutrál</span><span>plný plyn</span></div>
+        <input type="range" id="plyn" min="-100" max="100" value="0" data-i18n-aria="pakaPlynu">
+        <div class="sk"><span data-i18n="zpatecka">zpátečka</span><span data-i18n="neutral">neutrál</span><span data-i18n="plnyPlyn">plný plyn</span></div>
       </div>
       <div class="sim-tl">
-        <button id="btnMotor" class="hlavni" disabled>Nastartovat</button>
-        <button id="btnUkazka" disabled>Ukázková jízda</button>
-        <label><input type="checkbox" id="pruzina" checked> páka se vrací do neutrálu</label>
+        <button id="btnMotor" class="hlavni" disabled></button>
+        <button id="btnUkazka" disabled></button>
+        <label><input type="checkbox" id="pruzina" checked> <span data-i18n="pruzina">páka se vrací do neutrálu</span></label>
       </div>
-      <canvas id="graf" width="336" height="56" aria-label="Průběh otáček a rychlosti"></canvas>
+      <canvas id="graf" width="336" height="56" data-i18n-aria="grafAria"></canvas>
     </div>
   </div>
 </section>
 
 </main>
+
 <div class="editor" id="editor" role="dialog" aria-modal="true" aria-labelledby="edNazev">
  <div class="ed-panel">
   <div class="ed-hlava">
-    <h2 id="edNazev">Úprava zvuku</h2>
+    <h2 id="edNazev"></h2>
     <div class="ed-cas" id="edCas"></div>
   </div>
-  <div class="ed-plocha"><canvas id="edVlna" aria-label="Průběh zvuku, tažením vyber úsek"></canvas></div>
-  <canvas id="edPrehled" aria-label="Celý soubor, kliknutím přesuneš zobrazený úsek"></canvas>
+  <div class="ed-plocha"><canvas id="edVlna" data-i18n-aria="edVlnaAria"></canvas></div>
+  <canvas id="edPrehled" data-i18n-aria="edPrehledAria"></canvas>
 
   <div class="ed-radek">
-    <button id="edPrehrat" class="hlavni">▶ Přehrát</button>
-    <label class="ed-skupina" style="cursor:pointer"><input type="checkbox" id="edSmycka"> ve smyčce</label>
-    <div class="ed-skupina"><span>Zobrazení</span>
-      <button id="edBliz" title="Přiblížit">+</button><button id="edDal" title="Oddálit">−</button>
-      <button id="edNaVyber">Na výběr</button><button id="edCele">Celé</button></div>
-    <div class="ed-skupina"><span>Výběr</span>
-      <button id="edVse">Vše</button><button id="edZrusVyber">Zrušit</button>
-      <label><input type="checkbox" id="edNula" checked> k nule</label></div>
+    <button id="edPrehrat" class="hlavni"></button>
+    <label class="ed-skupina" style="cursor:pointer"><input type="checkbox" id="edSmycka"> <span data-i18n="veSmycce">ve smyčce</span></label>
+    <div class="ed-skupina"><span data-i18n="zobrazeni">Zobrazení</span>
+      <button id="edBliz" data-i18n-title="priblizit">+</button><button id="edDal" data-i18n-title="oddalit">−</button>
+      <button id="edNaVyber" data-i18n="naVyber">Na výběr</button><button id="edCele" data-i18n="cele">Celé</button></div>
+    <div class="ed-skupina"><span data-i18n="vyber">Výběr</span>
+      <button id="edVse" data-i18n="vse">Vše</button><button id="edZrusVyber" data-i18n="zrusitVyber">Zrušit</button>
+      <label><input type="checkbox" id="edNula" checked> <span data-i18n="kNule">k nule</span></label></div>
   </div>
 
   <div class="ed-radek">
-    <div class="ed-skupina"><span>Úsek</span>
-      <button id="edSmaz" data-sel>Vymazat</button>
-      <button id="edPonech" data-sel>Ponechat jen výběr</button>
-      <button id="edTicho" data-sel>Ticho</button>
-      <button id="edNabeh" data-sel>Náběh</button>
-      <button id="edDobeh" data-sel>Doběh</button></div>
-    <div class="ed-skupina"><span id="edHlCil">Celý zvuk</span>
+    <div class="ed-skupina"><span data-i18n="usek">Úsek</span>
+      <button id="edSmaz" data-sel data-i18n="vymazat">Vymazat</button>
+      <button id="edPonech" data-sel data-i18n="ponechat">Ponechat jen výběr</button>
+      <button id="edTicho" data-sel data-i18n="ticho">Ticho</button>
+      <button id="edNabeh" data-sel data-i18n="nabeh">Náběh</button>
+      <button id="edDobeh" data-sel data-i18n="dobeh">Doběh</button></div>
+    <div class="ed-skupina"><span id="edHlCil"></span>
       <label><input type="range" id="edDb" min="-24" max="12" step="0.5" value="0"><b id="edDbV" class="hodnota" style="min-width:58px">0,0 dB</b></label>
-      <button id="edZesil">Změnit hlasitost</button>
-      <button id="edNorm">Normalizovat</button></div>
-    <div class="ed-skupina"><span>Smyčka</span>
-      <select id="edProlnuti" aria-label="Délka prolnutí"><option value="0.01">10 ms</option><option value="0.03" selected>30 ms</option><option value="0.1">100 ms</option><option value="0.3">300 ms</option></select>
-      <button id="edSmyckaUp">Plynulé napojení</button>
-      <button id="edDC" title="Odstraní stejnosměrnou složku (posunutí od nuly)">Vycentrovat</button></div>
+      <button id="edZesil" data-i18n="zmenitHlas">Změnit hlasitost</button>
+      <button id="edNorm" data-i18n="normalizovat">Normalizovat</button></div>
+    <div class="ed-skupina"><span data-i18n="smyckaSk">Smyčka</span>
+      <select id="edProlnuti" data-i18n-aria="delkaProlnuti"><option value="0.01">10 ms</option><option value="0.03" selected>30 ms</option><option value="0.1">100 ms</option><option value="0.3">300 ms</option></select>
+      <button id="edSmyckaUp" data-i18n="plynuleNapojeni">Plynulé napojení</button>
+      <button id="edDC" data-i18n="vycentrovat" data-i18n-title="vycentrovatTitle">Vycentrovat</button></div>
   </div>
 
   <div class="ed-radek">
-    <button id="edZpet">Zpět</button><button id="edZnovu">Znovu</button><button id="edObnovit">Obnovit</button>
+    <button id="edZpet" data-i18n="zpet">Zpět</button><button id="edZnovu" data-i18n="znovu">Znovu</button><button id="edObnovit" data-i18n="obnovit">Obnovit</button>
     <span class="mezera"></span>
-    <button id="edZrusit">Zrušit</button><button id="edUlozit" class="hlavni">Uložit</button>
+    <button id="edZrusit" data-i18n="zrusit">Zrušit</button><button id="edUlozit" class="hlavni" data-i18n="ulozit">Uložit</button>
   </div>
-  <p class="ed-napoveda">Tažením vyber úsek, kolečkem myši nebo dvěma prsty přibliž, se Shiftem posouvej.
-  Mezerník přehraje, Delete vymaže výběr, ⌘Z / Ctrl+Z vrátí krok.</p>
+  <p class="ed-napoveda" data-i18n="edNapoveda"></p>
  </div>
 </div>
 
@@ -372,37 +378,222 @@ input[type=range]{accent-color:var(--paka);height:22px}
 "use strict";
 
 /* =====================================================================
+   Jazyk. Stejny klic "lang" jako drivejsi webove rozhrani a simulator.
+   ===================================================================== */
+const T = {
+ cz:{
+  podtitul:"nastavení karty", otevrit:"Otevřít SD kartu", ulozitNaKartu:"Uložit na kartu", stahnoutProKartu:"Stáhnout pro kartu",
+  titulek:"SBusSound – nastavení karty",
+  stavUvod:"Otevři SD kartu, nebo začni s výchozím nastavením.",
+  karta:"Karta", bezKarty:"Bez karty", neulozeno:"neuloženo", vseUlozeno:"vše uloženo",
+  novyZvuk1:"1 nový zvuk", novyZvuk2:"{n} nové zvuky", novyZvuk5:"{n} nových zvuků",
+  oprav1:"1 oprava v nastaveni.txt", oprav2:"{n} opravy v nastaveni.txt", oprav5:"{n} oprav v nastaveni.txt", ukazat:"ukázat",
+  kanalyNadpis:"Kanály a zvuky",
+  kanalyPozn:"Číslo kanálu vysílače pro každou funkci, jak ho vidíš na monitoru kanálů ve vysílači. Zvuk může být v jakémkoli běžném formátu, při uložení se převede na 44100 Hz, 16 bit, mono.",
+  kanalVysilace:"Kanál vysílače", kanalPro:"Kanál pro {f}",
+  f_motor:"Motor", fp_motor:"přepínač zapnutí",
+  f_plyn:"Plyn", fp_plyn:"dozadu je zpátečka", ft_plyn:"řídí otáčky zvuku motor_run",
+  f_vez:"Věž", fp_vez:"páka otáčení",
+  f_kulomet:"Kulomet", fp_kulomet:"přepínač",
+  f_delo:"Dělo", fp_delo:"rána při přepnutí",
+  f_pozadi:"Okolí", fp_pozadi:"přepínač",
+  f_hlasitost:"Hlasitost", fp_hlasitost:"otočný ovladač", ft_hlasitost:"hlasitost všech zvuků za jízdy",
+  s_motor_start:"start", s_motor_run:"jízda", s_motor_stop:"vypnutí", s_turret:"věž", s_machinegun:"kulomet", s_cannon:"výstřel", s_background:"okolí",
+  prehrat:"Přehrát", prehratJm:"Přehrát {jm}", upravit:"Upravit", vybrat:"Vybrat…",
+  chybiVyber:"chybí – vyber soubor", nejdePrecist:"nejde přečíst",
+  smycka:"smyčka", jednou:"jednou", upraveno:"upraveno", novy:"nový: {z}",
+  dupl:"Stejný kanál u více funkcí: {s}. Engine to dovolí, jen to nejspíš nechceš.",
+  vystupNadpis:"Výstup", zvukJdeDo:"Zvuk jde do", i2s:"modulu PCM5102", jack:"jacku na desce",
+  reproduktor:"Reproduktor", oba:"oba kanály", levy:"levý", pravy:"pravý", celkHlas:"Celková hlasitost",
+  hlasPozn:"Za jízdy se hlasitost dál řídí ovladačem na vysílači.",
+  kalNadpis:"Kalibrace", kalPozn:"Rozsah hodnot, které posílá vysílač. FrSky typicky 172 až 1811.",
+  minimum:"minimum", stred:"střed", maximum:"maximum",
+  stredPlyn:"Vlastní střed páky plynu", stredVez:"Vlastní střed páky věže",
+  prevNadpis:"Převodovka", prevPozn:"Posuvníky rovnou slyšíš v simulátoru vpravo. Simulátor hraje zvuky motoru vybrané nahoře.",
+  p_stupnu:"Počet stupňů", p_pomer:"Poměr mezi stupni", p_rozjezd:"Rozjezd na plnou rychlost", p_dobeh:"Doběh do zastavení",
+  p_navrat:"Jak rychle se otáčky vrátí", p_propad:"Propad otáček při řazení", p_zpatecka:"Nejvyšší rychlost zpátečky", p_max_rychlost:"Nejvyšší rychlost přehrávání",
+  otackomer:"Otáčkoměr", rychlost:"rychlost", rychlostPrehr:"rychlost přehrávání", pakaPlynu:"Páka plynu",
+  zpatecka:"zpátečka", neutral:"neutrál", plnyPlyn:"plný plyn", pruzina:"páka se vrací do neutrálu",
+  grafAria:"Průběh otáček a rychlosti", otacky:"otáčky", dialStart:"START", dialStop:"DOBĚH",
+  nastartovat:"Nastartovat", preskocitStart:"Přeskočit start", vypnoutMotor:"Vypnout motor", dobehBtn:"Doběh…",
+  ukazka:"Ukázková jízda", zastavitUkazku:"Zastavit ukázku", nejdrivRun:"Nejdřív vyber zvuk jízdy (motor_run)",
+  sStartuje:"startuje, plyn zatím nereaguje", sDobeh:"doběh motoru", sStoji:"motor stojí", sVyberJizdu:"vyber zvuk jízdy",
+  sZpatecka:"zpátečka", sVolnobeh:"volnoběh", sStupenZ:"stupeň z {n}", zpatecka1:"Z",
+  // hlasky
+  delsi10:"{f} je delší než 10 minut – na kartě zabere hodně paměti.",
+  vybranZvuk:"{f} → {jm}.wav ({d} s, 44100 Hz mono)",
+  nejdeZvuk:"{f} nejde přečíst jako zvuk. Zkus WAV, MP3, M4A nebo FLAC.",
+  nacteno:"Načteno nastaveni.txt a {n} ze 7 zvuků", nenacteno:"Na kartě není nastaveni.txt – výchozí hodnoty a {n} ze 7 zvuků",
+  chybiZvuky:" (chybí {s})", nejdeOtevrit:"Kartu se nepodařilo otevřít: {e}",
+  // dialogy
+  dlZahoditNadpis:"Zahodit neuložené změny?",
+  dlZahoditText:"<p>Nastavení nebo zvuky jsou změněné a nejsou uložené na kartě. Otevřením karty se ztratí.</p>",
+  dlPonechat:"Ponechat změny", dlZahoditOtevrit:"Zahodit a otevřít kartu",
+  dlNejdeNadpis:"Nastavení nejde uložit", dlNejdeText:"<p>Nejdřív oprav:</p>", dlOpravim:"Opravím to",
+  dlUlozenoNadpis:"Uloženo na kartu {k}",
+  dlUlozenoText:"<p>Kartu bezpečně vysuň (⏏ ve Finderu) a vlož do tanku. Nové nastavení se načte po zapnutí.</p>",
+  dlNovyZvuk:"nový zvuk", dlUpraveno:"upraveno",
+  dlChybaNadpis:"Uložení se nepovedlo",
+  dlChybaText:"<p class=\"tlum\">Zkontroluj, že je karta vložená a není zamčená proti zápisu, a zkus to znovu. Změny v této stránce zůstaly.</p>",
+  dlZipNadpis:"Staženo SBusSound_nastaveni.zip", dlZipVZipu:"<p>V ZIPu je:</p>",
+  dlZipText:"<p>Najdeš ho ve Stažených souborech. Jeho obsah nakopíruj do kořene karty a stávající soubory přepiš.</p><p class=\"tlum\">Safari umí na kartu zapisovat jen takhle. V Chromu nebo Edge se ukládá rovnou na kartu.</p>",
+  ok:"OK", bezPovoleni:"bez povolení zápisu",
+  // editor
+  edNazev:"Úprava zvuku", edVlnaAria:"Průběh zvuku, tažením vyber úsek", edPrehledAria:"Celý soubor, kliknutím přesuneš zobrazený úsek",
+  veSmycce:"ve smyčce", zobrazeni:"Zobrazení", priblizit:"Přiblížit", oddalit:"Oddálit", naVyber:"Na výběr", cele:"Celé",
+  vyber:"Výběr", vse:"Vše", zrusitVyber:"Zrušit", kNule:"k nule", usek:"Úsek",
+  vymazat:"Vymazat", ponechat:"Ponechat jen výběr", ticho:"Ticho", nabeh:"Náběh", dobeh:"Doběh",
+  celyZvuk:"Celý zvuk", vyberCil:"Výběr", zmenitHlas:"Změnit hlasitost", normalizovat:"Normalizovat",
+  smyckaSk:"Smyčka", delkaProlnuti:"Délka prolnutí", plynuleNapojeni:"Plynulé napojení",
+  vycentrovat:"Vycentrovat", vycentrovatTitle:"Odstraní stejnosměrnou složku (posunutí od nuly)",
+  zpet:"Zpět", znovu:"Znovu", obnovit:"Obnovit", zrusit:"Zrušit", ulozit:"Uložit",
+  edNapoveda:"Tažením vyber úsek, kolečkem myši nebo dvěma prsty přibliž, se Shiftem posouvej. Mezerník přehraje, Delete vymaže výběr, ⌘Z / Ctrl+Z vrátí krok.",
+  edPrehrat:"▶ Přehrát", edPrehratVyber:"▶ Přehrát výběr", edZastavit:"■ Zastavit",
+  edDelka:"délka", edVyberInfo:"výběr", edKurzor:"kurzor", edSpicka:"špička", edSpickaVyberu:"špička výběru", edTicho:"ticho",
+  edNicNezustane:"Tím by ze zvuku nic nezůstalo.", edKratky:"Zvuk je na takové prolnutí moc krátký, zvol kratší.",
+  edProlnuto:"Konec se prolnul do začátku ({ms} ms). Poslechni si ho ve smyčce.",
+  edUpraven:"{jm}.wav upraven ({d} s). Na kartu ho zapíše tlačítko {b}.",
+  edZavritNadpis:"Zavřít editor?", edZahoditNadpis:"Zahodit úpravy zvuku?",
+  edZahoditText:"<p>Úpravy zvuku {jm}.wav nejsou uložené. Zavřením bez uložení se ztratí.</p>",
+  edNezmenenText:"<p>Zvuk {jm}.wav se nezměnil.</p>",
+  edZpetDoEditoru:"Zpět do editoru", edUlozitUpravy:"Uložit úpravy", edZahoditZavrit:"Zahodit a zavřít", edZavrit:"Zavřít",
+  // kontrola nastaveni
+  kChybaCela:"Kalibrace musí být celá čísla 0 až 2047.", kChybaPoradi:"Kalibrace: musí platit minimum < střed < maximum.",
+  kChybaRozsah:"Kalibrace: rozsah mezi minimem a maximem je menší než 200.",
+  kChybaStredPlyn:"Vlastní střed plynu musí ležet mezi minimem a maximem.", kChybaStredVez:"Vlastní střed věže musí ležet mezi minimem a maximem.",
+  kChybaKanal:"Kanál „{f}“ musí být 1 až 16.",
+  // cteni nastaveni.txt
+  nRadekSekce:"řádek {r}: špatná hlavička sekce", nRadekRovna:"řádek {r}: chybí =", nRadekPrazdny:"řádek {r}: chybí název nebo hodnota",
+  nVystup:"výstup „{v}“ neznám, beru i2s", nRepro:"reproduktor „{v}“ neznám, beru oba", nHlas:"hlasitost „{v}“ mimo 0–100, beru 100",
+  nKanal:"kanál {k} „{v}“ mimo 1–16, beru {d}", nKal:"kalibrace je neúplná nebo nesmyslná, beru 172/992/1811",
+  nStred:"{k} „{v}“ je mimo kalibraci, vynechávám", nPrev:"převodovka {k} „{v}“ mimo {a}–{b}, beru {d}",
+  nNeznama:"neznámá položka {k} – při uložení se vynechá",
+ },
+ en:{
+  podtitul:"card settings", otevrit:"Open SD card", ulozitNaKartu:"Save to card", stahnoutProKartu:"Download for card",
+  titulek:"SBusSound – card settings",
+  stavUvod:"Open the SD card, or start from the default settings.",
+  karta:"Card", bezKarty:"No card", neulozeno:"not saved", vseUlozeno:"all saved",
+  novyZvuk1:"1 new sound", novyZvuk2:"{n} new sounds", novyZvuk5:"{n} new sounds",
+  oprav1:"1 correction in nastaveni.txt", oprav2:"{n} corrections in nastaveni.txt", oprav5:"{n} corrections in nastaveni.txt", ukazat:"show",
+  kanalyNadpis:"Channels and sounds",
+  kanalyPozn:"Transmitter channel for each function, as shown on the transmitter's channel monitor. A sound can be in any common format; on saving it is converted to 44100 Hz, 16 bit, mono.",
+  kanalVysilace:"Transmitter channel", kanalPro:"Channel for {f}",
+  f_motor:"Engine", fp_motor:"on/off switch",
+  f_plyn:"Throttle", fp_plyn:"pull back to reverse", ft_plyn:"drives the revs of motor_run",
+  f_vez:"Turret", fp_vez:"rotation stick",
+  f_kulomet:"Machine gun", fp_kulomet:"switch",
+  f_delo:"Cannon", fp_delo:"fires on each flick",
+  f_pozadi:"Ambient", fp_pozadi:"switch",
+  f_hlasitost:"Volume", fp_hlasitost:"knob or slider", ft_hlasitost:"volume of all sounds while driving",
+  s_motor_start:"start", s_motor_run:"driving", s_motor_stop:"shutdown", s_turret:"turret", s_machinegun:"machine gun", s_cannon:"shot", s_background:"ambient",
+  prehrat:"Play", prehratJm:"Play {jm}", upravit:"Edit", vybrat:"Choose…",
+  chybiVyber:"missing – choose a file", nejdePrecist:"cannot be read",
+  smycka:"loop", jednou:"once", upraveno:"edited", novy:"new: {z}",
+  dupl:"The same channel is used by more functions: {s}. The engine allows it, you probably don't want it.",
+  vystupNadpis:"Output", zvukJdeDo:"Sound goes to", i2s:"PCM5102 module", jack:"on-board jack",
+  reproduktor:"Speaker", oba:"both channels", levy:"left", pravy:"right", celkHlas:"Master volume",
+  hlasPozn:"While driving, the volume is still set by the knob on the transmitter.",
+  kalNadpis:"Calibration", kalPozn:"The range of values the transmitter sends. FrSky typically 172 to 1811.",
+  minimum:"minimum", stred:"centre", maximum:"maximum",
+  stredPlyn:"Own centre of the throttle stick", stredVez:"Own centre of the turret stick",
+  prevNadpis:"Gearbox", prevPozn:"You hear the sliders straight away in the simulator on the right. It plays the engine sounds chosen above.",
+  p_stupnu:"Number of gears", p_pomer:"Ratio between gears", p_rozjezd:"Time to full speed", p_dobeh:"Time to a standstill",
+  p_navrat:"How fast the revs recover", p_propad:"Extra rev drop on upshift", p_zpatecka:"Top reverse speed", p_max_rychlost:"Top playback rate",
+  otackomer:"Rev counter", rychlost:"speed", rychlostPrehr:"playback rate", pakaPlynu:"Throttle stick",
+  zpatecka:"reverse", neutral:"neutral", plnyPlyn:"full throttle", pruzina:"stick returns to neutral",
+  grafAria:"Revs and speed over time", otacky:"revs", dialStart:"START", dialStop:"SHUTDOWN",
+  nastartovat:"Start engine", preskocitStart:"Skip the start", vypnoutMotor:"Switch engine off", dobehBtn:"Shutting down…",
+  ukazka:"Show a drive", zastavitUkazku:"Stop the demo", nejdrivRun:"Choose the driving sound (motor_run) first",
+  sStartuje:"starting, throttle has no effect yet", sDobeh:"engine shutting down", sStoji:"engine is off", sVyberJizdu:"choose the driving sound",
+  sZpatecka:"reverse", sVolnobeh:"idling", sStupenZ:"gear of {n}", zpatecka1:"R",
+  delsi10:"{f} is longer than 10 minutes – it will take a lot of memory on the card.",
+  vybranZvuk:"{f} → {jm}.wav ({d} s, 44100 Hz mono)",
+  nejdeZvuk:"{f} cannot be read as audio. Try WAV, MP3, M4A or FLAC.",
+  nacteno:"Loaded nastaveni.txt and {n} of 7 sounds", nenacteno:"No nastaveni.txt on the card – defaults and {n} of 7 sounds",
+  chybiZvuky:" (missing {s})", nejdeOtevrit:"Could not open the card: {e}",
+  dlZahoditNadpis:"Discard unsaved changes?",
+  dlZahoditText:"<p>Settings or sounds have changed and are not saved to the card. Opening a card will lose them.</p>",
+  dlPonechat:"Keep changes", dlZahoditOtevrit:"Discard and open card",
+  dlNejdeNadpis:"The settings cannot be saved", dlNejdeText:"<p>Fix this first:</p>", dlOpravim:"I'll fix it",
+  dlUlozenoNadpis:"Saved to card {k}",
+  dlUlozenoText:"<p>Eject the card safely (⏏ in Finder) and put it into the tank. The new settings load at power-up.</p>",
+  dlNovyZvuk:"new sound", dlUpraveno:"edited",
+  dlChybaNadpis:"Saving failed",
+  dlChybaText:"<p class=\"tlum\">Check that the card is inserted and not write-protected, then try again. Your changes are still in this page.</p>",
+  dlZipNadpis:"Downloaded SBusSound_nastaveni.zip", dlZipVZipu:"<p>The ZIP contains:</p>",
+  dlZipText:"<p>It is in your Downloads. Copy its contents to the root of the card and replace the existing files.</p><p class=\"tlum\">This is the only way Safari can write to the card. Chrome or Edge save straight to the card.</p>",
+  ok:"OK", bezPovoleni:"no permission to write",
+  edNazev:"Edit sound", edVlnaAria:"Waveform, drag to select a range", edPrehledAria:"Whole file, click to move the visible range",
+  veSmycce:"loop", zobrazeni:"View", priblizit:"Zoom in", oddalit:"Zoom out", naVyber:"Fit selection", cele:"All",
+  vyber:"Selection", vse:"All", zrusitVyber:"Clear", kNule:"snap to zero", usek:"Range",
+  vymazat:"Delete", ponechat:"Keep selection only", ticho:"Silence", nabeh:"Fade in", dobeh:"Fade out",
+  celyZvuk:"Whole sound", vyberCil:"Selection", zmenitHlas:"Change volume", normalizovat:"Normalise",
+  smyckaSk:"Loop", delkaProlnuti:"Crossfade length", plynuleNapojeni:"Seamless loop",
+  vycentrovat:"Remove DC", vycentrovatTitle:"Removes the DC offset (shift away from zero)",
+  zpet:"Undo", znovu:"Redo", obnovit:"Revert", zrusit:"Cancel", ulozit:"Save",
+  edNapoveda:"Drag to select, zoom with the mouse wheel or two fingers, hold Shift to scroll. Space plays, Delete removes the selection, ⌘Z / Ctrl+Z undoes a step.",
+  edPrehrat:"▶ Play", edPrehratVyber:"▶ Play selection", edZastavit:"■ Stop",
+  edDelka:"length", edVyberInfo:"selection", edKurzor:"cursor", edSpicka:"peak", edSpickaVyberu:"selection peak", edTicho:"silence",
+  edNicNezustane:"That would leave nothing of the sound.", edKratky:"The sound is too short for that crossfade, choose a shorter one.",
+  edProlnuto:"The end was crossfaded into the start ({ms} ms). Listen to it as a loop.",
+  edUpraven:"{jm}.wav edited ({d} s). The {b} button writes it to the card.",
+  edZavritNadpis:"Close the editor?", edZahoditNadpis:"Discard sound edits?",
+  edZahoditText:"<p>Your edits to {jm}.wav are not saved. Closing without saving loses them.</p>",
+  edNezmenenText:"<p>{jm}.wav has not changed.</p>",
+  edZpetDoEditoru:"Back to editor", edUlozitUpravy:"Save edits", edZahoditZavrit:"Discard and close", edZavrit:"Close",
+  kChybaCela:"Calibration values must be whole numbers 0 to 2047.", kChybaPoradi:"Calibration: minimum < centre < maximum must hold.",
+  kChybaRozsah:"Calibration: the range between minimum and maximum is less than 200.",
+  kChybaStredPlyn:"The own throttle centre must lie between minimum and maximum.", kChybaStredVez:"The own turret centre must lie between minimum and maximum.",
+  kChybaKanal:"Channel for “{f}” must be 1 to 16.",
+  nRadekSekce:"line {r}: bad section header", nRadekRovna:"line {r}: missing =", nRadekPrazdny:"line {r}: missing name or value",
+  nVystup:"output “{v}” unknown, using i2s", nRepro:"speaker “{v}” unknown, using both", nHlas:"volume “{v}” outside 0–100, using 100",
+  nKanal:"channel {k} “{v}” outside 1–16, using {d}", nKal:"calibration incomplete or invalid, using 172/992/1811",
+  nStred:"{k} “{v}” outside the calibration, leaving it out", nPrev:"gearbox {k} “{v}” outside {a}–{b}, using {d}",
+  nNeznama:"unknown entry {k} – left out when saving",
+ }
+};
+let LANG = (() => {
+  try{ const l = localStorage.getItem("lang"); if (l === "cz" || l === "en") return l; }catch(e){}
+  try{ return /^(cs|sk)/i.test(navigator.language || "") ? "cz" : "en"; }catch(e){ return "cz"; }
+})();
+function nastavJazyk(l){ LANG = l === "en" ? "en" : "cz"; }
+function t(k, p){
+  let s = T[LANG][k]; if (s === undefined) s = T.cz[k]; if (s === undefined) s = k;
+  if (p) for (const x in p) s = s.split("{" + x + "}").join(p[x]);
+  return s;
+}
+// pocet s ceskym sklonovanim (1 / 2-4 / 5+)
+function tPocet(k, n){ return t(n === 1 ? k + "1" : n < 5 && n > 1 ? k + "2" : k + "5", {n}); }
+const fmt = (n, des) => LANG === "en" ? n.toFixed(des) : n.toFixed(des).replace(".", ",");
+
+/* =====================================================================
    Model nastaveni - stejne klice, meze a vychozi hodnoty jako engine
    (nastaveni.cpp). Cast bez DOM, aby sla testovat samostatne.
    ===================================================================== */
 const FUNKCE = [
-  {k:"motor",     nazev:"Motor",      pozn:"přepínač zapnutí",   ch:9,  sloty:["motor_start","motor_run","motor_stop"]},
-  {k:"plyn",      nazev:"Plyn",       pozn:"dozadu je zpátečka", ch:10, sloty:[], text:"řídí otáčky zvuku motor_run"},
-  {k:"vez",       nazev:"Věž",        pozn:"páka otáčení",       ch:11, sloty:["turret"]},
-  {k:"kulomet",   nazev:"Kulomet",    pozn:"přepínač",           ch:7,  sloty:["machinegun"]},
-  {k:"delo",      nazev:"Dělo",       pozn:"rána při přepnutí",  ch:5,  sloty:["cannon"]},
-  {k:"pozadi",    nazev:"Okolí",      pozn:"přepínač",           ch:8,  sloty:["background"]},
-  {k:"hlasitost", nazev:"Hlasitost",  pozn:"otočný ovladač",     ch:6,  sloty:[], text:"hlasitost všech zvuků za jízdy"},
+  {k:"motor",     ch:9,  sloty:["motor_start","motor_run","motor_stop"]},
+  {k:"plyn",      ch:10, sloty:[]},
+  {k:"vez",       ch:11, sloty:["turret"]},
+  {k:"kulomet",   ch:7,  sloty:["machinegun"]},
+  {k:"delo",      ch:5,  sloty:["cannon"]},
+  {k:"pozadi",    ch:8,  sloty:["background"]},
+  {k:"hlasitost", ch:6,  sloty:[]},
 ];
 const SLOTY = {
-  motor_start:{popis:"start",    smycka:false},
-  motor_run:  {popis:"jízda",    smycka:true},
-  motor_stop: {popis:"vypnutí",  smycka:false},
-  turret:     {popis:"věž",      smycka:true},
-  machinegun: {popis:"kulomet",  smycka:true},
-  cannon:     {popis:"výstřel",  smycka:false},
-  background: {popis:"okolí",    smycka:true},
+  motor_start:{smycka:false}, motor_run:{smycka:true}, motor_stop:{smycka:false},
+  turret:{smycka:true}, machinegun:{smycka:true}, cannon:{smycka:false}, background:{smycka:true},
 };
-// klic, popisek, min, max, krok, vychozi, jednotka, cele cislo
+// klic, min, max, krok, vychozi, jednotka, cele cislo
 const PREVOD = [
-  {k:"stupnu",       t:"Počet stupňů",            min:1,   max:6,   krok:1,    v:3,    j:"",    cele:true},
-  {k:"pomer",        t:"Poměr mezi stupni",       min:1.2, max:2.2, krok:0.05, v:1.6,  j:"",    cele:false},
-  {k:"rozjezd",      t:"Rozjezd na plnou rychlost", min:1, max:12,  krok:0.5,  v:5,    j:" s",  cele:false},
-  {k:"dobeh",        t:"Doběh do zastavení",      min:1,   max:12,  krok:0.5,  v:3,    j:" s",  cele:false},
-  {k:"navrat",       t:"Jak rychle se otáčky vrátí", min:40, max:800, krok:10, v:250,  j:" ms", cele:true},
-  {k:"propad",       t:"Propad otáček při řazení", min:0,  max:60,  krok:1,    v:0,    j:" %",  cele:true},
-  {k:"zpatecka",     t:"Nejvyšší rychlost zpátečky", min:10, max:100, krok:5,  v:40,   j:" %",  cele:true},
-  {k:"max_rychlost", t:"Nejvyšší rychlost přehrávání", min:1.2, max:3, krok:0.01, v:1.81, j:"×", cele:false},
+  {k:"stupnu",       min:1,   max:6,   krok:1,    v:3,    j:"",    cele:true},
+  {k:"pomer",        min:1.2, max:2.2, krok:0.05, v:1.6,  j:"",    cele:false},
+  {k:"rozjezd",      min:1,   max:12,  krok:0.5,  v:5,    j:" s",  cele:false},
+  {k:"dobeh",        min:1,   max:12,  krok:0.5,  v:3,    j:" s",  cele:false},
+  {k:"navrat",       min:40,  max:800, krok:10,   v:250,  j:" ms", cele:true},
+  {k:"propad",       min:0,   max:60,  krok:1,    v:0,    j:" %",  cele:true},
+  {k:"zpatecka",     min:10,  max:100, krok:5,    v:40,   j:" %",  cele:true},
+  {k:"max_rychlost", min:1.2, max:3,   krok:0.01, v:1.81, j:"×",   cele:false},
 ];
 
 function vychozi(){
@@ -417,48 +608,48 @@ function vychozi(){
   return s;
 }
 
-function cislo(t){
-  if (t == null) return NaN;
-  t = String(t).trim().replace(",", ".");
-  if (!/^-?\d+(\.\d+)?$/.test(t)) return NaN;
-  return Number(t);
+function cislo(x){
+  if (x == null) return NaN;
+  x = String(x).trim().replace(",", ".");
+  if (!/^-?\d+(\.\d+)?$/.test(x)) return NaN;
+  return Number(x);
 }
 
 // Cte nastaveni.txt stejne jako engine (ini.cpp + nastaveni.cpp).
-// Vraci {s, poznamky[]}: co je spatne nebo navic, nahradi vychozi hodnotou.
+// Vraci {s, pozn[]}: co je spatne nebo navic, nahradi vychozi hodnotou.
 function nactiIni(text){
   const s = vychozi(), pozn = [];
   const hodnoty = {};
   let sekce = "";
   text.replace(/^﻿/, "").split(/\r?\n/).forEach((radek, i) => {
-    let r = radek.replace(/[#;].*$/, "").trim();
+    const r = radek.replace(/[#;].*$/, "").trim();
     if (!r) return;
     if (r.startsWith("[")){
-      if (!r.endsWith("]")) { pozn.push(`řádek ${i+1}: špatná hlavička sekce`); return; }
+      if (!r.endsWith("]")){ pozn.push(t("nRadekSekce", {r:i + 1})); return; }
       sekce = r.slice(1, -1).replace(/\s/g, "").toLowerCase();
       return;
     }
     const eq = r.indexOf("=");
-    if (eq < 0) { pozn.push(`řádek ${i+1}: chybí =`); return; }
+    if (eq < 0){ pozn.push(t("nRadekRovna", {r:i + 1})); return; }
     const k = r.slice(0, eq).trim().toLowerCase(), v = r.slice(eq + 1).trim().toLowerCase();
-    if (!k || !v) { pozn.push(`řádek ${i+1}: chybí název nebo hodnota`); return; }
+    if (!k || !v){ pozn.push(t("nRadekPrazdny", {r:i + 1})); return; }
     hodnoty[(sekce ? sekce + "." : "") + k] = v;
   });
   const vem = (k) => { const v = hodnoty[k]; delete hodnoty[k]; return v; };
 
   let v = vem("vystup.zarizeni");
-  if (v === "i2s" || v === "jack") s.vystup.zarizeni = v; else if (v) pozn.push(`výstup „${v}“ neznám, beru i2s`);
+  if (v === "i2s" || v === "jack") s.vystup.zarizeni = v; else if (v) pozn.push(t("nVystup", {v}));
   v = vem("vystup.reproduktor");
-  if (["oba","levy","pravy"].includes(v)) s.vystup.reproduktor = v; else if (v) pozn.push(`reproduktor „${v}“ neznám, beru oba`);
+  if (["oba","levy","pravy"].includes(v)) s.vystup.reproduktor = v; else if (v) pozn.push(t("nRepro", {v}));
   v = vem("vystup.hlasitost");
-  if (v != null){ const n = cislo(v); if (Number.isInteger(n) && n >= 0 && n <= 100) s.vystup.hlasitost = n; else pozn.push(`hlasitost „${v}“ mimo 0–100, beru 100`); }
+  if (v != null){ const n = cislo(v); if (Number.isInteger(n) && n >= 0 && n <= 100) s.vystup.hlasitost = n; else pozn.push(t("nHlas", {v})); }
 
   for (const f of FUNKCE){
     v = vem("kanaly." + f.k);
     if (v == null) continue;
     const n = cislo(v);
     if (Number.isInteger(n) && n >= 1 && n <= 16) s.kanaly[f.k] = n;
-    else pozn.push(`kanál ${f.k} „${v}“ mimo 1–16, beru ${f.ch}`);
+    else pozn.push(t("nKanal", {k:f.k, v, d:f.ch}));
   }
 
   const mn = vem("kalibrace.min"), md = vem("kalibrace.stred"), mx = vem("kalibrace.max");
@@ -466,14 +657,14 @@ function nactiIni(text){
     const a = cislo(mn), b = cislo(md), c = cislo(mx);
     if ([a,b,c].every(Number.isInteger) && a >= 0 && a < b && b < c && c <= 2047 && c - a >= 200){
       s.kalibrace.min = a; s.kalibrace.stred = b; s.kalibrace.max = c;
-    } else pozn.push("kalibrace je neúplná nebo nesmyslná, beru 172/992/1811");
+    } else pozn.push(t("nKal"));
   }
   for (const k of ["stred_plyn", "stred_vez"]){
     v = vem("kalibrace." + k);
     if (v == null) continue;
     const n = cislo(v);
     if (Number.isInteger(n) && n > s.kalibrace.min && n < s.kalibrace.max) s.kalibrace[k] = n;
-    else pozn.push(`${k} „${v}“ je mimo kalibraci, vynechávám`);
+    else pozn.push(t("nStred", {k, v}));
   }
 
   for (const p of PREVOD){
@@ -481,9 +672,9 @@ function nactiIni(text){
     if (v == null) continue;
     const n = cislo(v);
     if (!isNaN(n) && n >= p.min - 1e-9 && n <= p.max + 1e-9 && (!p.cele || Number.isInteger(n))) s.prevodovka[p.k] = n;
-    else pozn.push(`převodovka ${p.k} „${v}“ mimo ${p.min}–${p.max}, beru ${p.v}`);
+    else pozn.push(t("nPrev", {k:p.k, v, a:p.min, b:p.max, d:p.v}));
   }
-  for (const k of Object.keys(hodnoty)) pozn.push(`neznámá položka ${k} – při uložení se vynechá`);
+  for (const k of Object.keys(hodnoty)) pozn.push(t("nNeznama", {k}));
   return {s, pozn};
 }
 
@@ -492,73 +683,99 @@ function txtCislo(n){
   return String(Math.round(n * 100) / 100);
 }
 
+// Komentare v nastaveni.txt ve zvolenem jazyce. Nazvy a hodnoty zustavaji
+// stejne - ty cte engine.
+const KOMENTARE = {
+ cz:{
+  nadpis:"SBusSound - nastavení", ulozeno:"Uloženo editorem {kdy}.",
+  uvod:["Řádek má tvar:  název = hodnota", "Vše za znakem # je komentář. Velikost písmen nevadí.",
+        "Co chybí nebo je špatně, nahradí se výchozí hodnotou a zapíše", "se do log.txt (když je na kartě diag.txt)."],
+  zarizeni:["Kam jde zvuk:", "  i2s   = modul GY-PCM5102 (PCM5102A)", "          BCK -> GPIO18 (pin 12), LCK -> GPIO19 (pin 35),",
+            "          DIN -> GPIO21 (pin 40), SCK modulu na GND", "  jack  = 3,5mm jack přímo na Raspberry"],
+  repro:["Do kterého kanálu výstupu hrát: oba | levy | pravy"],
+  hlas:["Celková hlasitost výstupu v %, 0 až 100.", "Hlasitost za jízdy se dál řídí ovladačem na vysílači."],
+  kanaly:["Číslo kanálu vysílače (1 až 16) pro každou funkci."],
+  k_motor:"přepínač zapnutí motoru", k_plyn:"páka plynu, dozadu je zpátečka", k_vez:"páka otáčení věže",
+  k_kulomet:"přepínač kulometu", k_delo:"přepínač děla (rána při přepnutí)", k_pozadi:"přepínač zvuků okolí",
+  k_hlasitost:"otočný ovladač nebo posuvník hlasitosti",
+  kal:["Rozsah hodnot, které posílá vysílač (FrSky typicky 172 až 1811)."],
+  stredy:["Nepovinné: skutečný střed páky plynu a věže, když se liší", "od hodnoty \"stred\" výše."],
+  prev:["Stejné hodnoty jako posuvníky v simulátoru motoru."],
+  p_stupnu:"počet stupňů, 1 až 6", p_pomer:"poměr mezi stupni, 1,2 až 2,2", p_rozjezd:"s z klidu na plnou rychlost, 1 až 12",
+  p_dobeh:"s z plné rychlosti do zastavení, 1 až 12", p_navrat:"ms, jak rychle se otáčky vrátí po řazení, 40 až 800",
+  p_propad:"%, o kolik otáčky navíc klesnou při řazení nahoru, 0 až 60", p_zpatecka:"%, nejvyšší rychlost couvání, 10 až 100",
+  p_max_rychlost:"rychlost přehrávání motor_run při plných otáčkách, 1,2 až 3,0",
+ },
+ en:{
+  nadpis:"SBusSound - settings", ulozeno:"Saved by the editor {kdy}.",
+  uvod:["Each line reads:  name = value", "Everything after # is a comment. Letter case does not matter.",
+        "Anything missing or wrong is replaced by its default and written", "to log.txt (when diag.txt is on the card)."],
+  zarizeni:["Where the sound goes:", "  i2s   = GY-PCM5102 module (PCM5102A)", "          BCK -> GPIO18 (pin 12), LCK -> GPIO19 (pin 35),",
+            "          DIN -> GPIO21 (pin 40), module SCK to GND", "  jack  = 3.5 mm jack on the Raspberry"],
+  repro:["Which output channel to play: oba (both) | levy (left) | pravy (right)"],
+  hlas:["Master output volume in %, 0 to 100.", "While driving, the volume is still set by the knob on the transmitter."],
+  kanaly:["Transmitter channel (1 to 16) for each function."],
+  k_motor:"engine on/off switch", k_plyn:"throttle stick, pull back to reverse", k_vez:"turret rotation stick",
+  k_kulomet:"machine gun switch", k_delo:"cannon switch (fires on each flick)", k_pozadi:"ambient sound switch",
+  k_hlasitost:"volume knob or slider",
+  kal:["The range of values the transmitter sends (FrSky typically 172 to 1811)."],
+  stredy:["Optional: the real centre of the throttle and turret stick, when it", "differs from \"stred\" above."],
+  prev:["The same values as the sliders in the engine simulator."],
+  p_stupnu:"number of gears, 1 to 6", p_pomer:"ratio between gears, 1.2 to 2.2", p_rozjezd:"s from standstill to full speed, 1 to 12",
+  p_dobeh:"s from full speed to a standstill, 1 to 12", p_navrat:"ms, how fast the revs recover after a shift, 40 to 800",
+  p_propad:"%, extra rev drop on upshift, 0 to 60", p_zpatecka:"%, top reverse speed, 10 to 100",
+  p_max_rychlost:"playback rate of motor_run at full revs, 1.2 to 3.0",
+ }
+};
+
 // Vyrobi nastaveni.txt ve stejne podobe jako vzorovy soubor.
 function vyrobIni(s, kdy){
-  const k = s.kanaly, c = s.kalibrace, p = s.prevodovka;
-  const pad = (t, n) => (t + " ".repeat(n)).slice(0, Math.max(n, t.length));
+  const K = KOMENTARE[LANG], k = s.kanaly, c = s.kalibrace, p = s.prevodovka;
+  const pad = (x, n) => (x + " ".repeat(n)).slice(0, Math.max(n, String(x).length));
+  const kom = (radky) => radky.map(r => "# " + r).join("\n");
+  const kan = (f) => `${pad(f, 9)} = ${pad(String(k[f]), 5)} # ${K["k_" + f]}`;
+  const prv = (f) => `${pad(f, 12)} = ${pad(txtCislo(p[f]), 6)} # ${K["p_" + f]}`;
   return `# ================================================================
-#  SBusSound - nastavení
+#  ${K.nadpis}
 # ================================================================
-#  Uloženo editorem ${kdy}.
-#  Řádek má tvar:  název = hodnota
-#  Vše za znakem # je komentář. Velikost písmen nevadí.
-#  Co chybí nebo je špatně, nahradí se výchozí hodnotou a zapíše
-#  se do log.txt (když je na kartě diag.txt).
+#  ${K.ulozeno.replace("{kdy}", kdy)}
+${K.uvod.map(r => "#  " + r).join("\n")}
 
 
 [vystup]
 
-# Kam jde zvuk:
-#   i2s   = modul GY-PCM5102 (PCM5102A)
-#           BCK -> GPIO18 (pin 12), LCK -> GPIO19 (pin 35),
-#           DIN -> GPIO21 (pin 40), SCK modulu na GND
-#   jack  = 3,5mm jack přímo na Raspberry
+${kom(K.zarizeni)}
 zarizeni = ${s.vystup.zarizeni}
 
-# Do kterého kanálu výstupu hrát: oba | levy | pravy
+${kom(K.repro)}
 reproduktor = ${s.vystup.reproduktor}
 
-# Celková hlasitost výstupu v %, 0 až 100.
-# Hlasitost za jízdy se dál řídí ovladačem na vysílači.
+${kom(K.hlas)}
 hlasitost = ${s.vystup.hlasitost}
 
 
 [kanaly]
 
-# Číslo kanálu vysílače (1 až 16) pro každou funkci.
-${pad("motor", 9)} = ${pad(String(k.motor), 5)} # přepínač zapnutí motoru
-${pad("plyn", 9)} = ${pad(String(k.plyn), 5)} # páka plynu, dozadu je zpátečka
-${pad("vez", 9)} = ${pad(String(k.vez), 5)} # páka otáčení věže
-${pad("kulomet", 9)} = ${pad(String(k.kulomet), 5)} # přepínač kulometu
-${pad("delo", 9)} = ${pad(String(k.delo), 5)} # přepínač děla (rána při přepnutí)
-${pad("pozadi", 9)} = ${pad(String(k.pozadi), 5)} # přepínač zvuků okolí
-${pad("hlasitost", 9)} = ${pad(String(k.hlasitost), 5)} # otočný ovladač nebo posuvník hlasitosti
+${kom(K.kanaly)}
+${["motor", "plyn", "vez", "kulomet", "delo", "pozadi", "hlasitost"].map(kan).join("\n")}
 
 
 [kalibrace]
 
-# Rozsah hodnot, které posílá vysílač (FrSky typicky 172 až 1811).
+${kom(K.kal)}
 min   = ${c.min}
 stred = ${c.stred}
 max   = ${c.max}
 
-# Nepovinné: skutečný střed páky plynu a věže, když se liší
-# od hodnoty "stred" výše.
+${kom(K.stredy)}
 ${c.stred_plyn != null ? "" : "# "}stred_plyn = ${c.stred_plyn != null ? c.stred_plyn : c.stred}
 ${c.stred_vez != null ? "" : "# "}stred_vez  = ${c.stred_vez != null ? c.stred_vez : c.stred}
 
 
 [prevodovka]
 
-# Stejné hodnoty jako posuvníky v simulátoru motoru.
-stupnu       = ${pad(txtCislo(p.stupnu), 6)} # počet stupňů, 1 až 6
-pomer        = ${pad(txtCislo(p.pomer), 6)} # poměr mezi stupni, 1,2 až 2,2
-rozjezd      = ${pad(txtCislo(p.rozjezd), 6)} # s z klidu na plnou rychlost, 1 až 12
-dobeh        = ${pad(txtCislo(p.dobeh), 6)} # s z plné rychlosti do zastavení, 1 až 12
-navrat       = ${pad(txtCislo(p.navrat), 6)} # ms, jak rychle se otáčky vrátí po řazení, 40 až 800
-propad       = ${pad(txtCislo(p.propad), 6)} # %, o kolik otáčky navíc klesnou při řazení nahoru, 0 až 60
-zpatecka     = ${pad(txtCislo(p.zpatecka), 6)} # %, nejvyšší rychlost couvání, 10 až 100
-max_rychlost = ${pad(txtCislo(p.max_rychlost), 6)} # rychlost přehrávání motor_run při plných otáčkách, 1,2 až 3,0
+${kom(K.prev)}
+${PREVOD.map(x => prv(x.k)).join("\n")}
 `;
 }
 
@@ -566,42 +783,42 @@ max_rychlost = ${pad(txtCislo(p.max_rychlost), 6)} # rychlost přehrávání mot
 function kontrola(s){
   const ch = [], c = s.kalibrace;
   const cela = (n, a, b) => Number.isInteger(n) && n >= a && n <= b;
-  if (!cela(c.min,0,2047) || !cela(c.stred,0,2047) || !cela(c.max,0,2047)) ch.push("Kalibrace musí být celá čísla 0 až 2047.");
+  if (!cela(c.min,0,2047) || !cela(c.stred,0,2047) || !cela(c.max,0,2047)) ch.push({kal:true, t:t("kChybaCela")});
   else {
-    if (!(c.min < c.stred && c.stred < c.max)) ch.push("Kalibrace: musí platit minimum < střed < maximum.");
-    if (c.max - c.min < 200) ch.push("Kalibrace: rozsah mezi minimem a maximem je menší než 200.");
+    if (!(c.min < c.stred && c.stred < c.max)) ch.push({kal:true, t:t("kChybaPoradi")});
+    if (c.max - c.min < 200) ch.push({kal:true, t:t("kChybaRozsah")});
   }
   for (const k of ["stred_plyn", "stred_vez"]){
     const n = c[k];
     if (n != null && !(Number.isInteger(n) && n > c.min && n < c.max))
-      ch.push(`Vlastní střed ${k === "stred_plyn" ? "plynu" : "věže"} musí ležet mezi minimem a maximem.`);
+      ch.push({stred:true, t:t(k === "stred_plyn" ? "kChybaStredPlyn" : "kChybaStredVez")});
   }
-  for (const f of FUNKCE) if (!cela(s.kanaly[f.k], 1, 16)) ch.push(`Kanál „${f.nazev}“ musí být 1 až 16.`);
+  for (const f of FUNKCE) if (!cela(s.kanaly[f.k], 1, 16)) ch.push({t:t("kChybaKanal", {f:t("f_" + f.k)})});
   return ch;
 }
 
 function duplicity(s){
   const podle = {};
-  for (const f of FUNKCE) (podle[s.kanaly[f.k]] ||= []).push(f.nazev);
-  return Object.entries(podle).filter(([, n]) => n.length > 1).map(([c, n]) => `CH${c}: ${n.join(", ")}`);
+  for (const f of FUNKCE) (podle[s.kanaly[f.k]] ||= []).push(f.k);
+  return Object.entries(podle).filter(([, n]) => n.length > 1).map(([c, n]) => ({ch:Number(c), funkce:n}));
 }
 
 /* ---------- WAV a ZIP ---------- */
 function vyrobWav(f32, rate){
   const n = f32.length, buf = new ArrayBuffer(44 + n * 2), d = new DataView(buf);
-  const t = (o, s) => { for (let i = 0; i < s.length; i++) d.setUint8(o + i, s.charCodeAt(i)); };
-  t(0, "RIFF"); d.setUint32(4, 36 + n * 2, true); t(8, "WAVE");
-  t(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+  const w = (o, x) => { for (let i = 0; i < x.length; i++) d.setUint8(o + i, x.charCodeAt(i)); };
+  w(0, "RIFF"); d.setUint32(4, 36 + n * 2, true); w(8, "WAVE");
+  w(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
   d.setUint32(24, rate, true); d.setUint32(28, rate * 2, true); d.setUint16(32, 2, true); d.setUint16(34, 16, true);
-  t(36, "data"); d.setUint32(40, n * 2, true);
+  w(36, "data"); d.setUint32(40, n * 2, true);
   for (let i = 0; i < n; i++){
-    let v = Math.round(f32[i] * 32767);
+    const v = Math.round(f32[i] * 32767);
     d.setInt16(44 + i * 2, v > 32767 ? 32767 : v < -32768 ? -32768 : v, true);
   }
   return new Uint8Array(buf);
 }
 
-const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const CRC_T = (() => { const x = new Uint32Array(256); for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; x[n] = c >>> 0; } return x; })();
 function crc32(b){ let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
 
 // ZIP bez komprese (WAV se stejne skoro nekomprimuji). soubory: [{jmeno, data:Uint8Array}]
@@ -687,34 +904,33 @@ function smazUsek(d, a, b){
   out.set(d.subarray(0, a), 0); out.set(d.subarray(b), a);
   const K = Math.min(SPOJ, a, d.length - b);
   for (let i = 0; i < K; i++){
-    const w = (i + 1) / (K + 1);	// 0 -> 1: z konce pred strihem do zacatku za nim
+    const w = (i + 1) / (K + 1);
     out[a - K + i] = d[a - K + i] * (1 - w) + d[b - K + i] * w;
   }
   return out;
 }
 function ponechUsek(d, a, b){ return d.slice(Math.max(0, a), Math.min(d.length, b)); }
-function upravUsek(d, a, b, f){		// f(vzorek, poloha 0..1) -> novy vzorek
+function upravUsek(d, a, b, f){
   const out = d.slice(); a = Math.max(0, a); b = Math.min(d.length, b);
   const n = Math.max(1, b - a - 1);
   for (let i = a; i < b; i++) out[i] = f(d[i], (i - a) / n);
   return out;
 }
 const tichoUsek = (d, a, b) => upravUsek(d, a, b, () => 0);
-const nabehUsek = (d, a, b) => upravUsek(d, a, b, (v, t) => v * Math.sin(t * Math.PI / 2) ** 2);
-const dobehUsek = (d, a, b) => upravUsek(d, a, b, (v, t) => v * Math.cos(t * Math.PI / 2) ** 2);
+const nabehUsek = (d, a, b) => upravUsek(d, a, b, (v, x) => v * Math.sin(x * Math.PI / 2) ** 2);
+const dobehUsek = (d, a, b) => upravUsek(d, a, b, (v, x) => v * Math.cos(x * Math.PI / 2) ** 2);
 function zesilUsek(d, a, b, dB){ const g = Math.pow(10, dB / 20); return upravUsek(d, a, b, v => Math.max(-1, Math.min(1, v * g))); }
 function spicka(d, a = 0, b = d.length){ let m = 0; for (let i = a; i < b; i++){ const v = Math.abs(d[i]); if (v > m) m = v; } return m; }
 // Spicka na -1 dB (0,891) - stejna rezerva jako limiter v enginu.
 function normalizujUsek(d, a, b){ const m = spicka(d, a, b); return m > 0 ? upravUsek(d, a, b, v => v * 0.891 / m) : d.slice(); }
 function bezDC(d){ let s = 0; for (let i = 0; i < d.length; i++) s += d[i]; const m = s / (d.length || 1); return d.map(v => Math.max(-1, Math.min(1, v - m))); }
 // Plynula smycka: poslednich N vzorku se prolne do prvnich N a konec se zkrati.
-// Pri prehravani dokola pak konec plynule navazuje na zacatek.
 function plynulaSmycka(d, N){
   N = Math.min(Math.round(N), Math.floor(d.length / 3));
   if (N < 2) return d.slice();
   const out = d.slice(0, d.length - N), z = d.length - N;
   for (let i = 0; i < N; i++){
-    const w = Math.sin((i + 0.5) / N * Math.PI / 2) ** 2;	// rovny vykon
+    const w = Math.sin((i + 0.5) / N * Math.PI / 2) ** 2;
     out[i] = d[i] * w + d[z + i] * (1 - w);
   }
   return out;
@@ -730,11 +946,12 @@ let zmeneno = false;
 let karta = null;          // FileSystemDirectoryHandle (Chrome, Edge)
 let kartaJmeno = "";
 let poznamkyNacteni = [];
+let posledniText = null;   // nastaveni.txt z karty - poznamky se pri zmene jazyka prelozi znovu
 const zvuky = {};          // jmeno -> {buf:AudioBuffer, wav:Uint8Array|null, zdroj, chyba}
 let ctx = null;
 
 const $ = (id) => document.getElementById(id);
-const fmt = (n, des) => n.toFixed(des).replace(".", ",");
+const esc = x => String(x).replace(/[&<>"]/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;"}[c]));
 
 function audio(){
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -743,9 +960,9 @@ function audio(){
 }
 
 let hlaskaCas = null;
-function hlaska(t, chyba){
+function hlaska(x, chyba){
   const h = $("hlaska");
-  h.textContent = t;
+  h.textContent = x;
   h.className = "ukaz" + (chyba ? " chyba" : "");
   clearTimeout(hlaskaCas);
   hlaskaCas = setTimeout(() => h.className = chyba ? "chyba" : "", chyba ? 9000 : 4500);
@@ -754,8 +971,7 @@ function hlaska(t, chyba){
 function zmena(){ zmeneno = true; obnovStav(); }
 
 /* Dialog uprostred okna. tlacitka: [{t:"text", v:hodnota, hlavni:true, fokus:true}],
-   prvni = zruseni (Esc). Predvybrane (Enter) je tlacitko s fokus, jinak hlavni.
-   Vraci Promise s hodnotou stisknuteho tlacitka. */
+   prvni = zruseni (Esc). Predvybrane (Enter) je tlacitko s fokus, jinak hlavni. */
 let dialogKonec = null;
 const dialogOtevren = () => dialogKonec !== null;
 function dialog({ikona = "ok", nadpis, text, tlacitka}){
@@ -768,11 +984,11 @@ function dialog({ikona = "ok", nadpis, text, tlacitka}){
   clearTimeout(hlaskaCas); $("hlaska").className = "";	// at rusi jen jedna vec
   return new Promise(hotovo => {
     dialogKonec = (v) => { dialogKonec = null; $("dialog").classList.remove("otevren"); if (predtim && predtim.focus) predtim.focus(); hotovo(v); };
-    for (const t of tlacitka){
-      const b = document.createElement("button");
-      b.textContent = t.t; if (t.hlavni) b.className = "hlavni"; if (t.fokus) b.dataset.fokus = "1";
-      b.onclick = () => dialogKonec(t.v);
-      obal.appendChild(b);
+    for (const b of tlacitka){
+      const el = document.createElement("button");
+      el.textContent = b.t; if (b.hlavni) el.className = "hlavni"; if (b.fokus) el.dataset.fokus = "1";
+      el.onclick = () => dialogKonec(b.v);
+      obal.appendChild(el);
     }
     dialog.zruseni = tlacitka[0].v;
     $("dialog").classList.add("otevren");
@@ -785,23 +1001,45 @@ document.addEventListener("keydown", e => {
   else if (e.key === " " && e.target.tagName !== "BUTTON"){ e.preventDefault(); e.stopImmediatePropagation(); }
   else e.stopImmediatePropagation();		// klavesy editoru pod dialogem nefunguji
 }, true);
-const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;"}[c]));
 
 function obnovStav(){
   const nove = Object.keys(zvuky).filter(k => zvuky[k].wav).length;
-  const kde = kartaJmeno ? `Karta <b>${kartaJmeno}</b>` : "Bez karty";
-  let t = kde + (zmeneno
-    ? ` · <span class="neulozeno">neuloženo${nove ? `, ${nove} ${nove === 1 ? "nový zvuk" : nove < 5 ? "nové zvuky" : "nových zvuků"}` : ""}</span>`
-    : (kartaJmeno ? ` · <span class="ulozeno">vše uloženo</span>` : ""));
-  if (poznamkyNacteni.length) t += ` · ${poznamkyNacteni.length} ${poznamkyNacteni.length === 1 ? "oprava" : "oprav"} v nastaveni.txt <button class="tichy" id="btnPozn">ukázat</button>`;
-  $("stav").innerHTML = t;
+  const kde = kartaJmeno ? `${t("karta")} <b>${esc(kartaJmeno)}</b>` : t("bezKarty");
+  let x;
+  if (!kartaJmeno && !zmeneno) x = t("stavUvod");
+  else x = kde + (zmeneno
+    ? ` · <span class="neulozeno">${t("neulozeno")}${nove ? ", " + tPocet("novyZvuk", nove) : ""}</span>`
+    : ` · <span class="ulozeno">${t("vseUlozeno")}</span>`);
+  if (poznamkyNacteni.length) x += ` · ${tPocet("oprav", poznamkyNacteni.length)} <button class="tichy" id="btnPozn">${t("ukazat")}</button>`;
+  $("stav").innerHTML = x;
   const b = $("btnPozn");
   if (b) b.onclick = () => hlaska(poznamkyNacteni.join(" · "), true);
-  $("btnUlozit").textContent = window.showDirectoryPicker ? "Uložit na kartu" : "Stáhnout pro kartu";
+  $("btnUlozit").textContent = window.showDirectoryPicker ? t("ulozitNaKartu") : t("stahnoutProKartu");
 }
 // Zavreni stranky: varovat vzdy, aby se nezavrela omylem. Vlastni text
 // prohlizece nedovoli, ukaze svuj.
 window.addEventListener("beforeunload", e => { e.preventDefault(); e.returnValue = ""; });
+
+/* ---------- jazyk ---------- */
+function prelozStatiku(){
+  document.documentElement.lang = LANG === "en" ? "en" : "cs";
+  document.title = t("titulek");
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-title]").forEach(el => el.title = t(el.dataset.i18nTitle));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  document.querySelectorAll("[data-jazyk]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.jazyk === LANG)));
+}
+function zmenJazyk(l){
+  nastavJazyk(l);
+  try{ localStorage.setItem("lang", LANG); }catch(e){}
+  if (posledniText != null) poznamkyNacteni = nactiIni(posledniText).pozn;	// jen preklad poznamek
+  clearTimeout(hlaskaCas); $("hlaska").className = ""; $("hlaska").textContent = "";	// hlaska je v puvodnim jazyce
+  prelozStatiku();
+  vykresliFunkce(); vykresliPrevodovku();
+  obnovVse();
+  if (edOtevren()){ edTitulek(); edDbText(); edObnov(); }
+}
+document.querySelectorAll("[data-jazyk]").forEach(b => b.onclick = () => zmenJazyk(b.dataset.jazyk));
 
 /* ---------- kanaly a zvuky ---------- */
 function vykresliFunkce(){
@@ -810,20 +1048,20 @@ function vykresliFunkce(){
   for (const f of FUNKCE){
     const r = document.createElement("div");
     r.className = "funkce";
-    r.innerHTML = `<div class="nazev">${f.nazev}<small>${f.pozn}</small></div>
-      <label class="stitek" title="Kanál vysílače"><span>CH</span>
-        <input type="number" min="1" max="16" step="1" data-k="${f.k}" aria-label="Kanál pro ${f.nazev}"></label>
+    r.innerHTML = `<div class="nazev">${t("f_" + f.k)}<small>${t("fp_" + f.k)}</small></div>
+      <label class="stitek" title="${t("kanalVysilace")}"><span>CH</span>
+        <input type="number" min="1" max="16" step="1" data-k="${f.k}" aria-label="${t("kanalPro", {f:t("f_" + f.k)})}"></label>
       <div class="zvuky"></div>`;
     const zv = r.querySelector(".zvuky");
-    if (!f.sloty.length) zv.innerHTML = `<div class="bezzvuku">${f.text}</div>`;
+    if (!f.sloty.length) zv.innerHTML = `<div class="bezzvuku">${t("ft_" + f.k)}</div>`;
     for (const jm of f.sloty){
       const d = document.createElement("div");
       d.className = "zvuk";
-      d.innerHTML = `<div class="jm">${SLOTY[jm].popis}<small>${jm}.wav</small></div>
+      d.innerHTML = `<div class="jm">${t("s_" + jm)}<small>${jm}.wav</small></div>
         <div class="vlna" id="vl_${jm}"><canvas width="300" height="34"></canvas><span class="info"></span></div>
-        <button class="hrat" id="hr_${jm}" title="Přehrát" aria-label="Přehrát ${jm}">▶</button>
-        <button id="up_${jm}" data-upravit="${jm}">Upravit</button>
-        <button data-vyber="${jm}">Vybrat…</button>`;
+        <button class="hrat" id="hr_${jm}" title="${t("prehrat")}" aria-label="${t("prehratJm", {jm})}">▶</button>
+        <button id="up_${jm}" data-upravit="${jm}">${t("upravit")}</button>
+        <button data-vyber="${jm}">${t("vybrat")}</button>`;
       zv.appendChild(d);
     }
     obal.appendChild(r);
@@ -838,6 +1076,7 @@ function vykresliFunkce(){
   obal.querySelectorAll("button[data-vyber]").forEach(b => b.onclick = () => { cilovySlot = b.dataset.vyber; $("soubor").click(); });
   obal.querySelectorAll("[data-upravit]").forEach(b => b.onclick = () => otevriEditor(b.dataset.upravit));
   for (const jm of Object.keys(SLOTY)) $("hr_" + jm).onclick = () => prehraj(jm);
+  if (nahled){ $("hr_" + nahled.jm).classList.add("hraje"); $("hr_" + nahled.jm).textContent = "■"; }
 }
 
 function obnovKanaly(){
@@ -846,10 +1085,10 @@ function obnovKanaly(){
     if (document.activeElement !== inp) inp.value = Number.isFinite(v) ? v : "";
   });
   const d = duplicity(S);
-  const dupKanaly = new Set(d.map(x => Number(x.slice(2, x.indexOf(":")))));
+  const dupKanaly = new Set(d.map(x => x.ch));
   document.querySelectorAll("input[data-k]").forEach(inp =>
     inp.parentElement.classList.toggle("dup", dupKanaly.has(S.kanaly[inp.dataset.k]) || !(S.kanaly[inp.dataset.k] >= 1 && S.kanaly[inp.dataset.k] <= 16)));
-  $("dupl").textContent = d.length ? "Stejný kanál u více funkcí: " + d.join("; ") + ". Engine to dovolí, jen to nejspíš nechceš." : "";
+  $("dupl").textContent = d.length ? t("dupl", {s:d.map(x => `CH${x.ch}: ${x.funkce.map(f => t("f_" + f)).join(", ")}`).join("; ")}) : "";
 }
 
 function vykresliVlnu(jm){
@@ -861,7 +1100,7 @@ function vykresliVlnu(jm){
   el.classList.toggle("chyba", !!(z && z.chyba));
   $("hr_" + jm).disabled = !(z && z.buf);
   $("up_" + jm).disabled = !(z && z.buf);
-  if (!z || !z.buf){ info.textContent = z && z.chyba ? z.chyba : "chybí – vyber soubor"; return; }
+  if (!z || !z.buf){ info.textContent = z && z.chyba ? t("nejdePrecist") : t("chybiVyber"); return; }
   const d = z.buf.getChannelData(0), krok = d.length / w;
   g.fillStyle = z.wav ? "#C8A23C" : "#8E9A84";
   for (let x = 0; x < w; x++){
@@ -873,7 +1112,7 @@ function vykresliVlnu(jm){
   }
   const s = z.buf.duration;
   const delka = s >= 60 ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}` : fmt(s, 1) + " s";
-  info.textContent = `${delka} · ${SLOTY[jm].smycka ? "smyčka" : "jednou"}${z.wav ? (z.zdroj === "upraveno" ? " · upraveno" : " · nový: " + z.zdroj) : ""}`;
+  info.textContent = `${delka} · ${SLOTY[jm].smycka ? t("smycka") : t("jednou")}${z.wav ? " · " + (z.zdroj === "upraveno" ? t("upraveno") : t("novy", {z:z.zdroj})) : ""}`;
 }
 
 // Dekoduje libovolny podporovany format primo na 44100 Hz a smicha do mona.
@@ -904,21 +1143,21 @@ async function vyberZvuk(jm, f){
   zastavNahled();
   try{
     const buf = await dekoduj(await f.arrayBuffer());
-    if (buf.length === 0) throw new Error("prázdný");
-    if (buf.duration > 600) hlaska(`${f.name} je delší než 10 minut – na kartě zabere hodně paměti.`, true);
+    if (buf.length === 0) throw new Error("prazdny");
+    if (buf.duration > 600) hlaska(t("delsi10", {f:f.name}), true);
     const pripona = (f.name.split(".").pop() || "").toUpperCase();
-    zvuky[jm] = {buf, wav:vyrobWav(buf.getChannelData(0), 44100), zdroj:pripona || "soubor", chyba:null};
+    zvuky[jm] = {buf, wav:vyrobWav(buf.getChannelData(0), 44100), zdroj:pripona || "?", chyba:null};
     vykresliVlnu(jm); zmena(); obnovSim();
-    hlaska(`${f.name} → ${jm}.wav (${fmt(buf.duration, 1)} s, 44100 Hz mono)`);
+    hlaska(t("vybranZvuk", {f:f.name, jm, d:fmt(buf.duration, 1)}));
   }catch(err){
-    hlaska(`${f.name} nejde přečíst jako zvuk. Zkus WAV, MP3, M4A nebo FLAC.`, true);
+    hlaska(t("nejdeZvuk", {f:f.name}), true);
   }
 }
 
 /* nahled */
 let nahled = null;
 function zastavNahled(){
-  if (nahled){ try{ nahled.src.stop(); }catch(e){} $("hr_" + nahled.jm).classList.remove("hraje"); $("hr_" + nahled.jm).textContent = "▶"; nahled = null; }
+  if (nahled){ try{ nahled.src.stop(); }catch(e){} const b = $("hr_" + nahled.jm); if (b){ b.classList.remove("hraje"); b.textContent = "▶"; } nahled = null; }
 }
 function prehraj(jm){
   const bylo = nahled && nahled.jm;
@@ -935,8 +1174,7 @@ function prehraj(jm){
 
 /* ---------- vystup, kalibrace ---------- */
 function napojPrepinac(id, klic){
-  const el = $(id);
-  el.querySelectorAll("button").forEach(b => b.onclick = () => { S.vystup[klic] = b.dataset.v; obnovVystup(); zmena(); });
+  $(id).querySelectorAll("button").forEach(b => b.onclick = () => { S.vystup[klic] = b.dataset.v; obnovVystup(); zmena(); });
 }
 function obnovVystup(){
   for (const [id, k] of [["zarizeni", "zarizeni"], ["reproduktor", "reproduktor"]])
@@ -954,12 +1192,12 @@ function obnovKalibraci(){
   $("chVez").checked = c.stred_vez != null; $("kVez").disabled = c.stred_vez == null;
   nast("kPlyn", c.stred_plyn != null ? c.stred_plyn : c.stred);
   nast("kVez", c.stred_vez != null ? c.stred_vez : c.stred);
-  const ch = kontrola(S).filter(t => t.startsWith("Kalibrace") || t.startsWith("Vlastní"));
-  $("kalChyba").textContent = ch.join(" ");
-  for (const id of ["kMin", "kStred", "kMax"]) $(id).classList.toggle("spatne", ch.some(t => t.startsWith("Kalibrace")));
+  const ch = kontrola(S).filter(x => x.kal || x.stred);
+  $("kalChyba").textContent = ch.map(x => x.t).join(" ");
+  for (const id of ["kMin", "kStred", "kMax"]) $(id).classList.toggle("spatne", ch.some(x => x.kal));
 }
 for (const [id, k] of [["kMin", "min"], ["kStred", "stred"], ["kMax", "max"]])
-  $(id).addEventListener("input", e => { const n = Number(e.target.value); S.kalibrace[k] = e.target.value === "" ? NaN : n; obnovKalibraci(); zmena(); });
+  $(id).addEventListener("input", e => { S.kalibrace[k] = e.target.value === "" ? NaN : Number(e.target.value); obnovKalibraci(); zmena(); });
 for (const [ch, id, k] of [["chPlyn", "kPlyn", "stred_plyn"], ["chVez", "kVez", "stred_vez"]]){
   $(ch).addEventListener("change", e => { S.kalibrace[k] = e.target.checked ? Number($(id).value) || S.kalibrace.stred : null; obnovKalibraci(); zmena(); });
   $(id).addEventListener("input", e => { if ($(ch).checked){ S.kalibrace[k] = Number(e.target.value); obnovKalibraci(); zmena(); } });
@@ -972,7 +1210,7 @@ function vykresliPrevodovku(){
   for (const p of PREVOD){
     const d = document.createElement("div");
     d.className = "par";
-    d.innerHTML = `<label for="p_${p.k}"><span>${p.t}</span><span class="hodnota" id="pv_${p.k}"></span></label>
+    d.innerHTML = `<label for="p_${p.k}"><span>${t("p_" + p.k)}</span><span class="hodnota" id="pv_${p.k}"></span></label>
       <input type="range" id="p_${p.k}" min="${p.min}" max="${p.max}" step="${p.krok}">`;
     obal.appendChild(d);
     // model drzi presnou hodnotu ze souboru; posuvnik ji zmeni, az s nim clovek pohne
@@ -997,26 +1235,25 @@ async function nactiZeSouboru(najdi){
   // najdi(cesta) -> File | null ; cesta napr. "nastaveni.txt", "sounds/turret.wav"
   zastavNahled(); vypniSim();
   const f = await najdi("nastaveni.txt");
-  if (f){ const r = nactiIni(await nactiText(f)); S = r.s; poznamkyNacteni = r.pozn; }
-  else { S = vychozi(); poznamkyNacteni = []; }
-  let nacteno = 0, chybi = [];
+  if (f){ posledniText = await nactiText(f); const r = nactiIni(posledniText); S = r.s; poznamkyNacteni = r.pozn; }
+  else { posledniText = null; S = vychozi(); poznamkyNacteni = []; }
+  let nacteno = 0;
+  const chybi = [];
   for (const jm of Object.keys(SLOTY)){
     const z = await najdi("sounds/" + jm + ".wav");
     if (!z){ zvuky[jm] = {buf:null, wav:null, chyba:null}; chybi.push(jm); continue; }
     try{ zvuky[jm] = {buf:await dekoduj(await z.arrayBuffer()), wav:null, zdroj:"karta", chyba:null}; nacteno++; }
-    catch(e){ zvuky[jm] = {buf:null, wav:null, chyba:"nejde přečíst"}; }
+    catch(e){ zvuky[jm] = {buf:null, wav:null, chyba:true}; }
   }
   zmeneno = false;
   obnovVse();
-  hlaska((f ? "Načteno nastaveni.txt" : "Na kartě není nastaveni.txt – výchozí hodnoty") +
-         ` a ${nacteno} ze 7 zvuků` + (chybi.length ? ` (chybí ${chybi.join(", ")})` : "") + ".", !f || chybi.length > 0);
+  hlaska(t(f ? "nacteno" : "nenacteno", {n:nacteno}) + (chybi.length ? t("chybiZvuky", {s:chybi.join(", ")}) : "") + ".", !f || chybi.length > 0);
 }
 
 $("btnOtevrit").onclick = async () => {
   if (zmeneno){
-    const v = await dialog({ikona:"pozor", nadpis:"Zahodit neuložené změny?",
-      text:"<p>Nastavení nebo zvuky jsou změněné a nejsou uložené na kartě. Otevřením karty se ztratí.</p>",
-      tlacitka:[{t:"Ponechat změny", v:false, hlavni:true, fokus:true}, {t:"Zahodit a otevřít kartu", v:true}]});
+    const v = await dialog({ikona:"pozor", nadpis:t("dlZahoditNadpis"), text:t("dlZahoditText"),
+      tlacitka:[{t:t("dlPonechat"), v:false, hlavni:true, fokus:true}, {t:t("dlZahoditOtevrit"), v:true}]});
     if (!v) return;
   }
   if (window.showDirectoryPicker){
@@ -1030,7 +1267,7 @@ $("btnOtevrit").onclick = async () => {
           return await (await h.getFileHandle(casti[casti.length - 1])).getFile();
         }catch(e){ return null; }
       });
-    }catch(e){ if (e.name !== "AbortError") hlaska("Kartu se nepodařilo otevřít: " + e.message, true); }
+    }catch(e){ if (e.name !== "AbortError") hlaska(t("nejdeOtevrit", {e:e.message}), true); }
   } else {
     $("slozka").click();
   }
@@ -1047,16 +1284,17 @@ $("slozka").onchange = async e => {
 /* ---------- karta: ulozeni ---------- */
 function kdy(){
   const d = new Date(), p = n => String(n).padStart(2, "0");
-  return `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+  return LANG === "en" ? `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`
+                       : `${d.getDate()}. ${d.getMonth() + 1}. ${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 $("btnUlozit").onclick = async () => {
   if (edOtevren()) return;
   const ch = kontrola(S);
   if (ch.length){
-    await dialog({ikona:"chyba", nadpis:"Nastavení nejde uložit",
-      text:"<p>Nejdřív oprav:</p><ul>" + ch.map(t => `<li style="color:var(--chyba)">${esc(t)}</li>`).join("") + "</ul>",
-      tlacitka:[{t:"Opravím to", v:0, hlavni:true}]});
+    await dialog({ikona:"chyba", nadpis:t("dlNejdeNadpis"),
+      text:t("dlNejdeText") + "<ul>" + ch.map(x => `<li style="color:var(--chyba)">${esc(x.t)}</li>`).join("") + "</ul>",
+      tlacitka:[{t:t("dlOpravim"), v:0, hlavni:true}]});
     return;
   }
   const text = vyrobIni(S, kdy());
@@ -1065,25 +1303,24 @@ $("btnUlozit").onclick = async () => {
   if (window.showDirectoryPicker){
     try{
       if (!karta){ karta = await window.showDirectoryPicker({id:"sbuskarta", mode:"readwrite"}); kartaJmeno = karta.name; }
-      if (karta.requestPermission && (await karta.requestPermission({mode:"readwrite"})) !== "granted") throw new Error("bez povolení zápisu");
+      if (karta.requestPermission && (await karta.requestPermission({mode:"readwrite"})) !== "granted") throw new Error(t("bezPovoleni"));
       const zapis = async (h, jm, data) => { const w = await (await h.getFileHandle(jm, {create:true})).createWritable(); await w.write(data); await w.close(); };
       if (nove.length){
         const s = await karta.getDirectoryHandle("sounds", {create:true});
         for (const jm of nove) await zapis(s, jm + ".wav", zvuky[jm].wav);
       }
       await zapis(karta, "nastaveni.txt", new TextEncoder().encode(text));
-      const popis = nove.map(jm => `<li>sounds/${jm}.wav <small>${zvuky[jm].zdroj === "upraveno" ? "upraveno" : "nový zvuk"}, ${fmt(zvuky[jm].buf.duration, 1)} s</small></li>`);
+      posledniText = text; poznamkyNacteni = [];
+      const popis = nove.map(jm => `<li>sounds/${jm}.wav <small>${zvuky[jm].zdroj === "upraveno" ? t("dlUpraveno") : t("dlNovyZvuk")}, ${fmt(zvuky[jm].buf.duration, 1)} s</small></li>`);
       for (const jm of nove){ zvuky[jm].wav = null; zvuky[jm].zdroj = "karta"; vykresliVlnu(jm); }
       zmeneno = false; obnovStav();
-      await dialog({ikona:"ok", nadpis:`Uloženo na kartu ${kartaJmeno}`,
-        text:`<ul><li>nastaveni.txt</li>${popis.join("")}</ul>
-              <p>Kartu bezpečně vysuň (⏏ ve Finderu) a vlož do tanku. Nové nastavení se načte po zapnutí.</p>`,
-        tlacitka:[{t:"OK", v:0, hlavni:true}]});
+      await dialog({ikona:"ok", nadpis:t("dlUlozenoNadpis", {k:kartaJmeno}),
+        text:`<ul><li>nastaveni.txt</li>${popis.join("")}</ul>${t("dlUlozenoText")}`,
+        tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
     }catch(e){
       if (e.name !== "AbortError")
-        await dialog({ikona:"chyba", nadpis:"Uložení se nepovedlo",
-          text:`<p>${esc(e.message)}</p><p class="tlum">Zkontroluj, že je karta vložená a není zamčená proti zápisu, a zkus to znovu. Změny v této stránce zůstaly.</p>`,
-          tlacitka:[{t:"OK", v:0, hlavni:true}]});
+        await dialog({ikona:"chyba", nadpis:t("dlChybaNadpis"), text:`<p>${esc(e.message)}</p>${t("dlChybaText")}`,
+          tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
     }
     return;
   }
@@ -1096,11 +1333,9 @@ $("btnUlozit").onclick = async () => {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 20000);
   zmeneno = false; obnovStav();
-  await dialog({ikona:"ok", nadpis:"Staženo SBusSound_nastaveni.zip",
-    text:`<p>V ZIPu je:</p><ul><li>nastaveni.txt</li>${nove.map(jm => `<li>sounds/${jm}.wav</li>`).join("")}</ul>
-          <p>Najdeš ho ve Stažených souborech. Jeho obsah nakopíruj do kořene karty a stávající soubory přepiš.</p>
-          <p class="tlum">Safari umí na kartu zapisovat jen takhle. V Chromu nebo Edge se ukládá rovnou na kartu.</p>`,
-    tlacitka:[{t:"OK", v:0, hlavni:true}]});
+  await dialog({ikona:"ok", nadpis:t("dlZipNadpis"),
+    text:`${t("dlZipVZipu")}<ul><li>nastaveni.txt</li>${nove.map(jm => `<li>sounds/${jm}.wav</li>`).join("")}</ul>${t("dlZipText")}`,
+    tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
 };
 
 /* =====================================================================
@@ -1144,13 +1379,13 @@ function vypniSim(){ SIM.demo = null; SIM.demoPoStartu = false; if (SIM.faze !==
 
 function obnovSim(){
   const ma = !!buf("motor_run"), b = $("btnMotor"), u = $("btnUkazka");
-  if (SIM.faze === "stoji"){ b.textContent = "Nastartovat"; b.disabled = !ma; }
-  else if (SIM.faze === "start"){ b.textContent = "Přeskočit start"; b.disabled = false; }
-  else if (SIM.faze === "jede"){ b.textContent = "Vypnout motor"; b.disabled = false; }
-  else { b.textContent = "Doběh…"; b.disabled = true; }
+  if (SIM.faze === "stoji"){ b.textContent = t("nastartovat"); b.disabled = !ma; }
+  else if (SIM.faze === "start"){ b.textContent = t("preskocitStart"); b.disabled = false; }
+  else if (SIM.faze === "jede"){ b.textContent = t("vypnoutMotor"); b.disabled = false; }
+  else { b.textContent = t("dobehBtn"); b.disabled = true; }
   u.disabled = !ma || SIM.faze === "stop";
-  u.textContent = SIM.demo || SIM.demoPoStartu ? "Zastavit ukázku" : "Ukázková jízda";
-  b.title = ma ? "" : "Nejdřív vyber zvuk jízdy (motor_run)";
+  u.textContent = SIM.demo || SIM.demoPoStartu ? t("zastavitUkazku") : t("ukazka");
+  b.title = ma ? "" : t("nejdrivRun");
 }
 $("btnMotor").onclick = () => { if (SIM.faze === "stoji") nastartuj(); else if (SIM.faze === "start") dojed(); else if (SIM.faze === "jede") vypniMotor(); };
 $("btnUkazka").onclick = () => {
@@ -1166,10 +1401,10 @@ plyn.addEventListener("input", () => { if (SIM.demo){ SIM.demo = null; obnovSim(
 
 const SCENAR = [[0.4,0],[7,100],[9,100],[12.5,0],[14,0],[18,-100],[21,0],[22.5,0]];
 function vedUkazku(){
-  const t = SIM.t - SIM.demo.start;
-  if (t > SCENAR[SCENAR.length - 1][0]){ SIM.demo = null; vypniMotor(); return; }
+  const x = SIM.t - SIM.demo.start;
+  if (x > SCENAR[SCENAR.length - 1][0]){ SIM.demo = null; vypniMotor(); return; }
   let pc = 0, pv = 0;
-  for (const [c, v] of SCENAR){ if (t <= c){ plyn.value = Math.round(pv + (v - pv) * (t - pc) / Math.max(0.001, c - pc)); break; } pc = c; pv = v; }
+  for (const [c, v] of SCENAR){ if (x <= c){ plyn.value = Math.round(pv + (v - pv) * (x - pc) / Math.max(0.001, c - pc)); break; } pc = c; pv = v; }
 }
 
 const budik = $("budik"), bg = budik.getContext("2d");
@@ -1190,8 +1425,8 @@ function kresliBudik(){
     bg.lineWidth = i % 5 ? 1 : 2; bg.strokeStyle = "#23271F"; bg.stroke();
   }
   bg.fillStyle = "#4A5142"; bg.font = "11px 'Avenir Next Condensed','Arial Narrow',sans-serif"; bg.textAlign = "center";
-  bg.fillText("otáčky", cx, cy + 26);
-  if (SIM.faze === "start" || SIM.faze === "stop"){ bg.fillStyle = "#8E3322"; bg.font = "600 12px 'Avenir Next Condensed','Arial Narrow',sans-serif"; bg.fillText(SIM.faze === "start" ? "START" : "DOBĚH", cx, cy - 22); }
+  bg.fillText(t("otacky"), cx, cy + 26);
+  if (SIM.faze === "start" || SIM.faze === "stop"){ bg.fillStyle = "#8E3322"; bg.font = "600 12px 'Avenir Next Condensed','Arial Narrow',sans-serif"; bg.fillText(SIM.faze === "start" ? t("dialStart") : t("dialStop"), cx, cy - 22); }
   const a = a0 + roz * Math.max(0, Math.min(1, SIM.B.otacky));
   bg.beginPath(); bg.moveTo(cx - Math.cos(a) * 8, cy - Math.sin(a) * 8); bg.lineTo(cx + Math.cos(a) * (R - 16), cy + Math.sin(a) * (R - 16));
   bg.lineWidth = 3; bg.lineCap = "round"; bg.strokeStyle = "#B3402B"; bg.stroke();
@@ -1200,7 +1435,7 @@ function kresliBudik(){
 function kresliGraf(){
   const w = graf.clientWidth, h = 56, t0 = SIM.t - 10;
   gg.clearRect(0, 0, w, h);
-  const x = t => (t - t0) / 10 * w, y = v => h - 4 - v * (h - 8);
+  const x = q => (q - t0) / 10 * w, y = v => h - 4 - v * (h - 8);
   gg.strokeStyle = "rgba(142,151,138,.6)"; gg.lineWidth = 1;
   for (const b of SIM.hist) if (b.r && b.t >= t0){ gg.beginPath(); gg.moveTo(x(b.t), 0); gg.lineTo(x(b.t), h); gg.stroke(); }
   for (const [k, c] of [["v", "#C8A23C"], ["o", "#B3402B"]]){
@@ -1212,10 +1447,10 @@ function kresliGraf(){
 function ukazatele(){
   const jede = SIM.faze === "jede", B = SIM.B, zpet = jede && B.smer < 0 && (B.rychlost > 0 || Number(plyn.value) < -2);
   let c = "–", p;
-  if (SIM.faze === "start") p = "startuje, plyn zatím nereaguje";
-  else if (SIM.faze === "stop") p = "doběh motoru";
-  else if (!jede) p = buf("motor_run") ? "motor stojí" : "vyber zvuk jízdy";
-  else { c = zpet ? "Z" : String(B.stupen); p = zpet ? "zpátečka" : B.rychlost === 0 ? "volnoběh" : `stupeň z ${S.prevodovka.stupnu}`; }
+  if (SIM.faze === "start") p = t("sStartuje");
+  else if (SIM.faze === "stop") p = t("sDobeh");
+  else if (!jede) p = buf("motor_run") ? t("sStoji") : t("sVyberJizdu");
+  else { c = zpet ? t("zpatecka1") : String(B.stupen); p = zpet ? t("sZpatecka") : B.rychlost === 0 ? t("sVolnobeh") : t("sStupenZ", {n:S.prevodovka.stupnu}); }
   $("sStupen").textContent = c; $("sStupen").classList.toggle("radi", SIM.t < SIM.radiDo); $("sPopis").textContent = p;
   const pr = Math.round(B.rychlost * 100);
   $("tRychlost").textContent = pr + " %"; $("vRychlost").style.width = pr + "%"; $("pRychlost").classList.toggle("vzad", zpet);
@@ -1247,10 +1482,11 @@ function snimek(ms){
    Editor zvuku
    ===================================================================== */
 const ED = {jm:null, d:null, puvodni:null, zpet:[], znovu:[], v0:0, v1:1, a:null, b:null, kurzor:0,
-            hra:null, tah:null, r:1, cache:null, cKlic:"", pKlic:"", pCache:null, info:null, spina:true};
+            hra:null, tah:null, r:1, cache:null, cKlic:"", pKlic:"", pCache:null, info:null};
 const edVlna = $("edVlna"), edPrehled = $("edPrehled");
 const ZPET_MAX_BAJTU = 400e6;		// historie kroku nejvys ~400 MB (dlouhe pozadi)
 
+function edTitulek(){ $("edNazev").innerHTML = `${t("edNazev")} <small>${t("s_" + ED.jm)}, ${ED.jm}.wav</small>`; }
 function otevriEditor(jm){
   const z = zvuky[jm];
   if (!z || !z.buf) return;
@@ -1258,7 +1494,7 @@ function otevriEditor(jm){
   ED.jm = jm; ED.d = z.buf.getChannelData(0).slice(); ED.puvodni = ED.d;
   ED.zpet = []; ED.znovu = []; ED.a = ED.b = null; ED.kurzor = 0;
   ED.v0 = 0; ED.v1 = ED.d.length; ED.cKlic = ED.pKlic = ""; ED.info = null;
-  $("edNazev").innerHTML = `Úprava zvuku <small>${SLOTY[jm].popis}, ${jm}.wav</small>`;
+  edTitulek();
   $("edSmycka").checked = SLOTY[jm].smycka;
   $("edDb").value = 0; edDbText();
   $("editor").classList.add("otevren");
@@ -1276,7 +1512,7 @@ const edOtevren = () => ED.jm !== null;
 function edProved(fce){
   edStop();
   const nove = fce(ED.d);
-  if (!nove || nove.length < 2){ hlaska("Tím by ze zvuku nic nezůstalo.", true); return false; }
+  if (!nove || nove.length < 2){ hlaska(t("edNicNezustane"), true); return false; }
   ED.zpet.push(ED.d); ED.znovu = [];
   let bajtu = ED.zpet.reduce((s, x) => s + x.length * 4, 0);
   while (bajtu > ZPET_MAX_BAJTU && ED.zpet.length > 1) bajtu -= ED.zpet.shift().length * 4;
@@ -1299,22 +1535,21 @@ function edObnovit(){ if (ED.d !== ED.puvodni){ const p = ED.puvodni; edProved((
 
 function edUloz(){
   if (ED.d !== ED.puvodni){
-    const buf = audio().createBuffer(1, ED.d.length, ED_RATE);
-    buf.getChannelData(0).set(ED.d);
-    zvuky[ED.jm] = {buf, wav:vyrobWav(ED.d, ED_RATE), zdroj:"upraveno", chyba:null};
+    const b = audio().createBuffer(1, ED.d.length, ED_RATE);
+    b.getChannelData(0).set(ED.d);
+    zvuky[ED.jm] = {buf:b, wav:vyrobWav(ED.d, ED_RATE), zdroj:"upraveno", chyba:null};
     vykresliVlnu(ED.jm); zmena(); obnovSim();
-    hlaska(`${ED.jm}.wav upraven (${fmt(ED.d.length / ED_RATE, 2)} s). Na kartu ho zapíše tlačítko ${$("btnUlozit").textContent}.`);
+    hlaska(t("edUpraven", {jm:ED.jm, d:fmt(ED.d.length / ED_RATE, 2), b:$("btnUlozit").textContent}));
   }
   zavriEditor();
 }
 async function edZrus(){
   edStop();
   const zmeny = ED.d !== ED.puvodni;
-  const v = await dialog({ikona:"pozor", nadpis: zmeny ? "Zahodit úpravy zvuku?" : "Zavřít editor?",
-    text: zmeny ? `<p>Úpravy zvuku ${esc(ED.jm)}.wav nejsou uložené. Zavřením bez uložení se ztratí.</p>`
-                : `<p>Zvuk ${esc(ED.jm)}.wav se nezměnil.</p>`,
-    tlacitka: zmeny ? [{t:"Zpět do editoru", v:false, fokus:true}, {t:"Uložit úpravy", v:"ulozit", hlavni:true}, {t:"Zahodit a zavřít", v:true}]
-                    : [{t:"Zpět do editoru", v:false}, {t:"Zavřít", v:true, hlavni:true}]});
+  const v = await dialog({ikona:"pozor", nadpis: zmeny ? t("edZahoditNadpis") : t("edZavritNadpis"),
+    text: t(zmeny ? "edZahoditText" : "edNezmenenText", {jm:esc(ED.jm)}),
+    tlacitka: zmeny ? [{t:t("edZpetDoEditoru"), v:false, fokus:true}, {t:t("edUlozitUpravy"), v:"ulozit", hlavni:true}, {t:t("edZahoditZavrit"), v:true}]
+                    : [{t:t("edZpetDoEditoru"), v:false}, {t:t("edZavrit"), v:true, hlavni:true}]});
   if (v === "ulozit") edUloz();
   else if (v) zavriEditor();
 }
@@ -1334,8 +1569,8 @@ $("edZesil").onclick = () => {
 $("edNorm").onclick = () => { const [a, b] = edUsek(); edProved(d => normalizujUsek(d, a, b)); };
 $("edSmyckaUp").onclick = () => {
   const N = Math.round(Number($("edProlnuti").value) * ED_RATE);
-  if (ED.d.length < N * 3){ hlaska("Zvuk je na takové prolnutí moc krátký, zvol kratší.", true); return; }
-  if (edProved(d => plynulaSmycka(d, N))){ $("edSmycka").checked = true; hlaska(`Konec se prolnul do začátku (${fmt(N / ED_RATE * 1000, 0)} ms). Poslechni si ho ve smyčce.`); }
+  if (ED.d.length < N * 3){ hlaska(t("edKratky"), true); return; }
+  if (edProved(d => plynulaSmycka(d, N))){ $("edSmycka").checked = true; hlaska(t("edProlnuto", {ms:fmt(N / ED_RATE * 1000, 0)})); }
 };
 $("edDC").onclick = () => edProved(d => bezDC(d));
 function edDbText(){ const v = Number($("edDb").value); $("edDbV").textContent = (v > 0 ? "+" : v < 0 ? "−" : "") + fmt(Math.abs(v), 1) + " dB"; }
@@ -1346,7 +1581,7 @@ $("edUlozit").onclick = edUloz; $("edZrusit").onclick = edZrus;
 /* --- vyber a zobrazeni --- */
 function edZoom(f, stred){
   const L = ED.d.length, sp = ED.v1 - ED.v0;
-  let nsp = Math.max(64, Math.min(L, sp * f));
+  const nsp = Math.max(64, Math.min(L, sp * f));
   if (stred == null) stred = ED.v0 + sp / 2;
   const podil = (stred - ED.v0) / sp;
   ED.v0 = stred - podil * nsp; ED.v1 = ED.v0 + nsp;
@@ -1366,8 +1601,8 @@ $("edNaVyber").onclick = () => {
   const okraj = (ED.b - ED.a) * 0.08;
   ED.v0 = ED.a - okraj; ED.v1 = ED.b + okraj; edDrzZobrazeni(); edObnov();
 };
-$("edVse").onclick = () => { ED.a = 0; ED.b = ED.d.length; ED.info = null; edObnov(); };
-$("edZrusVyber").onclick = () => { ED.a = ED.b = null; ED.info = null; edObnov(); };
+$("edVse").onclick = () => { ED.a = 0; ED.b = ED.d.length; edObnov(); };
+$("edZrusVyber").onclick = () => { ED.a = ED.b = null; edObnov(); };
 
 const edX2S = (x) => ED.v0 + x / edVlna.clientWidth * (ED.v1 - ED.v0);
 const edS2X = (s) => (s - ED.v0) / (ED.v1 - ED.v0) * edVlna.clientWidth;
@@ -1382,41 +1617,38 @@ edVlna.addEventListener("pointerdown", e => {
 });
 edVlna.addEventListener("pointermove", e => {
   const x = e.offsetX, s = Math.max(0, Math.min(ED.d.length, edX2S(x)));
-  const t = ED.tah;
-  if (!t){
+  const tah = ED.tah;
+  if (!tah){
     edVlna.style.cursor = ED.a != null && (Math.abs(x - edS2X(ED.a)) < 7 || Math.abs(x - edS2X(ED.b)) < 7) ? "ew-resize" : "text";
     return;
   }
-  if (t.typ === "novy"){
-    if (!t.pohnul && Math.abs(x - t.x0) < 4) return;
-    t.pohnul = true; ED.a = Math.min(t.s0, s); ED.b = Math.max(t.s0, s);
-  } else if (t.typ === "a"){ ED.a = Math.min(s, ED.b - 1); }
+  if (tah.typ === "novy"){
+    if (!tah.pohnul && Math.abs(x - tah.x0) < 4) return;
+    tah.pohnul = true; ED.a = Math.min(tah.s0, s); ED.b = Math.max(tah.s0, s);
+  } else if (tah.typ === "a"){ ED.a = Math.min(s, ED.b - 1); }
   else { ED.b = Math.max(s, ED.a + 1); }
-  ED.info = null; edObnov();
+  edObnov();
 });
-function edPusteno(e){
-  const t = ED.tah; ED.tah = null;
-  if (!t) return;
-  if (t.typ === "novy" && !t.pohnul){
-    ED.kurzor = Math.round(t.s0); ED.a = ED.b = null;
+function edPusteno(){
+  const tah = ED.tah; ED.tah = null;
+  if (!tah) return;
+  if (tah.typ === "novy" && !tah.pohnul){
+    ED.kurzor = Math.round(tah.s0); ED.a = ED.b = null;
     if (ED.hra){ edStop(); edPrehraj(); }		// kliknuti za prehravani = prehravat odtud
   } else if (ED.a != null){
     ED.a = edPrichyt(ED.a); ED.b = edPrichyt(ED.b);
     if (ED.b - ED.a < 2) ED.a = ED.b = null;
   }
-  ED.info = null; edObnov();
+  edObnov();
 }
 edVlna.addEventListener("pointerup", edPusteno);
 edVlna.addEventListener("pointercancel", edPusteno);
-edVlna.addEventListener("dblclick", () => { ED.a = 0; ED.b = ED.d.length; ED.info = null; edObnov(); });
+edVlna.addEventListener("dblclick", () => { ED.a = 0; ED.b = ED.d.length; edObnov(); });
 edVlna.addEventListener("wheel", e => {
   e.preventDefault();
   const sp = ED.v1 - ED.v0;
-  if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)){
-    edPosun((e.deltaX || e.deltaY) / edVlna.clientWidth * sp);
-  } else {
-    edZoom(Math.exp(Math.max(-1, Math.min(1, e.deltaY * 0.003))), edX2S(e.offsetX));
-  }
+  if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) edPosun((e.deltaX || e.deltaY) / edVlna.clientWidth * sp);
+  else edZoom(Math.exp(Math.max(-1, Math.min(1, e.deltaY * 0.003))), edX2S(e.offsetX));
 }, {passive:false});
 
 function edPrehledNa(e){
@@ -1499,8 +1731,8 @@ function kresliPrubeh(g, d, v0, v1, w, h, barva){
   }
 }
 function casText(s, krok){
-  const t = s / ED_RATE, des = krok >= 1 ? 0 : krok >= 0.1 ? 1 : krok >= 0.01 ? 2 : 3;
-  return t >= 60 ? `${Math.floor(t / 60)}:${(t % 60).toFixed(des).padStart(des ? des + 3 : 2, "0")}` : fmt(t, des);
+  const x = s / ED_RATE, des = krok >= 1 ? 0 : krok >= 0.1 ? 1 : krok >= 0.01 ? 2 : 3;
+  return x >= 60 ? `${Math.floor(x / 60)}:${fmt(x % 60, des).padStart(des ? des + 3 : 2, "0")}` : fmt(x, des);
 }
 
 function edKresli(){
@@ -1520,33 +1752,24 @@ function edKresli(){
     ED.cKlic = klic; ED.cData = ED.d;
   }
   g.clearRect(0, 0, w, h);
-  // casova osa
   g.fillStyle = "#2B3028"; g.fillRect(0, 0, w, pas);
   const sp = (ED.v1 - ED.v0) / ED_RATE, kroky = [0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,15,30,60];
   const krok = kroky.find(k => k / sp * w >= 74 * r) || 60;
   g.font = `${11 * r}px "Avenir Next Condensed","Arial Narrow",sans-serif`; g.textBaseline = "middle";
-  for (let t = Math.ceil(ED.v0 / ED_RATE / krok) * krok; t * ED_RATE <= ED.v1; t += krok){
-    const x = X(t * ED_RATE);
+  for (let q = Math.ceil(ED.v0 / ED_RATE / krok) * krok; q * ED_RATE <= ED.v1; q += krok){
+    const x = X(q * ED_RATE);
     g.fillStyle = "#5C6556"; g.fillRect(x, pas - 5 * r, r, 5 * r);
-    g.fillStyle = "#939C8D"; g.fillText(casText(t * ED_RATE, krok), x + 3 * r, pas / 2);
+    g.fillStyle = "#939C8D"; g.fillText(casText(q * ED_RATE, krok), x + 3 * r, pas / 2);
   }
   g.save(); g.translate(0, pas);
-  if (ED.a != null){
-    const x1 = X(ED.a), x2 = X(ED.b);
-    g.fillStyle = "rgba(200,162,60,.18)"; g.fillRect(x1, 0, x2 - x1, hv);
-  }
+  if (ED.a != null){ const x1 = X(ED.a), x2 = X(ED.b); g.fillStyle = "rgba(200,162,60,.18)"; g.fillRect(x1, 0, x2 - x1, hv); }
   g.drawImage(ED.cache, 0, 0);
-  if (ED.a != null){
-    g.fillStyle = "#C8A23C";
-    g.fillRect(X(ED.a) - r, 0, 2 * r, hv); g.fillRect(X(ED.b) - r, 0, 2 * r, hv);
-  }
-  // kurzor (kde zacne prehravani)
+  if (ED.a != null){ g.fillStyle = "#C8A23C"; g.fillRect(X(ED.a) - r, 0, 2 * r, hv); g.fillRect(X(ED.b) - r, 0, 2 * r, hv); }
   if (ED.a == null){ g.fillStyle = "rgba(200,162,60,.75)"; for (let y = 0; y < hv; y += 6 * r) g.fillRect(X(ED.kurzor), y, r, 3 * r); }
   const p = edPoloha();
   if (p != null){ g.fillStyle = "#E0563B"; g.fillRect(X(p) - r, 0, 2 * r, hv); }
   g.restore();
 
-  // prehled celeho souboru
   const pg = edPrehled.getContext("2d"), pw = edPrehled.width, ph = edPrehled.height;
   const pk = `${pw}|${ph}`;
   if (ED.pKlic !== pk || ED.pData !== ED.d){
@@ -1568,21 +1791,21 @@ function edKresli(){
 function edObnov(){
   if (!edOtevren()) return;
   const L = ED.d.length, vyber = ED.a != null;
-  const infoKlic = `${ED.a}|${ED.b}|${L}`;
+  const infoKlic = `${ED.a}|${ED.b}|${L}|${LANG}`;
   if (!ED.info || ED.infoKlic !== infoKlic || ED.infoData !== ED.d){
     ED.infoKlic = infoKlic; ED.infoData = ED.d;
     const [a, b] = edUsek(), m = spicka(ED.d, a, b);
-    ED.info = m > 0 ? `${vyber ? "špička výběru" : "špička"} ${m >= 0.9999 ? "0,0" : "−" + fmt(-20 * Math.log10(m), 1)} dB` : "ticho";
+    ED.info = m > 0 ? `${vyber ? t("edSpickaVyberu") : t("edSpicka")} ${m >= 0.9999 ? fmt(0, 1) : "−" + fmt(-20 * Math.log10(m), 1)} dB` : t("edTicho");
   }
-  const t = s => fmt(s / ED_RATE, 2);
-  $("edCas").innerHTML = `délka <b>${t(L)} s</b> · ` +
-    (vyber ? `výběr <b>${t(ED.a)}–${t(ED.b)} s</b> (${t(ED.b - ED.a)} s)` : `kurzor ${t(ED.kurzor)} s`) + ` · ${ED.info}`;
+  const q = s => fmt(s / ED_RATE, 2);
+  $("edCas").innerHTML = `${t("edDelka")} <b>${q(L)} s</b> · ` +
+    (vyber ? `${t("edVyberInfo")} <b>${q(ED.a)}–${q(ED.b)} s</b> (${q(ED.b - ED.a)} s)` : `${t("edKurzor")} ${q(ED.kurzor)} s`) + ` · ${ED.info}`;
   document.querySelectorAll("#editor [data-sel]").forEach(b => b.disabled = !vyber);
-  $("edHlCil").textContent = vyber ? "Výběr" : "Celý zvuk";
+  $("edHlCil").textContent = vyber ? t("vyberCil") : t("celyZvuk");
   $("edZpet").disabled = !ED.zpet.length; $("edZnovu").disabled = !ED.znovu.length;
   $("edObnovit").disabled = ED.d === ED.puvodni;
   $("edNaVyber").disabled = !vyber; $("edZrusVyber").disabled = !vyber;
-  $("edPrehrat").textContent = ED.hra ? "■ Zastavit" : vyber ? "▶ Přehrát výběr" : "▶ Přehrát";
+  $("edPrehrat").textContent = ED.hra ? t("edZastavit") : vyber ? t("edPrehratVyber") : t("edPrehrat");
   $("edPrehrat").classList.toggle("hraje", !!ED.hra);
   ED.prekreslit = true;
 }
@@ -1595,6 +1818,7 @@ requestAnimationFrame(edSnimek);
 /* ---------- start ---------- */
 napojPrepinac("zarizeni", "zarizeni");
 napojPrepinac("reproduktor", "reproduktor");
+prelozStatiku();
 vykresliFunkce();
 vykresliPrevodovku();
 for (const jm of Object.keys(SLOTY)) zvuky[jm] = {buf:null, wav:null, chyba:null};
@@ -1604,7 +1828,7 @@ requestAnimationFrame(snimek);
 
 })();
 
-if (typeof module !== "undefined") module.exports = {vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD,
+if (typeof module !== "undefined") module.exports = {vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD, T, nastavJazyk,
   kNule, smazUsek, ponechUsek, tichoUsek, nabehUsek, dobehUsek, zesilUsek, normalizujUsek, bezDC, plynulaSmycka, spicka};
 </script>
 </body>
