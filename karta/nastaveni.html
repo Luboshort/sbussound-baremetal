@@ -91,7 +91,7 @@ section .pozn{margin:0 0 12px;font-size:13.5px;color:var(--tlum);max-width:68ch}
 }
 .stitek input::-webkit-inner-spin-button{opacity:.5}
 .zvuky{display:flex;flex-direction:column;gap:6px;min-width:0}
-.zvuk{display:grid;grid-template-columns:96px minmax(80px,1fr) auto auto;gap:8px;align-items:center;min-width:0}
+.zvuk{display:grid;grid-template-columns:96px minmax(80px,1fr) auto auto auto;gap:8px;align-items:center;min-width:0}
 .zvuk .jm{font-size:13.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .zvuk .jm small{display:block;font-size:12px;color:var(--tlum)}
 .vlna{position:relative;height:34px;border-radius:4px;background:#2A2F27;border:1px solid #444C40;overflow:hidden;min-width:0}
@@ -109,7 +109,8 @@ section .pozn{margin:0 0 12px;font-size:13.5px;color:var(--tlum);max-width:68ch}
 @media (max-width:620px){
   .funkce{grid-template-columns:minmax(0,1fr) 92px}
   .funkce .zvuky{grid-column:1 / -1}
-  .zvuk{grid-template-columns:64px minmax(60px,1fr) auto auto;gap:6px}
+  .zvuk{grid-template-columns:56px minmax(50px,1fr) auto auto auto;gap:5px}
+  .zvuk button{padding:6px 8px}
   .zvuk .jm small{display:none}
   .lista{padding:8px 12px}
   main{padding:12px 10px 32px}
@@ -172,6 +173,34 @@ input[type=range]{accent-color:var(--paka);height:22px}
   transition:opacity .3s;opacity:0;pointer-events:none}
 #hlaska.ukaz{opacity:1}
 #hlaska.chyba{background:#4E2E26;border-color:#94513F}
+/* ---------- editor zvuku ---------- */
+.editor{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
+  background:rgba(22,25,20,.78);padding:16px}
+.editor.otevren{display:flex}
+.ed-panel{width:min(1120px,100%);max-height:100%;overflow:auto;background:var(--deska);
+  border:1px solid var(--hrana);border-radius:10px;padding:14px 16px;box-shadow:0 18px 60px rgba(0,0,0,.55)}
+.ed-hlava{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.ed-hlava h2{margin:0;font-size:19px;font-weight:600;color:#EEF1EA}
+.ed-hlava h2 small{font-size:14px;font-weight:400;color:var(--tlum);margin-left:6px}
+.ed-cas{flex:1;text-align:right;font-size:14px;color:var(--tlum);white-space:nowrap}
+.ed-cas b{color:var(--mosaz);font-weight:600}
+.ed-plocha{position:relative;border:1px solid #474F42;border-radius:6px;background:#22261F;overflow:hidden;
+  touch-action:none;cursor:text}
+#edVlna{display:block;width:100%;height:230px}
+#edPrehled{display:block;width:100%;height:38px;margin-top:6px;border:1px solid #474F42;border-radius:4px;
+  background:#22261F;cursor:pointer;touch-action:none}
+.ed-radek{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ed-radek .mezera{flex:1}
+.ed-skupina{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;
+  border:1px solid #434B3F;border-radius:6px;background:#30352D}
+.ed-skupina > span{font-size:13px;color:var(--tlum);margin-right:2px}
+.ed-skupina label{font-size:13.5px;color:var(--tlum);display:flex;align-items:center;gap:5px}
+.ed-skupina select{background:#2A2F27;border:1px solid #4A5245;border-radius:4px;padding:3px 4px}
+.ed-skupina input[type=range]{width:120px}
+#edPrehrat{min-width:96px}
+#edPrehrat.hraje{background:var(--mosaz);color:#2B2614;border-color:var(--mosaz)}
+.ed-napoveda{margin:8px 0 0;font-size:12.5px;color:var(--tlum)}
+@media (max-width:620px){#edVlna{height:180px}.ed-cas{text-align:left}}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>
 </head>
@@ -259,6 +288,53 @@ input[type=range]{accent-color:var(--paka);height:22px}
 </section>
 
 </main>
+<div class="editor" id="editor" role="dialog" aria-modal="true" aria-labelledby="edNazev">
+ <div class="ed-panel">
+  <div class="ed-hlava">
+    <h2 id="edNazev">Úprava zvuku</h2>
+    <div class="ed-cas" id="edCas"></div>
+  </div>
+  <div class="ed-plocha"><canvas id="edVlna" aria-label="Průběh zvuku, tažením vyber úsek"></canvas></div>
+  <canvas id="edPrehled" aria-label="Celý soubor, kliknutím přesuneš zobrazený úsek"></canvas>
+
+  <div class="ed-radek">
+    <button id="edPrehrat" class="hlavni">▶ Přehrát</button>
+    <label class="ed-skupina" style="cursor:pointer"><input type="checkbox" id="edSmycka"> ve smyčce</label>
+    <div class="ed-skupina"><span>Zobrazení</span>
+      <button id="edBliz" title="Přiblížit">+</button><button id="edDal" title="Oddálit">−</button>
+      <button id="edNaVyber">Na výběr</button><button id="edCele">Celé</button></div>
+    <div class="ed-skupina"><span>Výběr</span>
+      <button id="edVse">Vše</button><button id="edZrusVyber">Zrušit</button>
+      <label><input type="checkbox" id="edNula" checked> k nule</label></div>
+  </div>
+
+  <div class="ed-radek">
+    <div class="ed-skupina"><span>Úsek</span>
+      <button id="edSmaz" data-sel>Vymazat</button>
+      <button id="edPonech" data-sel>Ponechat jen výběr</button>
+      <button id="edTicho" data-sel>Ticho</button>
+      <button id="edNabeh" data-sel>Náběh</button>
+      <button id="edDobeh" data-sel>Doběh</button></div>
+    <div class="ed-skupina"><span id="edHlCil">Celý zvuk</span>
+      <label><input type="range" id="edDb" min="-24" max="12" step="0.5" value="0"><b id="edDbV" class="hodnota" style="min-width:58px">0,0 dB</b></label>
+      <button id="edZesil">Změnit hlasitost</button>
+      <button id="edNorm">Normalizovat</button></div>
+    <div class="ed-skupina"><span>Smyčka</span>
+      <select id="edProlnuti" aria-label="Délka prolnutí"><option value="0.01">10 ms</option><option value="0.03" selected>30 ms</option><option value="0.1">100 ms</option><option value="0.3">300 ms</option></select>
+      <button id="edSmyckaUp">Plynulé napojení</button>
+      <button id="edDC" title="Odstraní stejnosměrnou složku (posunutí od nuly)">Vycentrovat</button></div>
+  </div>
+
+  <div class="ed-radek">
+    <button id="edZpet">Zpět</button><button id="edZnovu">Znovu</button><button id="edObnovit">Obnovit</button>
+    <span class="mezera"></span>
+    <button id="edZrusit">Zrušit</button><button id="edUlozit" class="hlavni">Uložit</button>
+  </div>
+  <p class="ed-napoveda">Tažením vyber úsek, kolečkem myši nebo dvěma prsty přibliž, se Shiftem posouvej.
+  Mezerník přehraje, Delete vymaže výběr, ⌘Z / Ctrl+Z vrátí krok.</p>
+ </div>
+</div>
+
 <div id="hlaska" role="status"></div>
 
 <script>
@@ -558,6 +634,61 @@ function krokPrevodovky(B, P, plyn, dt){
   return radil;
 }
 
+/* ---------- upravy zvuku (editor) - vse nad mono Float32Array, 44100 Hz ---------- */
+const ED_RATE = 44100;
+const SPOJ = Math.round(ED_RATE * 0.002);	// prolnuti na miste strihu (2 ms)
+
+// Nejblizsi pruchod nulou do +-5 ms (strih v nule necvaka).
+function kNule(d, i){
+  const max = Math.round(ED_RATE * 0.005);
+  i = Math.max(0, Math.min(d.length, Math.round(i)));
+  for (let k = 0; k <= max; k++){
+    for (const j of [i - k, i + k]){
+      if (j > 0 && j < d.length && ((d[j - 1] <= 0 && d[j] >= 0) || (d[j - 1] >= 0 && d[j] <= 0))) return j;
+    }
+  }
+  return i;
+}
+// Vymaze usek [a,b). Misto strihu kratce prolne, aby necvaklo.
+function smazUsek(d, a, b){
+  a = Math.max(0, Math.min(d.length, a)); b = Math.max(a, Math.min(d.length, b));
+  const out = new Float32Array(d.length - (b - a));
+  out.set(d.subarray(0, a), 0); out.set(d.subarray(b), a);
+  const K = Math.min(SPOJ, a, d.length - b);
+  for (let i = 0; i < K; i++){
+    const w = (i + 1) / (K + 1);	// 0 -> 1: z konce pred strihem do zacatku za nim
+    out[a - K + i] = d[a - K + i] * (1 - w) + d[b - K + i] * w;
+  }
+  return out;
+}
+function ponechUsek(d, a, b){ return d.slice(Math.max(0, a), Math.min(d.length, b)); }
+function upravUsek(d, a, b, f){		// f(vzorek, poloha 0..1) -> novy vzorek
+  const out = d.slice(); a = Math.max(0, a); b = Math.min(d.length, b);
+  const n = Math.max(1, b - a - 1);
+  for (let i = a; i < b; i++) out[i] = f(d[i], (i - a) / n);
+  return out;
+}
+const tichoUsek = (d, a, b) => upravUsek(d, a, b, () => 0);
+const nabehUsek = (d, a, b) => upravUsek(d, a, b, (v, t) => v * Math.sin(t * Math.PI / 2) ** 2);
+const dobehUsek = (d, a, b) => upravUsek(d, a, b, (v, t) => v * Math.cos(t * Math.PI / 2) ** 2);
+function zesilUsek(d, a, b, dB){ const g = Math.pow(10, dB / 20); return upravUsek(d, a, b, v => Math.max(-1, Math.min(1, v * g))); }
+function spicka(d, a = 0, b = d.length){ let m = 0; for (let i = a; i < b; i++){ const v = Math.abs(d[i]); if (v > m) m = v; } return m; }
+// Spicka na -1 dB (0,891) - stejna rezerva jako limiter v enginu.
+function normalizujUsek(d, a, b){ const m = spicka(d, a, b); return m > 0 ? upravUsek(d, a, b, v => v * 0.891 / m) : d.slice(); }
+function bezDC(d){ let s = 0; for (let i = 0; i < d.length; i++) s += d[i]; const m = s / (d.length || 1); return d.map(v => Math.max(-1, Math.min(1, v - m))); }
+// Plynula smycka: poslednich N vzorku se prolne do prvnich N a konec se zkrati.
+// Pri prehravani dokola pak konec plynule navazuje na zacatek.
+function plynulaSmycka(d, N){
+  N = Math.min(Math.round(N), Math.floor(d.length / 3));
+  if (N < 2) return d.slice();
+  const out = d.slice(0, d.length - N), z = d.length - N;
+  for (let i = 0; i < N; i++){
+    const w = Math.sin((i + 0.5) / N * Math.PI / 2) ** 2;	// rovny vykon
+    out[i] = d[i] * w + d[z + i] * (1 - w);
+  }
+  return out;
+}
+
 /* =====================================================================
    Rozhrani
    ===================================================================== */
@@ -624,6 +755,7 @@ function vykresliFunkce(){
       d.innerHTML = `<div class="jm">${SLOTY[jm].popis}<small>${jm}.wav</small></div>
         <div class="vlna" id="vl_${jm}"><canvas width="300" height="34"></canvas><span class="info"></span></div>
         <button class="hrat" id="hr_${jm}" title="Přehrát" aria-label="Přehrát ${jm}">▶</button>
+        <button id="up_${jm}" data-upravit="${jm}">Upravit</button>
         <button data-vyber="${jm}">Vybrat…</button>`;
       zv.appendChild(d);
     }
@@ -636,7 +768,8 @@ function vykresliFunkce(){
       zmena(); obnovKanaly();
     });
   });
-  obal.querySelectorAll("[data-vyber]").forEach(b => b.onclick = () => { cilovySlot = b.dataset.vyber; $("soubor").click(); });
+  obal.querySelectorAll("button[data-vyber]").forEach(b => b.onclick = () => { cilovySlot = b.dataset.vyber; $("soubor").click(); });
+  obal.querySelectorAll("[data-upravit]").forEach(b => b.onclick = () => otevriEditor(b.dataset.upravit));
   for (const jm of Object.keys(SLOTY)) $("hr_" + jm).onclick = () => prehraj(jm);
 }
 
@@ -660,6 +793,7 @@ function vykresliVlnu(jm){
   el.classList.toggle("prazdna", !z || (!z.buf && !z.chyba));
   el.classList.toggle("chyba", !!(z && z.chyba));
   $("hr_" + jm).disabled = !(z && z.buf);
+  $("up_" + jm).disabled = !(z && z.buf);
   if (!z || !z.buf){ info.textContent = z && z.chyba ? z.chyba : "chybí – vyber soubor"; return; }
   const d = z.buf.getChannelData(0), krok = d.length / w;
   g.fillStyle = z.wav ? "#C8A23C" : "#8E9A84";
@@ -672,7 +806,7 @@ function vykresliVlnu(jm){
   }
   const s = z.buf.duration;
   const delka = s >= 60 ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}` : fmt(s, 1) + " s";
-  info.textContent = `${delka} · ${SLOTY[jm].smycka ? "smyčka" : "jednou"}${z.wav ? " · nový: " + z.zdroj : ""}`;
+  info.textContent = `${delka} · ${SLOTY[jm].smycka ? "smyčka" : "jednou"}${z.wav ? (z.zdroj === "upraveno" ? " · upraveno" : " · nový: " + z.zdroj) : ""}`;
 }
 
 // Dekoduje libovolny podporovany format primo na 44100 Hz a smicha do mona.
@@ -1020,6 +1154,348 @@ function snimek(ms){
   kresliBudik(); kresliGraf(); ukazatele();
 }
 
+/* =====================================================================
+   Editor zvuku
+   ===================================================================== */
+const ED = {jm:null, d:null, puvodni:null, zpet:[], znovu:[], v0:0, v1:1, a:null, b:null, kurzor:0,
+            hra:null, tah:null, r:1, cache:null, cKlic:"", pKlic:"", pCache:null, info:null, spina:true};
+const edVlna = $("edVlna"), edPrehled = $("edPrehled");
+const ZPET_MAX_BAJTU = 400e6;		// historie kroku nejvys ~400 MB (dlouhe pozadi)
+
+function otevriEditor(jm){
+  const z = zvuky[jm];
+  if (!z || !z.buf) return;
+  zastavNahled(); vypniSim();
+  ED.jm = jm; ED.d = z.buf.getChannelData(0).slice(); ED.puvodni = ED.d;
+  ED.zpet = []; ED.znovu = []; ED.a = ED.b = null; ED.kurzor = 0;
+  ED.v0 = 0; ED.v1 = ED.d.length; ED.cKlic = ED.pKlic = ""; ED.info = null;
+  $("edNazev").innerHTML = `Úprava zvuku <small>${SLOTY[jm].popis}, ${jm}.wav</small>`;
+  $("edSmycka").checked = SLOTY[jm].smycka;
+  $("edDb").value = 0; edDbText();
+  $("editor").classList.add("otevren");
+  edRozmery(); edObnov();
+  $("edPrehrat").focus();
+}
+function zavriEditor(){
+  edStop();
+  $("editor").classList.remove("otevren");
+  ED.jm = null; ED.d = ED.puvodni = null; ED.zpet = []; ED.znovu = []; ED.cache = ED.pCache = null;
+}
+const edOtevren = () => ED.jm !== null;
+
+/* --- kroky a historie --- */
+function edProved(fce){
+  edStop();
+  const nove = fce(ED.d);
+  if (!nove || nove.length < 2){ hlaska("Tím by ze zvuku nic nezůstalo.", true); return false; }
+  ED.zpet.push(ED.d); ED.znovu = [];
+  let bajtu = ED.zpet.reduce((s, x) => s + x.length * 4, 0);
+  while (bajtu > ZPET_MAX_BAJTU && ED.zpet.length > 1) bajtu -= ED.zpet.shift().length * 4;
+  ED.d = nove;
+  edPoZmene();
+  return true;
+}
+function edPoZmene(){
+  const L = ED.d.length;
+  if (ED.v1 > L){ const sp = ED.v1 - ED.v0; ED.v1 = L; ED.v0 = Math.max(0, L - sp); }
+  if (ED.v1 - ED.v0 < 32){ ED.v0 = 0; ED.v1 = L; }
+  if (ED.a != null){ ED.a = Math.min(ED.a, L); ED.b = Math.min(ED.b, L); if (ED.b - ED.a < 1) ED.a = ED.b = null; }
+  ED.kurzor = Math.min(ED.kurzor, L);
+  ED.info = null;
+  edObnov();
+}
+function edZpet(){ if (!ED.zpet.length) return; edStop(); ED.znovu.push(ED.d); ED.d = ED.zpet.pop(); edPoZmene(); }
+function edZnovu(){ if (!ED.znovu.length) return; edStop(); ED.zpet.push(ED.d); ED.d = ED.znovu.pop(); edPoZmene(); }
+function edObnovit(){ if (ED.d !== ED.puvodni){ const p = ED.puvodni; edProved(() => p); ED.a = ED.b = null; edObnov(); } }
+
+function edUloz(){
+  if (ED.d !== ED.puvodni){
+    const buf = audio().createBuffer(1, ED.d.length, ED_RATE);
+    buf.getChannelData(0).set(ED.d);
+    zvuky[ED.jm] = {buf, wav:vyrobWav(ED.d, ED_RATE), zdroj:"upraveno", chyba:null};
+    vykresliVlnu(ED.jm); zmena(); obnovSim();
+    hlaska(`${ED.jm}.wav upraven (${fmt(ED.d.length / ED_RATE, 2)} s). Na kartu ho zapíše tlačítko ${$("btnUlozit").textContent}.`);
+  }
+  zavriEditor();
+}
+function edZrus(){
+  if (ED.d !== ED.puvodni && !confirm("Zahodit úpravy tohoto zvuku?")) return;
+  zavriEditor();
+}
+
+/* --- upravy --- */
+const edUsek = () => ED.a != null ? [ED.a, ED.b] : [0, ED.d.length];
+$("edSmaz").onclick = () => { const [a, b] = edUsek(); if (edProved(d => smazUsek(d, a, b))){ ED.a = ED.b = null; ED.kurzor = a; edObnov(); } };
+$("edPonech").onclick = () => { const [a, b] = edUsek(); if (edProved(d => ponechUsek(d, a, b))){ ED.a = ED.b = null; ED.kurzor = 0; ED.v0 = 0; ED.v1 = ED.d.length; edObnov(); } };
+$("edTicho").onclick = () => { const [a, b] = edUsek(); edProved(d => tichoUsek(d, a, b)); };
+$("edNabeh").onclick = () => { const [a, b] = edUsek(); edProved(d => nabehUsek(d, a, b)); };
+$("edDobeh").onclick = () => { const [a, b] = edUsek(); edProved(d => dobehUsek(d, a, b)); };
+$("edZesil").onclick = () => {
+  const dB = Number($("edDb").value); if (!dB) return;
+  const [a, b] = edUsek();
+  if (edProved(d => zesilUsek(d, a, b, dB))){ $("edDb").value = 0; edDbText(); }
+};
+$("edNorm").onclick = () => { const [a, b] = edUsek(); edProved(d => normalizujUsek(d, a, b)); };
+$("edSmyckaUp").onclick = () => {
+  const N = Math.round(Number($("edProlnuti").value) * ED_RATE);
+  if (ED.d.length < N * 3){ hlaska("Zvuk je na takové prolnutí moc krátký, zvol kratší.", true); return; }
+  if (edProved(d => plynulaSmycka(d, N))){ $("edSmycka").checked = true; hlaska(`Konec se prolnul do začátku (${fmt(N / ED_RATE * 1000, 0)} ms). Poslechni si ho ve smyčce.`); }
+};
+$("edDC").onclick = () => edProved(d => bezDC(d));
+function edDbText(){ const v = Number($("edDb").value); $("edDbV").textContent = (v > 0 ? "+" : v < 0 ? "−" : "") + fmt(Math.abs(v), 1) + " dB"; }
+$("edDb").addEventListener("input", edDbText);
+$("edZpet").onclick = edZpet; $("edZnovu").onclick = edZnovu; $("edObnovit").onclick = edObnovit;
+$("edUlozit").onclick = edUloz; $("edZrusit").onclick = edZrus;
+
+/* --- vyber a zobrazeni --- */
+function edZoom(f, stred){
+  const L = ED.d.length, sp = ED.v1 - ED.v0;
+  let nsp = Math.max(64, Math.min(L, sp * f));
+  if (stred == null) stred = ED.v0 + sp / 2;
+  const podil = (stred - ED.v0) / sp;
+  ED.v0 = stred - podil * nsp; ED.v1 = ED.v0 + nsp;
+  edDrzZobrazeni(); edObnov();
+}
+function edPosun(o){ ED.v0 += o; ED.v1 += o; edDrzZobrazeni(); edObnov(); }
+function edDrzZobrazeni(){
+  const L = ED.d.length, sp = ED.v1 - ED.v0;
+  if (ED.v0 < 0){ ED.v0 = 0; ED.v1 = sp; }
+  if (ED.v1 > L){ ED.v1 = L; ED.v0 = Math.max(0, L - sp); }
+}
+$("edBliz").onclick = () => edZoom(0.5, ED.a != null ? (ED.a + ED.b) / 2 : null);
+$("edDal").onclick = () => edZoom(2);
+$("edCele").onclick = () => { ED.v0 = 0; ED.v1 = ED.d.length; edObnov(); };
+$("edNaVyber").onclick = () => {
+  if (ED.a == null) return;
+  const okraj = (ED.b - ED.a) * 0.08;
+  ED.v0 = ED.a - okraj; ED.v1 = ED.b + okraj; edDrzZobrazeni(); edObnov();
+};
+$("edVse").onclick = () => { ED.a = 0; ED.b = ED.d.length; ED.info = null; edObnov(); };
+$("edZrusVyber").onclick = () => { ED.a = ED.b = null; ED.info = null; edObnov(); };
+
+const edX2S = (x) => ED.v0 + x / edVlna.clientWidth * (ED.v1 - ED.v0);
+const edS2X = (s) => (s - ED.v0) / (ED.v1 - ED.v0) * edVlna.clientWidth;
+function edPrichyt(s){ return $("edNula").checked ? kNule(ED.d, s) : Math.round(s); }
+
+edVlna.addEventListener("pointerdown", e => {
+  const x = e.offsetX, s = Math.max(0, Math.min(ED.d.length, edX2S(x)));
+  edVlna.setPointerCapture(e.pointerId);
+  if (ED.a != null && Math.abs(x - edS2X(ED.a)) < 7) ED.tah = {typ:"a"};
+  else if (ED.a != null && Math.abs(x - edS2X(ED.b)) < 7) ED.tah = {typ:"b"};
+  else ED.tah = {typ:"novy", s0:s, x0:x, pohnul:false};
+});
+edVlna.addEventListener("pointermove", e => {
+  const x = e.offsetX, s = Math.max(0, Math.min(ED.d.length, edX2S(x)));
+  const t = ED.tah;
+  if (!t){
+    edVlna.style.cursor = ED.a != null && (Math.abs(x - edS2X(ED.a)) < 7 || Math.abs(x - edS2X(ED.b)) < 7) ? "ew-resize" : "text";
+    return;
+  }
+  if (t.typ === "novy"){
+    if (!t.pohnul && Math.abs(x - t.x0) < 4) return;
+    t.pohnul = true; ED.a = Math.min(t.s0, s); ED.b = Math.max(t.s0, s);
+  } else if (t.typ === "a"){ ED.a = Math.min(s, ED.b - 1); }
+  else { ED.b = Math.max(s, ED.a + 1); }
+  ED.info = null; edObnov();
+});
+function edPusteno(e){
+  const t = ED.tah; ED.tah = null;
+  if (!t) return;
+  if (t.typ === "novy" && !t.pohnul){
+    ED.kurzor = Math.round(t.s0); ED.a = ED.b = null;
+    if (ED.hra){ edStop(); edPrehraj(); }		// kliknuti za prehravani = prehravat odtud
+  } else if (ED.a != null){
+    ED.a = edPrichyt(ED.a); ED.b = edPrichyt(ED.b);
+    if (ED.b - ED.a < 2) ED.a = ED.b = null;
+  }
+  ED.info = null; edObnov();
+}
+edVlna.addEventListener("pointerup", edPusteno);
+edVlna.addEventListener("pointercancel", edPusteno);
+edVlna.addEventListener("dblclick", () => { ED.a = 0; ED.b = ED.d.length; ED.info = null; edObnov(); });
+edVlna.addEventListener("wheel", e => {
+  e.preventDefault();
+  const sp = ED.v1 - ED.v0;
+  if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)){
+    edPosun((e.deltaX || e.deltaY) / edVlna.clientWidth * sp);
+  } else {
+    edZoom(Math.exp(Math.max(-1, Math.min(1, e.deltaY * 0.003))), edX2S(e.offsetX));
+  }
+}, {passive:false});
+
+function edPrehledNa(e){
+  const s = e.offsetX / edPrehled.clientWidth * ED.d.length, sp = ED.v1 - ED.v0;
+  ED.v0 = s - sp / 2; ED.v1 = s + sp / 2; edDrzZobrazeni(); edObnov();
+}
+edPrehled.addEventListener("pointerdown", e => { edPrehled.setPointerCapture(e.pointerId); ED.tahPrehled = true; edPrehledNa(e); });
+edPrehled.addEventListener("pointermove", e => { if (ED.tahPrehled) edPrehledNa(e); });
+edPrehled.addEventListener("pointerup", () => ED.tahPrehled = false);
+
+/* --- prehravani --- */
+function edPrehraj(){
+  if (ED.hra){ edStop(); return; }
+  const c = audio(), src = c.createBufferSource(), b = c.createBuffer(1, ED.d.length, ED_RATE);
+  b.getChannelData(0).set(ED.d);
+  src.buffer = b;
+  const g = c.createGain(); g.gain.value = 0.85; src.connect(g); g.connect(c.destination);
+  const smycka = $("edSmycka").checked;
+  let a = 0, k = ED.d.length, od = ED.kurzor;
+  if (ED.a != null){ a = ED.a; k = ED.b; od = ED.a; }
+  else if (od >= k - 1) od = 0;
+  if (smycka){ src.loop = true; src.loopStart = a / ED_RATE; src.loopEnd = k / ED_RATE; src.start(0, od / ED_RATE); }
+  else src.start(0, od / ED_RATE, (k - od) / ED_RATE);
+  ED.hra = {src, t0:c.currentTime, od, a, k, smycka};
+  src.onended = () => { if (ED.hra && ED.hra.src === src){ ED.hra = null; edObnov(); } };
+  edObnov();
+}
+function edStop(){
+  if (ED.hra){ const s = ED.hra.src; ED.hra = null; try{ s.stop(); }catch(e){} }
+  if (edOtevren()) edObnov();
+}
+function edPoloha(){
+  const h = ED.hra; if (!h) return null;
+  let p = h.od + (audio().currentTime - h.t0) * ED_RATE;
+  if (h.smycka && p >= h.k){ const L = Math.max(1, h.k - h.a); p = h.a + ((p - h.a) % L); }
+  return Math.min(p, ED.d.length);
+}
+$("edPrehrat").onclick = edPrehraj;
+$("edSmycka").addEventListener("change", () => { if (ED.hra){ edStop(); edPrehraj(); } });
+
+/* --- klavesy --- */
+document.addEventListener("keydown", e => {
+  if (!edOtevren()) return;
+  const cmd = e.metaKey || e.ctrlKey;
+  if (cmd && (e.key === "z" || e.key === "Z")){ e.preventDefault(); e.shiftKey ? edZnovu() : edZpet(); return; }
+  if (cmd && (e.key === "y" || e.key === "Y")){ e.preventDefault(); edZnovu(); return; }
+  if (e.target.tagName === "SELECT") return;
+  if (e.key === " " && !(e.target.tagName === "INPUT" && e.target.type === "checkbox")){ e.preventDefault(); edPrehraj(); }
+  else if ((e.key === "Delete" || e.key === "Backspace") && ED.a != null){ e.preventDefault(); $("edSmaz").click(); }
+  else if (e.key === "Escape"){ e.preventDefault(); if (ED.a != null){ ED.a = ED.b = null; edObnov(); } else edZrus(); }
+});
+
+/* --- vykresleni --- */
+function edRozmery(){
+  const r = window.devicePixelRatio || 1; ED.r = r;
+  for (const c of [edVlna, edPrehled]){ c.width = Math.max(100, Math.round(c.clientWidth * r)); c.height = Math.round(c.clientHeight * r); }
+  ED.cKlic = ED.pKlic = "";
+}
+window.addEventListener("resize", () => { if (edOtevren()){ edRozmery(); edObnov(); } });
+
+function kresliPrubeh(g, d, v0, v1, w, h, barva){
+  const spp = (v1 - v0) / w;
+  g.fillStyle = barva; g.strokeStyle = barva;
+  if (spp > 1){
+    for (let x = 0; x < w; x++){
+      const a = Math.max(0, Math.floor(v0 + x * spp)), b = Math.min(d.length, Math.floor(v0 + (x + 1) * spp) + 1);
+      const krok = Math.max(1, Math.floor((b - a) / 512));
+      let mn = 1, mx = -1;
+      for (let i = a; i < b; i += krok){ const v = d[i]; if (v < mn) mn = v; if (v > mx) mx = v; }
+      if (mx < mn) continue;
+      const y1 = (1 - mx) * h / 2, y2 = (1 - mn) * h / 2;
+      g.fillRect(x, y1, 1, Math.max(1, y2 - y1));
+    }
+  } else {
+    const i0 = Math.max(0, Math.floor(v0)), i1 = Math.min(d.length - 1, Math.ceil(v1));
+    g.beginPath();
+    for (let i = i0; i <= i1; i++){ const x = (i - v0) / spp, y = (1 - d[i]) * h / 2; i === i0 ? g.moveTo(x, y) : g.lineTo(x, y); }
+    g.lineWidth = Math.max(1, ED.r * 1.2); g.stroke();
+    if (spp < 0.12) for (let i = i0; i <= i1; i++){ const x = (i - v0) / spp, y = (1 - d[i]) * h / 2; g.fillRect(x - 2 * ED.r, y - 2 * ED.r, 4 * ED.r, 4 * ED.r); }
+  }
+}
+function casText(s, krok){
+  const t = s / ED_RATE, des = krok >= 1 ? 0 : krok >= 0.1 ? 1 : krok >= 0.01 ? 2 : 3;
+  return t >= 60 ? `${Math.floor(t / 60)}:${(t % 60).toFixed(des).padStart(des ? des + 3 : 2, "0")}` : fmt(t, des);
+}
+
+function edKresli(){
+  if (!edOtevren()) return;
+  const g = edVlna.getContext("2d"), w = edVlna.width, h = edVlna.height, r = ED.r;
+  const pas = 18 * r, hv = h - pas;			// nahore casova osa
+  const X = s => (s - ED.v0) / (ED.v1 - ED.v0) * w;
+  const klic = `${ED.v0}|${ED.v1}|${w}|${h}`;
+  if (ED.cKlic !== klic || ED.cData !== ED.d){
+    ED.cache ||= document.createElement("canvas");
+    ED.cache.width = w; ED.cache.height = hv;
+    const cg = ED.cache.getContext("2d");
+    cg.clearRect(0, 0, w, hv);
+    cg.fillStyle = "rgba(142,151,138,.22)";
+    for (const y of [0.5, 0.25, 0.75]) cg.fillRect(0, Math.round(hv * y), w, y === 0.5 ? r : r * 0.5);
+    kresliPrubeh(cg, ED.d, ED.v0, ED.v1, w, hv, "#A6B19A");
+    ED.cKlic = klic; ED.cData = ED.d;
+  }
+  g.clearRect(0, 0, w, h);
+  // casova osa
+  g.fillStyle = "#2B3028"; g.fillRect(0, 0, w, pas);
+  const sp = (ED.v1 - ED.v0) / ED_RATE, kroky = [0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5,1,2,5,10,15,30,60];
+  const krok = kroky.find(k => k / sp * w >= 74 * r) || 60;
+  g.font = `${11 * r}px "Avenir Next Condensed","Arial Narrow",sans-serif`; g.textBaseline = "middle";
+  for (let t = Math.ceil(ED.v0 / ED_RATE / krok) * krok; t * ED_RATE <= ED.v1; t += krok){
+    const x = X(t * ED_RATE);
+    g.fillStyle = "#5C6556"; g.fillRect(x, pas - 5 * r, r, 5 * r);
+    g.fillStyle = "#939C8D"; g.fillText(casText(t * ED_RATE, krok), x + 3 * r, pas / 2);
+  }
+  g.save(); g.translate(0, pas);
+  if (ED.a != null){
+    const x1 = X(ED.a), x2 = X(ED.b);
+    g.fillStyle = "rgba(200,162,60,.18)"; g.fillRect(x1, 0, x2 - x1, hv);
+  }
+  g.drawImage(ED.cache, 0, 0);
+  if (ED.a != null){
+    g.fillStyle = "#C8A23C";
+    g.fillRect(X(ED.a) - r, 0, 2 * r, hv); g.fillRect(X(ED.b) - r, 0, 2 * r, hv);
+  }
+  // kurzor (kde zacne prehravani)
+  if (ED.a == null){ g.fillStyle = "rgba(200,162,60,.75)"; for (let y = 0; y < hv; y += 6 * r) g.fillRect(X(ED.kurzor), y, r, 3 * r); }
+  const p = edPoloha();
+  if (p != null){ g.fillStyle = "#E0563B"; g.fillRect(X(p) - r, 0, 2 * r, hv); }
+  g.restore();
+
+  // prehled celeho souboru
+  const pg = edPrehled.getContext("2d"), pw = edPrehled.width, ph = edPrehled.height;
+  const pk = `${pw}|${ph}`;
+  if (ED.pKlic !== pk || ED.pData !== ED.d){
+    ED.pCache ||= document.createElement("canvas");
+    ED.pCache.width = pw; ED.pCache.height = ph;
+    const cg = ED.pCache.getContext("2d"); cg.clearRect(0, 0, pw, ph);
+    kresliPrubeh(cg, ED.d, 0, ED.d.length, pw, ph, "#7D8873");
+    ED.pKlic = pk; ED.pData = ED.d;
+  }
+  const PX = s => s / ED.d.length * pw;
+  pg.clearRect(0, 0, pw, ph);
+  if (ED.a != null){ pg.fillStyle = "rgba(200,162,60,.22)"; pg.fillRect(PX(ED.a), 0, Math.max(r, PX(ED.b) - PX(ED.a)), ph); }
+  pg.drawImage(ED.pCache, 0, 0);
+  pg.fillStyle = "rgba(255,255,255,.07)"; pg.fillRect(PX(ED.v0), 0, PX(ED.v1) - PX(ED.v0), ph);
+  pg.strokeStyle = "#C8A23C"; pg.lineWidth = r; pg.strokeRect(PX(ED.v0) + r / 2, r / 2, Math.max(2 * r, PX(ED.v1) - PX(ED.v0) - r), ph - r);
+  if (p != null){ pg.fillStyle = "#E0563B"; pg.fillRect(PX(p), 0, r, ph); }
+}
+
+function edObnov(){
+  if (!edOtevren()) return;
+  const L = ED.d.length, vyber = ED.a != null;
+  const infoKlic = `${ED.a}|${ED.b}|${L}`;
+  if (!ED.info || ED.infoKlic !== infoKlic || ED.infoData !== ED.d){
+    ED.infoKlic = infoKlic; ED.infoData = ED.d;
+    const [a, b] = edUsek(), m = spicka(ED.d, a, b);
+    ED.info = m > 0 ? `${vyber ? "špička výběru" : "špička"} ${m >= 0.9999 ? "0,0" : "−" + fmt(-20 * Math.log10(m), 1)} dB` : "ticho";
+  }
+  const t = s => fmt(s / ED_RATE, 2);
+  $("edCas").innerHTML = `délka <b>${t(L)} s</b> · ` +
+    (vyber ? `výběr <b>${t(ED.a)}–${t(ED.b)} s</b> (${t(ED.b - ED.a)} s)` : `kurzor ${t(ED.kurzor)} s`) + ` · ${ED.info}`;
+  document.querySelectorAll("#editor [data-sel]").forEach(b => b.disabled = !vyber);
+  $("edHlCil").textContent = vyber ? "Výběr" : "Celý zvuk";
+  $("edZpet").disabled = !ED.zpet.length; $("edZnovu").disabled = !ED.znovu.length;
+  $("edObnovit").disabled = ED.d === ED.puvodni;
+  $("edNaVyber").disabled = !vyber; $("edZrusVyber").disabled = !vyber;
+  $("edPrehrat").textContent = ED.hra ? "■ Zastavit" : vyber ? "▶ Přehrát výběr" : "▶ Přehrát";
+  $("edPrehrat").classList.toggle("hraje", !!ED.hra);
+  ED.prekreslit = true;
+}
+function edSnimek(){
+  requestAnimationFrame(edSnimek);
+  if (edOtevren() && (ED.prekreslit || ED.hra)){ ED.prekreslit = false; edKresli(); }
+}
+requestAnimationFrame(edSnimek);
+
 /* ---------- start ---------- */
 napojPrepinac("zarizeni", "zarizeni");
 napojPrepinac("reproduktor", "reproduktor");
@@ -1032,7 +1508,8 @@ requestAnimationFrame(snimek);
 
 })();
 
-if (typeof module !== "undefined") module.exports = {vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD};
+if (typeof module !== "undefined") module.exports = {vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD,
+  kNule, smazUsek, ponechUsek, tichoUsek, nabehUsek, dobehUsek, zesilUsek, normalizujUsek, bezDC, plynulaSmycka, spicka};
 </script>
 </body>
 </html>
