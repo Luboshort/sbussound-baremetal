@@ -12,7 +12,8 @@ nejde „rozbít“ vypnutím napájení. Postaveno na knihovně
 
 Po každém pushi ho GitHub sestaví sám: **Actions → poslední běh → Artifacts →
 SBusSound_karta**. Obsah ZIPu nakopíruj do kořene SD karty (FAT32, schéma MBR)
-a do složky `sounds/` přidej zvuky:
+a je hotovo – včetně sady zvuků tanku ve složce `sounds/`. Kterýkoli zvuk můžeš
+nahradit vlastním se stejným názvem:
 
 | soubor | kdy hraje |
 |---|---|
@@ -26,7 +27,7 @@ a do složky `sounds/` přidej zvuky:
 
 Zvuky mohou být WAV 8/16/24/32 bit nebo float, mono i stereo, jakákoli
 vzorkovací frekvence – při načtení se převedou na 44100 Hz mono. Chybějící
-zvuk se prostě nepřehraje.
+zvuk se prostě nepřehraje. Nejsnáz se mění přes stránku `nastaveni.html`.
 
 **Aktualizace** = přepsat na kartě `kernel8-32.img` novým. Nastavení a zvuky
 zůstanou.
@@ -114,7 +115,7 @@ Výsledek je ve složce `vystup/karta/`.
 ## Struktura
 
     src/        zdrojový kód (C++)
-    karta/      config.txt, vzorové nastaveni.txt, nastaveni.html
+    karta/      config.txt, vzorové nastaveni.txt, nastaveni.html, sounds/ se zvuky
     docs/       schémata zapojení
     circle/     knihovna Circle (git submodule, pevná verze)
     sestav.sh   sestavení kernelu a složení obsahu karty

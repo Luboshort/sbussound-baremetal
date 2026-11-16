@@ -12,7 +12,9 @@ card. Built on the [Circle](https://github.com/rsta2/circle) library.
 
 GitHub builds them after every push: **Actions → latest run → Artifacts →
 SBusSound_karta**. Copy the contents of the ZIP to the root of the SD card
-(FAT32, MBR partition scheme) and add the sounds to the `sounds/` folder:
+(FAT32, MBR partition scheme) and you are done – a set of tank sounds is
+included in the `sounds/` folder. Replace any of them with your own under the
+same name:
 
 | file | when it plays |
 |---|---|
@@ -26,7 +28,7 @@ SBusSound_karta**. Copy the contents of the ZIP to the root of the SD card
 
 Sounds can be WAV 8/16/24/32 bit or float, mono or stereo, at any sample rate –
 they are converted to 44100 Hz mono when loaded. A missing sound is simply not
-played.
+played. The easiest way to change them is the `nastaveni.html` page.
 
 **Updating** = replace `kernel8-32.img` on the card with the new one. Settings
 and sounds stay.
@@ -127,7 +129,7 @@ The result is in the `vystup/karta/` folder.
 ## Layout
 
     src/        source code (C++)
-    karta/      config.txt, sample nastaveni.txt, nastaveni.html
+    karta/      config.txt, sample nastaveni.txt, nastaveni.html, sounds/
     docs/       wiring diagrams
     circle/     the Circle library (git submodule, pinned version)
     sestav.sh   builds the kernel and assembles the card contents
