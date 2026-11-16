@@ -201,6 +201,28 @@ input[type=range]{accent-color:var(--paka);height:22px}
 #edPrehrat.hraje{background:var(--mosaz);color:#2B2614;border-color:var(--mosaz)}
 .ed-napoveda{margin:8px 0 0;font-size:12.5px;color:var(--tlum)}
 @media (max-width:620px){#edVlna{height:180px}.ed-cas{text-align:left}}
+
+/* ---------- dialog uprostred okna ---------- */
+.dialog{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
+  background:rgba(18,21,16,.8);padding:20px}
+.dialog.otevren{display:flex}
+.dl-panel{width:min(520px,100%);background:var(--deska);border:1px solid var(--hrana);border-radius:12px;
+  padding:26px 28px 22px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.dl-ikona{width:74px;height:74px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:40px;font-weight:600;line-height:1}
+.dl-ikona.ok{background:rgba(127,163,94,.18);border:2px solid var(--zelen);color:var(--zelen)}
+.dl-ikona.pozor{background:rgba(200,162,60,.15);border:2px solid var(--mosaz);color:var(--mosaz)}
+.dl-ikona.chyba{background:rgba(224,119,95,.15);border:2px solid var(--chyba);color:var(--chyba)}
+.dl-panel h2{margin:0 0 8px;font-size:25px;font-weight:600;color:#EEF1EA;line-height:1.2}
+.dl-text{font-size:16px;color:var(--text);max-width:44ch;margin:0 auto}
+.dl-text p{margin:.5em 0}
+.dl-text .tlum{color:var(--tlum);font-size:14.5px}
+.dl-text ul{list-style:none;padding:0;margin:12px auto;display:inline-block;text-align:left}
+.dl-text li{padding:3px 0 3px 22px;position:relative}
+.dl-text li::before{content:"✓";position:absolute;left:0;color:var(--zelen)}
+.dl-text li small{color:var(--tlum);font-size:13.5px}
+.dl-tl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.dl-tl button{font-size:16px;padding:9px 20px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>
 </head>
@@ -333,6 +355,15 @@ input[type=range]{accent-color:var(--paka);height:22px}
   <p class="ed-napoveda">Tažením vyber úsek, kolečkem myši nebo dvěma prsty přibliž, se Shiftem posouvej.
   Mezerník přehraje, Delete vymaže výběr, ⌘Z / Ctrl+Z vrátí krok.</p>
  </div>
+</div>
+
+<div class="dialog" id="dialog" role="alertdialog" aria-modal="true" aria-labelledby="dlNadpis" aria-describedby="dlText">
+  <div class="dl-panel">
+    <div class="dl-ikona" id="dlIkona"></div>
+    <h2 id="dlNadpis"></h2>
+    <div class="dl-text" id="dlText"></div>
+    <div class="dl-tl" id="dlTl"></div>
+  </div>
 </div>
 
 <div id="hlaska" role="status"></div>
@@ -722,6 +753,40 @@ function hlaska(t, chyba){
 
 function zmena(){ zmeneno = true; obnovStav(); }
 
+/* Dialog uprostred okna. tlacitka: [{t:"text", v:hodnota, hlavni:true, fokus:true}],
+   prvni = zruseni (Esc). Predvybrane (Enter) je tlacitko s fokus, jinak hlavni.
+   Vraci Promise s hodnotou stisknuteho tlacitka. */
+let dialogKonec = null;
+const dialogOtevren = () => dialogKonec !== null;
+function dialog({ikona = "ok", nadpis, text, tlacitka}){
+  const znak = {ok:"✓", pozor:"!", chyba:"✕"}[ikona];
+  $("dlIkona").className = "dl-ikona " + ikona; $("dlIkona").textContent = znak;
+  $("dlNadpis").textContent = nadpis;
+  $("dlText").innerHTML = text;
+  const obal = $("dlTl"); obal.innerHTML = "";
+  const predtim = document.activeElement;
+  clearTimeout(hlaskaCas); $("hlaska").className = "";	// at rusi jen jedna vec
+  return new Promise(hotovo => {
+    dialogKonec = (v) => { dialogKonec = null; $("dialog").classList.remove("otevren"); if (predtim && predtim.focus) predtim.focus(); hotovo(v); };
+    for (const t of tlacitka){
+      const b = document.createElement("button");
+      b.textContent = t.t; if (t.hlavni) b.className = "hlavni"; if (t.fokus) b.dataset.fokus = "1";
+      b.onclick = () => dialogKonec(t.v);
+      obal.appendChild(b);
+    }
+    dialog.zruseni = tlacitka[0].v;
+    $("dialog").classList.add("otevren");
+    (obal.querySelector("[data-fokus]") || obal.querySelector(".hlavni") || obal.lastChild).focus();
+  });
+}
+document.addEventListener("keydown", e => {
+  if (!dialogOtevren()) return;
+  if (e.key === "Escape"){ e.preventDefault(); e.stopImmediatePropagation(); dialogKonec(dialog.zruseni); }
+  else if (e.key === " " && e.target.tagName !== "BUTTON"){ e.preventDefault(); e.stopImmediatePropagation(); }
+  else e.stopImmediatePropagation();		// klavesy editoru pod dialogem nefunguji
+}, true);
+const esc = t => String(t).replace(/[&<>"]/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;"}[c]));
+
 function obnovStav(){
   const nove = Object.keys(zvuky).filter(k => zvuky[k].wav).length;
   const kde = kartaJmeno ? `Karta <b>${kartaJmeno}</b>` : "Bez karty";
@@ -734,7 +799,9 @@ function obnovStav(){
   if (b) b.onclick = () => hlaska(poznamkyNacteni.join(" · "), true);
   $("btnUlozit").textContent = window.showDirectoryPicker ? "Uložit na kartu" : "Stáhnout pro kartu";
 }
-window.addEventListener("beforeunload", e => { if (zmeneno){ e.preventDefault(); e.returnValue = ""; } });
+// Zavreni stranky: varovat vzdy, aby se nezavrela omylem. Vlastni text
+// prohlizece nedovoli, ukaze svuj.
+window.addEventListener("beforeunload", e => { e.preventDefault(); e.returnValue = ""; });
 
 /* ---------- kanaly a zvuky ---------- */
 function vykresliFunkce(){
@@ -946,7 +1013,12 @@ async function nactiZeSouboru(najdi){
 }
 
 $("btnOtevrit").onclick = async () => {
-  if (zmeneno && !confirm("Neuložené změny se ztratí. Pokračovat?")) return;
+  if (zmeneno){
+    const v = await dialog({ikona:"pozor", nadpis:"Zahodit neuložené změny?",
+      text:"<p>Nastavení nebo zvuky jsou změněné a nejsou uložené na kartě. Otevřením karty se ztratí.</p>",
+      tlacitka:[{t:"Ponechat změny", v:false, hlavni:true, fokus:true}, {t:"Zahodit a otevřít kartu", v:true}]});
+    if (!v) return;
+  }
   if (window.showDirectoryPicker){
     try{
       const d = await window.showDirectoryPicker({id:"sbuskarta", mode:"readwrite"});
@@ -979,8 +1051,14 @@ function kdy(){
 }
 
 $("btnUlozit").onclick = async () => {
+  if (edOtevren()) return;
   const ch = kontrola(S);
-  if (ch.length){ hlaska("Nejdřív oprav: " + ch.join(" "), true); return; }
+  if (ch.length){
+    await dialog({ikona:"chyba", nadpis:"Nastavení nejde uložit",
+      text:"<p>Nejdřív oprav:</p><ul>" + ch.map(t => `<li style="color:var(--chyba)">${esc(t)}</li>`).join("") + "</ul>",
+      tlacitka:[{t:"Opravím to", v:0, hlavni:true}]});
+    return;
+  }
   const text = vyrobIni(S, kdy());
   const nove = Object.keys(zvuky).filter(k => zvuky[k].wav);
 
@@ -994,11 +1072,18 @@ $("btnUlozit").onclick = async () => {
         for (const jm of nove) await zapis(s, jm + ".wav", zvuky[jm].wav);
       }
       await zapis(karta, "nastaveni.txt", new TextEncoder().encode(text));
+      const popis = nove.map(jm => `<li>sounds/${jm}.wav <small>${zvuky[jm].zdroj === "upraveno" ? "upraveno" : "nový zvuk"}, ${fmt(zvuky[jm].buf.duration, 1)} s</small></li>`);
       for (const jm of nove){ zvuky[jm].wav = null; zvuky[jm].zdroj = "karta"; vykresliVlnu(jm); }
       zmeneno = false; obnovStav();
-      hlaska(`Uloženo na kartu ${kartaJmeno}: nastaveni.txt` + (nove.length ? ` a ${nove.length} ${nove.length === 1 ? "zvuk" : "zvuky"}` : "") + ". Kartu vysuň a vlož do tanku.");
+      await dialog({ikona:"ok", nadpis:`Uloženo na kartu ${kartaJmeno}`,
+        text:`<ul><li>nastaveni.txt</li>${popis.join("")}</ul>
+              <p>Kartu bezpečně vysuň (⏏ ve Finderu) a vlož do tanku. Nové nastavení se načte po zapnutí.</p>`,
+        tlacitka:[{t:"OK", v:0, hlavni:true}]});
     }catch(e){
-      if (e.name !== "AbortError") hlaska("Uložení se nepovedlo: " + e.message, true);
+      if (e.name !== "AbortError")
+        await dialog({ikona:"chyba", nadpis:"Uložení se nepovedlo",
+          text:`<p>${esc(e.message)}</p><p class="tlum">Zkontroluj, že je karta vložená a není zamčená proti zápisu, a zkus to znovu. Změny v této stránce zůstaly.</p>`,
+          tlacitka:[{t:"OK", v:0, hlavni:true}]});
     }
     return;
   }
@@ -1011,7 +1096,11 @@ $("btnUlozit").onclick = async () => {
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 20000);
   zmeneno = false; obnovStav();
-  hlaska("Staženo SBusSound_nastaveni.zip. Jeho obsah nakopíruj do kořene karty a přepiš stávající soubory.");
+  await dialog({ikona:"ok", nadpis:"Staženo SBusSound_nastaveni.zip",
+    text:`<p>V ZIPu je:</p><ul><li>nastaveni.txt</li>${nove.map(jm => `<li>sounds/${jm}.wav</li>`).join("")}</ul>
+          <p>Najdeš ho ve Stažených souborech. Jeho obsah nakopíruj do kořene karty a stávající soubory přepiš.</p>
+          <p class="tlum">Safari umí na kartu zapisovat jen takhle. V Chromu nebo Edge se ukládá rovnou na kartu.</p>`,
+    tlacitka:[{t:"OK", v:0, hlavni:true}]});
 };
 
 /* =====================================================================
@@ -1218,9 +1307,16 @@ function edUloz(){
   }
   zavriEditor();
 }
-function edZrus(){
-  if (ED.d !== ED.puvodni && !confirm("Zahodit úpravy tohoto zvuku?")) return;
-  zavriEditor();
+async function edZrus(){
+  edStop();
+  const zmeny = ED.d !== ED.puvodni;
+  const v = await dialog({ikona:"pozor", nadpis: zmeny ? "Zahodit úpravy zvuku?" : "Zavřít editor?",
+    text: zmeny ? `<p>Úpravy zvuku ${esc(ED.jm)}.wav nejsou uložené. Zavřením bez uložení se ztratí.</p>`
+                : `<p>Zvuk ${esc(ED.jm)}.wav se nezměnil.</p>`,
+    tlacitka: zmeny ? [{t:"Zpět do editoru", v:false, fokus:true}, {t:"Uložit úpravy", v:"ulozit", hlavni:true}, {t:"Zahodit a zavřít", v:true}]
+                    : [{t:"Zpět do editoru", v:false}, {t:"Zavřít", v:true, hlavni:true}]});
+  if (v === "ulozit") edUloz();
+  else if (v) zavriEditor();
 }
 
 /* --- upravy --- */
