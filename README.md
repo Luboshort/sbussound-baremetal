@@ -31,3 +31,11 @@ Výsledek je ve složce `vystup/karta/`.
     karta/      config.txt, vzorové nastaveni.txt
     circle/     knihovna Circle (git submodule, pevná verze)
     sestav.sh   sestavení kernelu a složení obsahu karty
+
+## Úprava nastavení a zvuků
+
+Na kartě je `nastaveni.html`. Otevři ho v Chromu nebo Edge přímo z karty,
+klikni na **Otevřít SD kartu**, vyber kořen karty, uprav kanály, výstup,
+kalibraci, převodovku (se simulátorem) nebo vyber nové zvuky v libovolném
+běžném formátu a klikni na **Uložit na kartu**. V Safari se změny místo
+toho stáhnou jako ZIP, jehož obsah se nakopíruje do kořene karty.
