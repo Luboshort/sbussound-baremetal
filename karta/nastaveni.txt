@@ -1,0 +1,67 @@
+# ================================================================
+#  SBusSound - nastavení
+# ================================================================
+#  Řádek má tvar:  název = hodnota
+#  Vše za znakem # je komentář. Velikost písmen nevadí.
+#  Upravuj v obyčejném textovém editoru a ukládej jako prostý text
+#  (v TextEditu: Formát -> Převést na prostý text).
+#  Co chybí nebo je špatně, nahradí se výchozí hodnotou a zapíše
+#  se do log.txt (když je na kartě diag.txt).
+
+
+[vystup]
+
+# Kam jde zvuk:
+#   i2s   = modul GY-PCM5102 (PCM5102A)
+#           BCK -> GPIO18 (pin 12), LCK -> GPIO19 (pin 35),
+#           DIN -> GPIO21 (pin 40), SCK modulu na GND
+#   jack  = 3,5mm jack přímo na Raspberry
+zarizeni = i2s
+
+# Do kterého kanálu výstupu hrát: oba | levy | pravy
+# (do druhého pak jde ticho)
+reproduktor = oba
+
+# Celková hlasitost výstupu v %, 0 až 100.
+# Hlasitost za jízdy se dál řídí ovladačem na vysílači.
+hlasitost = 50
+
+
+[kanaly]
+
+# Číslo kanálu vysílače (1 až 16) pro každou funkci.
+# Stejné, jaké vidíš na monitoru kanálů ve vysílači.
+motor     = 9     # přepínač zapnutí motoru
+plyn      = 10    # páka plynu, dozadu je zpátečka
+vez       = 11    # páka otáčení věže
+kulomet   = 7     # přepínač kulometu
+delo      = 5     # přepínač děla (rána při přepnutí)
+pozadi    = 8     # přepínač zvuků okolí
+hlasitost = 6     # otočný ovladač nebo posuvník hlasitosti
+
+
+[kalibrace]
+
+# Rozsah hodnot, které posílá vysílač (FrSky typicky 172 až 1811).
+min   = 174
+stred = 995
+max   = 1815
+
+# Nepovinné: skutečný střed páky plynu a věže, když se liší
+# od hodnoty "stred" výše (odkomentuj a doplň).
+# stred_plyn = 995
+# stred_vez  = 995
+
+
+[prevodovka]
+
+# Stejné hodnoty jako posuvníky v simulátoru motoru.
+# Desetinná čísla můžeš psát s tečkou i s čárkou.
+stupnu       = 3      # počet stupňů, 1 až 6
+pomer        = 1.6    # poměr mezi stupni, 1,2 až 2,2
+rozjezd      = 5      # s z klidu na plnou rychlost, 1 až 12
+dobeh        = 3      # s z plné rychlosti do zastavení, 1 až 12
+navrat       = 250    # ms, jak rychle se otáčky vrátí po řazení, 40 až 800
+propad       = 50     # %, o kolik otáčky navíc klesnou při řazení nahoru, 0 až 60
+zpatecka     = 40     # %, nejvyšší rychlost couvání, 10 až 100
+max_rychlost = 2.25   # rychlost přehrávání motor_run při plných otáčkách, 1,2 až 3,0

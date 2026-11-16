@@ -1,0 +1,8 @@
+vystup/
+src/*.o
+src/*.d
+src/*.elf
+src/*.lst
+src/*.map
+src/*.img
+.DS_Store
