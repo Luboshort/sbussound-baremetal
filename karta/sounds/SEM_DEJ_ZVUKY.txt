@@ -1,1 +1,7 @@
-Sem nakopiruj machinegun.wav (pozdeji i ostatni zvuky).
+Sem patri zvuky / Put the sounds here:
+
+  motor_start.wav   motor_run.wav   motor_stop.wav
+  turret.wav        machinegun.wav  cannon.wav      background.wav
+
+Nejsnaz pres nastaveni.html v koreni karty (umi i MP3, M4A, FLAC...).
+Easiest via nastaveni.html in the root of the card (also takes MP3, M4A, FLAC...).
