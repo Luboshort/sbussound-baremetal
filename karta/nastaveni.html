@@ -224,6 +224,22 @@ input[type=range]{accent-color:var(--paka);height:22px}
 .dl-tl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 .dl-tl button{font-size:16px;padding:9px 20px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+/* ---------- uvodni okno a pretazeni karty ---------- */
+.uvod{position:fixed;inset:0;z-index:9;display:none;align-items:center;justify-content:center;
+  background:rgba(24,28,22,.88);padding:90px 20px 20px}
+.uvod.otevren{display:flex}
+.uv-panel{width:min(600px,100%);background:var(--deska);border:1px solid var(--hrana);border-radius:14px;
+  padding:34px 36px 24px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55)}
+.uv-panel svg{display:block;margin:0 auto 14px}
+.uv-panel h2{margin:0 0 8px;font-size:30px;font-weight:600;color:#EEF1EA;line-height:1.15}
+.uv-panel p{margin:0 auto 20px;max-width:46ch;font-size:16.5px}
+.uv-panel .velke{font-size:19px;padding:12px 30px;border-radius:7px}
+.uv-pretah{margin:22px 0 14px;padding:16px 14px;border:2px dashed var(--hrana);border-radius:10px;color:var(--tlum);font-size:15px}
+.pretah-nad .uv-pretah{border-color:var(--mosaz);color:var(--mosaz)}
+.pretah{position:fixed;inset:10px;z-index:45;display:none;align-items:center;justify-content:center;pointer-events:none;
+  border:3px dashed var(--mosaz);border-radius:16px;background:var(--skrin);box-shadow:0 0 0 10px var(--skrin)}
+.pretah-nad .pretah{display:flex}
+.pretah div{font-size:30px;font-weight:600;color:var(--mosaz)}
 .log-stav{display:flex;align-items:center;gap:10px;margin:2px 0 8px}
 #diagnostika.zapnuto{border-color:var(--mosaz)}
 #diagnostika .pozor{margin:8px 0 0;font-size:13.5px;color:var(--mosaz);display:none}
@@ -337,6 +353,22 @@ input[type=range]{accent-color:var(--paka);height:22px}
 
 </main>
 
+<div class="uvod otevren" id="uvod" role="dialog" aria-modal="true" aria-labelledby="uvNadpis">
+  <div class="uv-panel">
+    <svg width="74" height="92" viewBox="0 0 74 92" aria-hidden="true" fill="none" stroke="#C8A23C" stroke-width="3" stroke-linejoin="round">
+      <path d="M8 3h40l23 23v57a6 6 0 0 1-6 6H9a6 6 0 0 1-6-6V9a6 6 0 0 1 5-6z"/>
+      <path d="M20 4v18M31 4v18M42 4v18" stroke-linecap="round"/>
+      <path d="M17 52h40M17 62h28" stroke="#7A6327" stroke-linecap="round"/>
+    </svg>
+    <h2 id="uvNadpis" data-i18n="uvodNadpis">Otevři SD kartu</h2>
+    <p data-i18n="uvodText"></p>
+    <button id="uvOtevrit" class="hlavni velke" data-i18n="otevrit">Otevřít SD kartu</button>
+    <div class="uv-pretah" data-i18n="uvodPretah"></div>
+    <button id="uvBez" class="tichy" data-i18n="uvodBez">Pokračovat bez karty</button>
+  </div>
+</div>
+<div class="pretah" aria-hidden="true"><div data-i18n="pretahText">Pusť kartu</div></div>
+
 <div class="editor" id="editor" role="dialog" aria-modal="true" aria-labelledby="edNazev">
  <div class="ed-panel">
   <div class="ed-hlava">
@@ -429,6 +461,9 @@ const T = {
   kalNadpis:"Kalibrace", kalPozn:"Rozsah hodnot, které posílá vysílač. FrSky typicky 172 až 1811.",
   minimum:"minimum", stred:"střed", maximum:"maximum",
   stredPlyn:"Vlastní střed páky plynu", stredVez:"Vlastní střed páky věže",
+  uvodNadpis:"Otevři SD kartu", uvodText:"Vlož kartu ze SBusSound do počítače a vyber ji. Načte se nastavení i všechny zvuky.",
+  uvodPretah:"Nebo kartu přetáhni kamkoli do okna – z plochy nebo z postranního panelu Finderu.",
+  uvodBez:"Pokračovat bez karty", pretahText:"Pusť kartu", pretahniSlozku:"Přetáhni kartu nebo složku, ne jednotlivý soubor.",
   logNadpis:"Log", logZapisovat:"Zapisovat log.txt", vypnuto:"vypnuto", zapnuto:"zapnuto",
   logPozn:"Jen pro nastavování a hledání chyb. Raspberry pak každé 2 s přepisuje na kartě soubor log.txt: hodnoty všech kanálů, jak se načetlo nastavení a zvuky, časování zvuku.",
   logPozor:"Když je log zapnutý, vypnutí napájení právě během zápisu může poškodit soubory na kartě a stálé zapisování kartu opotřebovává. Po nastavení log vypni. Vypnutý log na kartu nic nezapisuje, napájení pak jde vypnout kdykoli.",
@@ -523,6 +558,9 @@ const T = {
   kalNadpis:"Calibration", kalPozn:"The range of values the transmitter sends. FrSky typically 172 to 1811.",
   minimum:"minimum", stred:"centre", maximum:"maximum",
   stredPlyn:"Own centre of the throttle stick", stredVez:"Own centre of the turret stick",
+  uvodNadpis:"Open the SD card", uvodText:"Put the SBusSound card into your computer and choose it. The settings and all sounds will load.",
+  uvodPretah:"Or drag the card anywhere into this window – from the desktop or the Finder sidebar.",
+  uvodBez:"Continue without a card", pretahText:"Drop the card", pretahniSlozku:"Drag the card or a folder, not a single file.",
   logNadpis:"Log", logZapisovat:"Write log.txt", vypnuto:"off", zapnuto:"on",
   logPozn:"For setting up and troubleshooting only. The Raspberry Pi then rewrites log.txt on the card every 2 s: values of all channels, how the settings and sounds loaded, audio timing.",
   logPozor:"With the log on, cutting the power right during a write can damage files on the card, and constant writing wears the card. Switch the log off when you are done. With the log off nothing is written to the card, so the power can be cut at any time.",
@@ -1308,32 +1346,72 @@ async function nactiZeSouboru(najdi){
     catch(e){ zvuky[jm] = {buf:null, wav:null, chyba:true}; }
   }
   zmeneno = false;
+  // pole, ve kterem byl kurzor, by si nechalo starou hodnotu
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
   obnovVse();
   hlaska(t(f ? "nacteno" : "nenacteno", {n:nacteno}) + (chybi.length ? t("chybiZvuky", {s:chybi.join(", ")}) : "") + ".", !f || chybi.length > 0);
 }
 
-$("btnOtevrit").onclick = async () => {
-  if (zmeneno){
-    const v = await dialog({ikona:"pozor", nadpis:t("dlZahoditNadpis"), text:t("dlZahoditText"),
-      tlacitka:[{t:t("dlPonechat"), v:false, hlavni:true, fokus:true}, {t:t("dlZahoditOtevrit"), v:true}]});
-    if (!v) return;
-  }
-  if (window.showDirectoryPicker){
+// Zmeny v strance by se otevrenim jine karty ztratily - zeptat se.
+async function muzuZahodit(){
+  if (!zmeneno) return true;
+  return await dialog({ikona:"pozor", nadpis:t("dlZahoditNadpis"), text:t("dlZahoditText"),
+    tlacitka:[{t:t("dlPonechat"), v:false, hlavni:true, fokus:true}, {t:t("dlZahoditOtevrit"), v:true}]});
+}
+function skryjUvod(){ $("uvod").classList.remove("otevren"); }
+
+// Chrome, Edge: karta jako FileSystemDirectoryHandle (z vyberu i z pretazeni) - uklada se rovnou na ni
+async function otevriHandle(d){
+  karta = d; kartaJmeno = d.name;
+  await nactiZeSouboru(async cesta => {
     try{
-      const d = await window.showDirectoryPicker({id:"sbuskarta", mode:"readwrite"});
-      karta = d; kartaJmeno = d.name;
-      await nactiZeSouboru(async cesta => {
-        try{
-          let h = d; const casti = cesta.split("/");
-          for (const c of casti.slice(0, -1)) h = await h.getDirectoryHandle(c);
-          return await (await h.getFileHandle(casti[casti.length - 1])).getFile();
-        }catch(e){ return null; }
-      });
-    }catch(e){ if (e.name !== "AbortError") hlaska(t("nejdeOtevrit", {e:e.message}), true); }
+      let h = d; const casti = cesta.split("/");
+      for (const c of casti.slice(0, -1)) h = await h.getDirectoryHandle(c);
+      return await (await h.getFileHandle(casti[casti.length - 1])).getFile();
+    }catch(e){ return null; }
+  });
+  skryjUvod();
+}
+// Safari, Firefox: pretazena slozka jako FileSystemDirectoryEntry - jen cteni, uklada se ZIP
+async function otevriEntry(koren){
+  karta = null; kartaJmeno = koren.name;
+  const seznamy = new Map();
+  const cti = d => {
+    if (!seznamy.has(d)) seznamy.set(d, new Promise((ok, chyba) => {
+      const r = d.createReader(), vse = [];
+      const dalsi = () => r.readEntries(a => { if (!a.length) ok(vse); else { vse.push(...a); dalsi(); } }, chyba);
+      dalsi();
+    }));
+    return seznamy.get(d);
+  };
+  await nactiZeSouboru(async cesta => {
+    try{
+      let d = koren; const casti = cesta.toLowerCase().split("/");
+      for (let i = 0; i < casti.length; i++){
+        const e = (await cti(d)).find(x => x.name.toLowerCase() === casti[i]);
+        if (!e) return null;
+        if (i === casti.length - 1) return e.isFile ? await new Promise((ok, chyba) => e.file(ok, chyba)) : null;
+        if (!e.isDirectory) return null;
+        d = e;
+      }
+    }catch(e){ return null; }
+    return null;
+  });
+  skryjUvod();
+}
+
+async function otevriVyberem(){
+  if (!(await muzuZahodit())) return;
+  if (window.showDirectoryPicker){
+    try{ await otevriHandle(await window.showDirectoryPicker({id:"sbuskarta", mode:"readwrite"})); }
+    catch(e){ if (e.name !== "AbortError") hlaska(t("nejdeOtevrit", {e:e.message}), true); }
   } else {
     $("slozka").click();
   }
-};
+}
+$("btnOtevrit").onclick = otevriVyberem;
+$("uvOtevrit").onclick = otevriVyberem;
+$("uvBez").onclick = skryjUvod;
 // Safari a Firefox: jen cteni pres vyber slozky, ukladani pak pres ZIP
 $("slozka").onchange = async e => {
   const soubory = [...e.target.files]; e.target.value = "";
@@ -1341,7 +1419,46 @@ $("slozka").onchange = async e => {
   const koren = soubory[0].webkitRelativePath.split("/")[0];
   kartaJmeno = koren; karta = null;
   await nactiZeSouboru(async cesta => soubory.find(f => f.webkitRelativePath.toLowerCase() === (koren + "/" + cesta).toLowerCase()) || null);
+  skryjUvod();
 };
+
+/* ---------- pretazeni karty kamkoli do okna ---------- */
+const nesouSoubory = e => !!(e.dataTransfer && [...e.dataTransfer.types].includes("Files"));
+const lzePustit = () => !edOtevren() && !dialogOtevren();
+let pretahCas = null;
+function pretah(ano){
+  clearTimeout(pretahCas);
+  document.body.classList.toggle("pretah-nad", ano);
+  // dragleave pri prechodu mezi prvky neni spolehlive - zhasnout, kdyz dragover prestane chodit
+  if (ano) pretahCas = setTimeout(() => pretah(false), 250);
+}
+window.addEventListener("dragover", e => {
+  if (!nesouSoubory(e)) return;
+  e.preventDefault();				// jinak by prohlizec soubor otevrel
+  e.dataTransfer.dropEffect = lzePustit() ? "copy" : "none";
+  if (lzePustit()) pretah(true);
+});
+window.addEventListener("drop", e => {
+  if (!nesouSoubory(e)) return;
+  e.preventDefault();
+  pretah(false);
+  if (!lzePustit()) return;
+  const polozka = [...e.dataTransfer.items].find(i => i.kind === "file");
+  if (!polozka) return;
+  // obe je nutne ziskat hned v udalosti, pozdeji uz polozka neplati
+  const handle = polozka.getAsFileSystemHandle ? polozka.getAsFileSystemHandle() : null;
+  const entry = polozka.webkitGetAsEntry ? polozka.webkitGetAsEntry() : null;
+  (async () => {
+    let h = null;
+    if (handle){ try{ h = await handle; }catch(err){ h = null; } }
+    const slozka = (h && h.kind === "directory") || (!h && entry && entry.isDirectory);
+    if (!slozka){ hlaska(t("pretahniSlozku"), true); return; }
+    if (!(await muzuZahodit())) return;
+    try{
+      if (h) await otevriHandle(h); else await otevriEntry(entry);
+    }catch(err){ hlaska(t("nejdeOtevrit", {e:err.message}), true); }
+  })();
+});
 
 /* ---------- karta: ulozeni ---------- */
 function kdy(){
@@ -1888,6 +2005,7 @@ for (const jm of Object.keys(SLOTY)) zvuky[jm] = {buf:null, wav:null, chyba:null
 rozmery();
 obnovVse();
 requestAnimationFrame(snimek);
+$("uvOtevrit").focus();
 
 })();
 
