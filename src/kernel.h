@@ -46,6 +46,8 @@ public:
 private:
 	void Chyba (TKodChyby Kod);		// nevraci se
 	void Udalost (const char *pText);	// do logu a do historie pro log.txt
+	void Vypadek (const char *pText);	// do logu a do historie vypadku signalu
+	void SledujVypadky (unsigned nTed);	// udalosti z rozboru SBus, chyby linky
 	void ZapisDiag (void);
 	CString Prehled (void);
 	unsigned Ms (void) const;
@@ -90,6 +92,16 @@ private:
 	enum { UDALOSTI = 20 };
 	CString			m_Udalost[UDALOSTI];
 	unsigned		m_nUdalosti;
+
+	// vypadky signalu zvlast, aby je nevytlacilo razeni a prepinace
+	enum { VYPADKU = 40 };
+	CString			m_Vypadek[VYPADKU];
+	unsigned		m_nVypadku;
+	unsigned		m_nFailsafu, m_nBezRamcu;	// epizod od zapnuti
+	unsigned		m_nRamcuZaS;			// platnych ramcu za posledni sekundu
+	unsigned		m_nRamcuPred, m_nRamcuCas;
+	unsigned		m_nLinkaCas;			// posledni kontrola chyb linky
+	unsigned		m_LinkaPred[6];			// parita, ramec, preteceni, break, zahozeno, s chybou
 };
 
 #endif

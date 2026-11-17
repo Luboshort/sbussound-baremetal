@@ -8,6 +8,7 @@
 #include <circle/interrupt.h>
 #include <circle/types.h>
 #include "sbusramec.h"
+#include "sbusrozbor.h"
 
 #define SBUS_TICHO_US	500000		// po teto dobe bez ramce = bez signalu
 
@@ -38,6 +39,8 @@ public:
 	unsigned m_nChybRamec;		// framing error
 	unsigned m_nChybPreteceni;
 	unsigned m_nChybBreak;
+	unsigned m_nPodezrelych;	// prijate ramce s bajtem, u ktereho UART hlasil chybu
+	CSBusRozbor m_Rozbor;		// mezery, ztracene ramce, odskoky kanalu
 
 private:
 	CSerialDevice	m_Serial;
@@ -45,6 +48,8 @@ private:
 	unsigned	m_nBuf;
 	unsigned	m_nCasRamce;	// CTimer::GetClockTicks() posledniho ramce
 	boolean		m_bNekdyRamec;
+	boolean		m_bOtrava;	// UART hlasil chybu - vadny bajt prijde v dalsim cteni
+	unsigned	m_nOtravaOd, m_nOtravaDo;	// usek m_Buf s moznym vadnym bajtem
 };
 
 #endif

@@ -123,6 +123,12 @@ When `nastaveni.txt` has `log = ano` in the `[diagnostika]` section (the
 every 2 s: values of all channels, how the settings and sounds loaded, audio
 timing. The page can show it after opening the card.
 
+Signal dropouts have their own list in the log (the last 40, time from
+power-up): gaps between SBus frames over 50 ms, frames lost between
+transmitter and receiver, failsafe, channel values jumping away and back
+(damaged data) and SBus line errors summed per second. Totals since power-up
+are at the top.
+
 It is for setting up and troubleshooting only – cutting the power right during
 a write can damage files on the card. When you are done, set `log = ne` again;
 then nothing is written to the card and the power can be cut at any time.

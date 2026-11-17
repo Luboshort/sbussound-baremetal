@@ -108,6 +108,11 @@ Když je v `nastaveni.txt` v sekci `[diagnostika]` `log = ano` (na stránce
 hodnoty všech kanálů, jak se načetlo nastavení a zvuky, časování zvuku.
 Stránka ho po otevření karty umí zobrazit.
 
+Výpadky signálu mají v logu vlastní seznam (posledních 40, čas od zapnutí):
+mezery mezi SBus rámci nad 50 ms, ztracené rámce mezi vysílačem a přijímačem,
+failsafe, odskoky hodnot kanálů (poškozená data) a chyby na lince SBus
+souhrnně za sekundu. Nahoře je souhrn počtů od zapnutí.
+
 Je to jen pro nastavování a hledání chyb – vypnutí napájení právě během zápisu
 může poškodit soubory na kartě. Po nastavení dej zpět `log = ne`, pak se na
 kartu nic nezapisuje a napájení jde vypnout kdykoli. (Dřívější soubor
