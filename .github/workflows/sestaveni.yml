@@ -8,10 +8,10 @@ on:
 
 jobs:
   sestav:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04      # pevna verze, ubuntu-latest se meni
     steps:
       - name: Stazeni kodu vcetne knihovny Circle
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: recursive
 
@@ -26,7 +26,7 @@ jobs:
         run: ./sestav.sh
 
       - name: Obsah karty ke stazeni
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: SBusSound_karta
           path: vystup/karta/
