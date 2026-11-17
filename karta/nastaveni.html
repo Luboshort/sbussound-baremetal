@@ -243,7 +243,12 @@ input[type=range]{accent-color:var(--paka);height:22px}
 .log-stav{display:flex;align-items:center;gap:10px;margin:2px 0 8px}
 #diagnostika.zapnuto{border-color:var(--mosaz)}
 #diagnostika .pozor{margin:8px 0 0;font-size:13.5px;color:var(--mosaz);display:none}
-#diagnostika.zapnuto .pozor{display:block}
+#diagnostika .cast.zapnuto .pozor{display:block}
+#diagnostika .cast + .cast{margin-top:14px;padding-top:12px;border-top:1px solid var(--hrana)}
+#diagnostika ol{margin:6px 0 0;padding-left:20px;font-size:13.5px;color:var(--tlum);max-width:68ch}
+#diagnostika ol li{margin:2px 0}
+.dl-text ol{text-align:left;margin:10px auto;padding-left:22px;max-width:44ch}
+.dl-text ol li{padding:2px 0}
 .dl-panel.siroky{width:min(860px,100%)}
 .dl-panel.siroky .dl-text{max-width:none}
 .dl-text pre{text-align:left;margin:10px 0 0;max-height:58vh;overflow:auto;padding:10px 12px;background:var(--skrin);
@@ -311,7 +316,17 @@ input[type=range]{accent-color:var(--paka);height:22px}
 </section>
 
 <section id="diagnostika">
-  <h2 data-i18n="logNadpis">Log</h2>
+  <h2 data-i18n="nastavovaniNadpis">Nastavování</h2>
+  <div class="cast" id="castMap">
+  <div class="radek"><label data-i18n="mapZapnout">Mapovat kanály</label>
+    <div class="prepinac" id="mapPrep">
+      <button data-v="ne" data-i18n="vypnuto">vypnuto</button><button data-v="ano" data-i18n="zapnuto">zapnuto</button>
+    </div></div>
+  <p class="pozn" style="margin:4px 0 0" data-i18n="mapPozn"></p>
+  <div class="pozor"><span data-i18n="mapPozor"></span>
+    <ol id="mapPostup"></ol></div>
+  </div>
+  <div class="cast" id="castLog">
   <div class="radek"><label data-i18n="logZapisovat">Zapisovat log.txt</label>
     <div class="prepinac" id="logPrep">
       <button data-v="ne" data-i18n="vypnuto">vypnuto</button><button data-v="ano" data-i18n="zapnuto">zapnuto</button>
@@ -320,6 +335,7 @@ input[type=range]{accent-color:var(--paka);height:22px}
   <p class="pozor" data-i18n="logPozor"></p>
   <div class="radek" style="justify-content:flex-start;margin-bottom:0"><button id="btnLog" disabled data-i18n="logZobrazit">Zobrazit log.txt</button>
     <span class="pozn" id="logInfo" style="margin:0"></span></div>
+  </div>
 </section>
 </div>
 
@@ -464,6 +480,18 @@ const T = {
   uvodNadpis:"Otevři SD kartu", uvodText:"Vlož kartu ze SBusSound do počítače a vyber ji. Načte se nastavení i všechny zvuky.",
   uvodPretah:"Nebo kartu přetáhni kamkoli do okna – z plochy nebo z postranního panelu Finderu.",
   uvodBez:"Pokračovat bez karty", pretahText:"Pusť kartu", pretahniSlozku:"Přetáhni kartu nebo složku, ne jednotlivý soubor.",
+  nastavovaniNadpis:"Nastavování", mapZapnout:"Mapovat kanály",
+  mapPozn:"Kanály vysílače se přiřadí samy: Raspberry po zapnutí přehrává zvuky jeden po druhém a ty u každého pohneš ovladačem, který ho má ovládat.",
+  mapPozor:"Po uložení vlož kartu do tanku, zapni vysílač a pak Raspberry. Místo jízdy začne mapování (LED bliká dvakrát za sekundu):",
+  mapPostup:["Jako první hrají dokola stoupající tóny – otoč ovladačem hlasitosti. Je to zároveň kontrola, že Raspberry čte SBus: když se po pohybu ovladače nic nestane, signál nepřichází (zkontroluj zapojení a vysílač).",
+    "Od té chvíle ovladač hlasitosti řídí hlasitost všech dalších zvuků (nejméně 10 %), takže si je ztiš podle potřeby. Na jinou funkci se už nepřiřadí.",
+    "Pak hraje dokola zvuk další funkce. Jasně pohni ovladačem, který k ní patří – aspoň o třetinu rozsahu, kterýmkoli směrem. Kanál se přiřadí, zvuk ztichne a po 3 s ticha začne další.",
+    "Pořadí: hlasitost (stoupající tóny), start motoru (vypínač motoru), jízda (páka plynu), věž, kulomet, výstřel (přepínač děla), okolí. Vypnutí motoru má stejný kanál jako start.",
+    "Ovladač, kterým jsi už pohnul, můžeš vrátit zpět – to se nepočítá. Chybí-li zvuk, místo něj pípne tolikrát, kolikátý je v pořadí.",
+    "Když vyjde jeden kanál u dvou funkcí, zazní tři hluboké tóny a celé se to opakuje od začátku.",
+    "Na konci se kanály zapíšou do nastaveni.txt, mapování se samo vypne a Raspberry se restartuje do normálního provozu."],
+  dlMapovani:"<p><b>Mapování kanálů je zapnuté.</b> Zapni vysílač a pak Raspberry. Na stoupající tóny otoč ovladačem hlasitosti, pak u každého zvuku pohni ovladačem, který k němu patří. Na konci se Raspberry samo restartuje.</p>",
+  nMap:"mapovat „{v}“ neznám (ano nebo ne), beru ne",
   logNadpis:"Log", logZapisovat:"Zapisovat log.txt", vypnuto:"vypnuto", zapnuto:"zapnuto",
   logPozn:"Jen pro nastavování a hledání chyb. Raspberry pak každé 2 s přepisuje na kartě soubor log.txt: hodnoty všech kanálů, jak se načetlo nastavení a zvuky, časování zvuku.",
   logPozor:"Když je log zapnutý, vypnutí napájení právě během zápisu může poškodit soubory na kartě a stálé zapisování kartu opotřebovává. Po nastavení log vypni. Vypnutý log na kartu nic nezapisuje, napájení pak jde vypnout kdykoli.",
@@ -561,6 +589,18 @@ const T = {
   uvodNadpis:"Open the SD card", uvodText:"Put the SBusSound card into your computer and choose it. The settings and all sounds will load.",
   uvodPretah:"Or drag the card anywhere into this window – from the desktop or the Finder sidebar.",
   uvodBez:"Continue without a card", pretahText:"Drop the card", pretahniSlozku:"Drag the card or a folder, not a single file.",
+  nastavovaniNadpis:"Setup", mapZapnout:"Map channels",
+  mapPozn:"The transmitter channels are assigned automatically: after power-up the Raspberry Pi plays the sounds one by one and for each you move the control that should drive it.",
+  mapPozor:"After saving, put the card into the tank, switch on the transmitter and then the Raspberry Pi. Instead of driving, mapping starts (the LED blinks twice a second):",
+  mapPostup:["First, rising tones play in a loop – turn the volume control. This also checks that the Raspberry Pi reads SBus: if nothing happens when you move it, no signal arrives (check the wiring and the transmitter).",
+    "From then on the volume control sets the volume of all the following sounds (at least 10 %), so turn them down as you like. It will not be assigned to any other function.",
+    "Then the sound of the next function plays in a loop. Move the control that belongs to it clearly – at least a third of its range, in any direction. The channel is assigned, the sound stops and after 3 s of silence the next one starts.",
+    "Order: volume (rising tones), engine start (engine switch), driving (throttle stick), turret, machine gun, shot (cannon switch), ambient. Engine shutdown uses the same channel as the start.",
+    "A control you already moved may be put back – that does not count. If a sound is missing, it beeps as many times as its place in the order.",
+    "If one channel comes out for two functions, three low tones sound and everything starts again.",
+    "At the end the channels are written to nastaveni.txt, mapping switches itself off and the Raspberry Pi restarts into normal operation."],
+  dlMapovani:"<p><b>Channel mapping is on.</b> Switch on the transmitter, then the Raspberry Pi. At the rising tones turn the volume control, then for each sound move the control that belongs to it. At the end the Raspberry Pi restarts by itself.</p>",
+  nMap:"mapovat “{v}” unknown (ano or ne), using ne",
   logNadpis:"Log", logZapisovat:"Write log.txt", vypnuto:"off", zapnuto:"on",
   logPozn:"For setting up and troubleshooting only. The Raspberry Pi then rewrites log.txt on the card every 2 s: values of all channels, how the settings and sounds loaded, audio timing.",
   logPozor:"With the log on, cutting the power right during a write can damage files on the card, and constant writing wears the card. Switch the log off when you are done. With the log off nothing is written to the card, so the power can be cut at any time.",
@@ -672,7 +712,7 @@ function vychozi(){
     kanaly:{},
     kalibrace:{min:172, stred:992, max:1811, stred_plyn:null, stred_vez:null},
     prevodovka:{},
-    diagnostika:{log:false},
+    diagnostika:{log:false, mapovat:false},
   };
   for (const f of FUNKCE) s.kanaly[f.k] = f.ch;
   for (const p of PREVOD) s.prevodovka[p.k] = p.v;
@@ -748,6 +788,9 @@ function nactiIni(text){
   v = vem("diagnostika.log");
   if (v === "ano" || v === "1") s.diagnostika.log = true;
   else if (v != null && v !== "ne" && v !== "0") pozn.push(t("nLog", {v}));
+  v = vem("diagnostika.mapovat");
+  if (v === "ano" || v === "1") s.diagnostika.mapovat = true;
+  else if (v != null && v !== "ne" && v !== "0") pozn.push(t("nMap", {v}));
   for (const k of Object.keys(hodnoty)) pozn.push(t("nNeznama", {k}));
   return {s, pozn};
 }
@@ -779,6 +822,9 @@ const KOMENTARE = {
   p_dobeh:"s z plné rychlosti do zastavení, 1 až 12", p_navrat:"ms, jak rychle se otáčky vrátí po řazení, 40 až 800",
   p_propad:"%, o kolik otáčky navíc klesnou při řazení nahoru, 0 až 60", p_zpatecka:"%, nejvyšší rychlost couvání, 10 až 100",
   p_max_rychlost:"rychlost přehrávání motor_run při plných otáčkách, 1,2 až 3,0",
+  map:["Mapovat kanály: ano = po zapnutí Raspberry postupně hraje zvuky a u každého",
+       "čeká na pohyb ovladače, kanál zapíše sem do [kanaly]. Na konci samo nastaví",
+       "mapovat = ne a restartuje se."],
   diag:["Zapisovat log.txt na kartu: ano | ne", "Jen pro nastavování a hledání chyb - každé 2 s se přepíše log.txt.",
         "Vypnutí napájení během zápisu může poškodit soubory na kartě.", "Po nastavení dej zpět ne: pak se na kartu nic nezapisuje."],
  },
@@ -801,6 +847,9 @@ const KOMENTARE = {
   p_dobeh:"s from full speed to a standstill, 1 to 12", p_navrat:"ms, how fast the revs recover after a shift, 40 to 800",
   p_propad:"%, extra rev drop on upshift, 0 to 60", p_zpatecka:"%, top reverse speed, 10 to 100",
   p_max_rychlost:"playback rate of motor_run at full revs, 1.2 to 3.0",
+  map:["Map channels: ano (yes) = after power-up the Raspberry Pi plays the sounds one",
+       "by one, waits for a control to move for each and writes the channel to [kanaly].",
+       "At the end it sets mapovat = ne by itself and restarts."],
   diag:["Write log.txt to the card: ano (yes) | ne (no)", "For setting up and troubleshooting only - log.txt is rewritten every 2 s.",
         "Cutting the power during a write can damage files on the card.", "Set it back to ne when done: then nothing is written to the card."],
  }
@@ -857,6 +906,9 @@ ${PREVOD.map(x => prv(x.k)).join("\n")}
 
 
 [diagnostika]
+
+${kom(K.map)}
+mapovat = ${s.diagnostika.mapovat ? "ano" : "ne"}
 
 ${kom(K.diag)}
 log = ${s.diagnostika.log ? "ano" : "ne"}
@@ -1313,13 +1365,18 @@ function obnovPrevodovku(){
 }
 
 function obnovLog(){
-  const zap = !!S.diagnostika.log;
+  const zap = !!S.diagnostika.log, map = !!S.diagnostika.mapovat;
   $("logPrep").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.v === "ano") === zap)));
-  $("diagnostika").classList.toggle("zapnuto", zap);
+  $("mapPrep").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.v === "ano") === map)));
+  $("castLog").classList.toggle("zapnuto", zap);
+  $("castMap").classList.toggle("zapnuto", map);
+  $("diagnostika").classList.toggle("zapnuto", zap || map);
+  $("mapPostup").innerHTML = T[LANG].mapPostup.map(x => `<li>${esc(x)}</li>`).join("");
   $("btnLog").disabled = logText == null;
   $("logInfo").textContent = logText != null ? t("logZ", {k:kartaJmeno}) : kartaJmeno ? t("logNeni") : "";
 }
 $("logPrep").querySelectorAll("button").forEach(b => b.onclick = () => { S.diagnostika.log = b.dataset.v === "ano"; obnovLog(); zmena(); });
+$("mapPrep").querySelectorAll("button").forEach(b => b.onclick = () => { S.diagnostika.mapovat = b.dataset.v === "ano"; obnovLog(); zmena(); });
 $("btnLog").onclick = () => dialog({ikona:"ok", nadpis:t("logNadpisDl"), siroky:true,
   text:`<p class="tlum">${t("logStary")}</p><pre>${esc(logText || "")}</pre>`,
   tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
@@ -1495,7 +1552,7 @@ $("btnUlozit").onclick = async () => {
       for (const jm of nove){ zvuky[jm].wav = null; zvuky[jm].zdroj = "karta"; vykresliVlnu(jm); }
       zmeneno = false; obnovStav();
       await dialog({ikona:"ok", nadpis:t("dlUlozenoNadpis", {k:kartaJmeno}),
-        text:`<ul><li>nastaveni.txt</li>${popis.join("")}</ul>${t("dlUlozenoText")}`,
+        text:`<ul><li>nastaveni.txt</li>${popis.join("")}</ul>${t("dlUlozenoText")}${S.diagnostika.mapovat ? t("dlMapovani") : ""}`,
         tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
     }catch(e){
       if (e.name !== "AbortError")
@@ -1514,7 +1571,7 @@ $("btnUlozit").onclick = async () => {
   setTimeout(() => URL.revokeObjectURL(a.href), 20000);
   zmeneno = false; obnovStav();
   await dialog({ikona:"ok", nadpis:t("dlZipNadpis"),
-    text:`${t("dlZipVZipu")}<ul><li>nastaveni.txt</li>${nove.map(jm => `<li>sounds/${jm}.wav</li>`).join("")}</ul>${t("dlZipText")}`,
+    text:`${t("dlZipVZipu")}<ul><li>nastaveni.txt</li>${nove.map(jm => `<li>sounds/${jm}.wav</li>`).join("")}</ul>${t("dlZipText")}${S.diagnostika.mapovat ? t("dlMapovani") : ""}`,
     tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
 };
 

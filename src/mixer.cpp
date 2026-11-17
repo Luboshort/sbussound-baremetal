@@ -14,6 +14,7 @@
 #define MIX_VEZ		0.55f
 #define MIX_POZADI	0.45f
 #define MIX_DELO	0.9f
+#define MIX_MAPOVANI	0.85f		// mapovani kanalu: hraje jen jeden zvuk
 
 // Limiter: kdyz by smes po hlasitosti presahla PRAH, ztlumi se cela smes
 // presne tolik, aby se vesla (okamzite), a pak se zesileni pomalu vraci
@@ -62,7 +63,12 @@ CMixer::CMixer (void)
 	m_nCelkova (100),
 	m_Strana (StranaOba),
 	m_bPipani (FALSE),
-	m_pPipani (0)
+	m_pPipani (0),
+	m_bMapovani (FALSE),
+	m_pMapChci (0),
+	m_nMapChci (0),
+	m_nMapZadost (0),
+	m_nMapHotovo (0)
 {
 }
 
@@ -96,8 +102,67 @@ void CMixer::Vstupy (const TVstupy &V)
 	m_fHlasitost = V.fHlasitost;
 }
 
+void CMixer::Mapovani (const s16 *pData, unsigned nVzorku)
+{
+	m_pMapChci = pData;
+	m_nMapChci = pData ? nVzorku : 0;
+	m_nMapZadost++;			// az po zapisu zvuku - preruseni ho pak precte cele
+	m_bMapovani = TRUE;
+}
+
+s16 *CMixer::VyrobTony (const unsigned *pHz, unsigned nTonu, unsigned nTonMs,
+			unsigned nMezeraMs, unsigned nPauzaMs, unsigned *pVzorku)
+{
+	unsigned nTon = RATE * nTonMs / 1000, nMezera = RATE * nMezeraMs / 1000;
+	unsigned nDelka = nTonu * (nTon + nMezera) + RATE * nPauzaMs / 1000;
+	s16 *p = new s16[nDelka];
+	if (p == 0)
+	{
+		return 0;
+	}
+	unsigned k = 0;
+	const unsigned nOkraj = RATE / 200;		// 5 ms nabeh a dobeh
+	for (unsigned t = 0; t < nTonu; t++)
+	{
+		unsigned nPerioda = RATE / pHz[t];	// trojuhelnik
+		for (unsigned i = 0; i < nTon; i++)
+		{
+			unsigned f = i % nPerioda;
+			int v = f < nPerioda / 2 ? (int) (f * 4 * 16000 / nPerioda) - 16000
+						 : 48000 - (int) (f * 4 * 16000 / nPerioda);
+			unsigned nObalka = i < nOkraj ? i : (nTon - i < nOkraj ? nTon - i : nOkraj);
+			p[k++] = (s16) (v * (int) nObalka / (int) nOkraj);
+		}
+		for (unsigned i = 0; i < nMezera; i++) p[k++] = 0;
+	}
+	while (k < nDelka) p[k++] = 0;
+	*pVzorku = nDelka;
+	return p;
+}
+
 void CMixer::Blok (float *pOut, unsigned n)
 {
+	if (m_bMapovani)
+	{
+		unsigned nZadost = m_nMapZadost;
+		if (nZadost != m_nMapHotovo)
+		{
+			m_nMapHotovo = nZadost;
+			if (m_pMapChci == 0)
+			{
+				m_MapZvuk.Zap (FALSE);		// dozni za 5 ms
+			}
+			else
+			{
+				m_MapZvuk.Data (m_pMapChci, m_nMapChci);
+				m_MapZvuk.Zap (TRUE);
+			}
+		}
+		for (unsigned i = 0; i < n; i++) pOut[i] = 0.0f;
+		m_MapZvuk.Blok (pOut, n, MIX_MAPOVANI);
+		return;
+	}
+
 	double fDt = (double) n / RATE;
 	boolean bMotor = m_bMotor;
 	TStavMotoru Stav = m_Stav;

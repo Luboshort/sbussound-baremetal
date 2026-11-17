@@ -69,6 +69,11 @@ max_rychlost = 2.25   # rychlost přehrávání motor_run při plných otáčká
 
 [diagnostika]
 
+# Mapovat kanály: ano = po zapnutí Raspberry postupně hraje zvuky a u každého
+# čeká na pohyb ovladače, kanál zapíše sem do [kanaly]. Na konci samo nastaví
+# mapovat = ne a restartuje se.
+mapovat = ne
+
 # Zapisovat log.txt na kartu: ano | ne
 # Jen pro nastavování a hledání chyb - každé 2 s se přepíše log.txt.
 # Vypnutí napájení během zápisu může poškodit soubory na kartě.

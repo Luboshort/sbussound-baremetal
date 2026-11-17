@@ -101,6 +101,31 @@ Kliknutím na obrázek se otevře PDF v plném rozlišení.
 
 Chyby se zároveň ohlásí stejným počtem pípnutí (když zvuk funguje).
 
+## Mapování kanálů
+
+Kanály vysílače se dají přiřadit samy, bez hledání čísel kanálů. Na stránce
+`nastaveni.html` v kartě **Nastavování** zapni **Mapovat kanály** a ulož
+(v `nastaveni.txt` je to `mapovat = ano` v sekci `[diagnostika]`). Pak vlož
+kartu do tanku, zapni vysílač a Raspberry:
+
+1. Jako první hrají dokola stoupající tóny (LED bliká dvakrát za sekundu) –
+   otoč ovladačem hlasitosti. Je to zároveň kontrola, že Raspberry čte SBus:
+   když se po pohybu nic nestane, signál nepřichází.
+2. Od té chvíle ovladač hlasitosti řídí hlasitost dalších zvuků (nejméně
+   10 %) a na jinou funkci se už nepřiřadí.
+3. Pak dokola hraje zvuk další funkce. Jasně pohni ovladačem, který k ní
+   patří – aspoň o 30 % rozsahu, kterýmkoli směrem. Kanál se přiřadí, zvuk
+   ztichne a po 3 s ticha začne další.
+   Pořadí: hlasitost, `motor_start` (vypínač motoru, `motor_stop` má stejný
+   kanál), `motor_run` (páka plynu), `turret`, `machinegun`, `cannon`,
+   `background`. Chybějící zvuk nahradí pípání – tolik pípnutí, kolikátý je
+   v pořadí.
+4. Ovladač, kterým už se pohnulo, se smí vrátit zpět – to se nepočítá.
+5. Když vyjde jeden kanál u dvou funkcí, zazní tři hluboké tóny a celé se to
+   opakuje.
+6. Na konci se kanály zapíšou do `nastaveni.txt` (komentáře zůstanou),
+   mapování se vypne (`mapovat = ne`) a Raspberry se restartuje do provozu.
+
 ## Log pro nastavování
 
 Když je v `nastaveni.txt` v sekci `[diagnostika]` `log = ano` (na stránce

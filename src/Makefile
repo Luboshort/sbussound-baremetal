@@ -3,7 +3,7 @@
 #
 CIRCLEHOME ?= ../circle
 
-OBJS	= main.o kernel.o wav.o mixer.o hlasy.o prevodovka.o matika.o sbus.o ini.o nastaveni.o
+OBJS	= main.o kernel.o wav.o mixer.o hlasy.o prevodovka.o matika.o sbus.o ini.o nastaveni.o mapovani.o
 
 LIBS	= $(CIRCLEHOME)/addon/fatfs/libfatfs.a \
 	  $(CIRCLEHOME)/addon/SDCard/libsdcard.a \

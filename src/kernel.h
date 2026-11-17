@@ -48,6 +48,9 @@ private:
 	void Udalost (const char *pText);	// do logu a do historie pro log.txt
 	void Vypadek (const char *pText);	// do logu a do historie vypadku signalu
 	void SledujVypadky (unsigned nTed);	// udalosti z rozboru SBus, chyby linky
+	void Mapuj (const TZvukyMixeru &Z);	// mapovani kanalu, konci restartem
+	void MapCekej (unsigned nMs);		// cekani v mapovani: SBus, LED, log
+	boolean UlozMapovani (const unsigned *pKanal);
 	void ZapisDiag (void);
 	CString Prehled (void);
 	unsigned Ms (void) const;
@@ -101,7 +104,8 @@ private:
 	unsigned		m_nRamcuZaS;			// platnych ramcu za posledni sekundu
 	unsigned		m_nRamcuPred, m_nRamcuCas;
 	unsigned		m_nLinkaCas;			// posledni kontrola chyb linky
-	unsigned		m_LinkaPred[6];			// parita, ramec, preteceni, break, zahozeno, s chybou
+	unsigned		m_LinkaPred[6];
+	int			m_nMapHlas;	// mapovani: kanal hlasitosti 0..15, -1 = jeste neni			// parita, ramec, preteceni, break, zahozeno, s chybou
 };
 
 #endif

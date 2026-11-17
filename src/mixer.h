@@ -63,6 +63,15 @@ public:
 	// Hraje na 80 % bez ohledu na hlasitost - musi byt slyset.
 	void Pipani (unsigned nPocet);
 
+	// Mapovani kanalu: misto jizdy hraje dokola jen zadany zvuk (0 = ticho).
+	// Vola hlavni smycka; novy zvuk zadavat az po tichu (aspon 50 ms).
+	void Mapovani (const s16 *pData, unsigned nVzorku);
+
+	// Tony pro mapovani: nTonu tonu po nTonMs s mezerou nMezeraMs, nakonec
+	// ticho nPauzaMs. pHz: frekvence kazdeho tonu. Vraci 0 = malo pameti.
+	static s16 *VyrobTony (const unsigned *pHz, unsigned nTonu, unsigned nTonMs,
+			       unsigned nMezeraMs, unsigned nPauzaMs, unsigned *pVzorku);
+
 	// Vola vystup z preruseni DMA. nChunkSize slov, stridave levy a pravy,
 	// kazde v rozsahu nMin..nMax. Musi byt rychle a nesmi sahat na kartu.
 	void Vypln (u32 *pBuffer, unsigned nChunkSize, int nMin, int nMax, boolean bProhodit);
@@ -122,6 +131,12 @@ private:
 	volatile boolean m_bPipani;
 	CSmycka m_Pipak;
 	s16 *m_pPipani;
+
+	volatile boolean m_bMapovani;
+	const s16 *volatile m_pMapChci;
+	volatile unsigned m_nMapChci;
+	volatile unsigned m_nMapZadost, m_nMapHotovo;
+	CSmycka m_MapZvuk;
 
 	enum { MAX_BLOK = 2048 };
 	float m_Smes[MAX_BLOK];

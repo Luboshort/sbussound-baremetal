@@ -60,6 +60,7 @@ them); the comments are written in the language the page is switched to.
 | `[kanaly]` | channel for `motor` (engine), `plyn` (throttle), `vez` (turret), `kulomet` (machine gun), `delo` (cannon), `pozadi` (ambient), `hlasitost` (volume) |
 | `[kalibrace]` | `min`, `stred` (centre), `max`; optional `stred_plyn`, `stred_vez` |
 | `[prevodovka]` | gearbox: `stupnu` (gears), `pomer` (ratio), `rozjezd`, `dobeh`, `navrat`, `propad`, `zpatecka` (reverse), `max_rychlost` |
+| `[diagnostika] mapovat` | channel mapping at the next power-up: `ano` (yes) or `ne` (no) |
 | `[diagnostika] log` | write `log.txt`: `ano` (yes) or `ne` (no) |
 
 ## Wiring
@@ -115,6 +116,34 @@ Click an image to open the full-resolution PDF.
 | 1 long + 7 short | the serial port for SBus cannot be set up |
 
 Errors are also announced by the same number of beeps (when sound works).
+
+## Channel mapping
+
+The transmitter channels can be assigned automatically, without looking up
+channel numbers. On the `nastaveni.html` page, in the **Setup** card, switch
+**Map channels** on and save (in `nastaveni.txt` it is `mapovat = ano` in the
+`[diagnostika]` section). Then put the card into the tank and switch on the
+transmitter and the Raspberry Pi:
+
+1. First, rising tones play in a loop (the LED blinks twice a second) – turn
+   the volume control. This also checks that the Raspberry Pi reads SBus: if
+   nothing happens when you move it, no signal arrives.
+2. From then on the volume control sets the volume of the following sounds
+   (at least 10 %) and is not assigned to any other function.
+3. Then the sound of the next function plays in a loop. Move the control that
+   belongs to it clearly – at least 30 % of its range, in any direction. The
+   channel is assigned, the sound stops and after 3 s of silence the next one
+   starts.
+   Order: volume, `motor_start` (engine switch, `motor_stop` uses the same
+   channel), `motor_run` (throttle stick), `turret`, `machinegun`, `cannon`,
+   `background`. A missing sound is replaced by beeps – as many as its place
+   in the order.
+4. A control that was already moved may be put back – that does not count.
+5. If one channel comes out for two functions, three low tones sound and
+   everything starts again.
+6. At the end the channels are written to `nastaveni.txt` (comments stay),
+   mapping switches off (`mapovat = ne`) and the Raspberry Pi restarts into
+   normal operation.
 
 ## Log for setting up
 

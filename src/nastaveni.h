@@ -39,6 +39,7 @@ struct TNastaveni
 	int nStredPlyn, nStredVez;	// stred pak (kdyz neni zadan, nStred)
 	TParPrevodovky Prev;		// [prevodovka]
 	boolean	  bLog;			// [diagnostika] log = ano: kazde 2 s log.txt
+	boolean	  bMapovat;		// [diagnostika] mapovat = ano: po zapnuti mapovani kanalu
 	unsigned nOprav;		// kolik veci bylo spatne a nahrazeno
 };
 

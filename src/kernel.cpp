@@ -22,12 +22,15 @@
 // failsafe, odskoky kanalu, chyby linky) maji v logu vlastni seznam s casem.
 //
 #include "kernel.h"
+#include "mapovani.h"
+#include <circle/startup.h>
 #include <circle/util.h>
 
-#define VERZE		"krok 6b"
+#define VERZE		"krok 7"
 #define DRIVE		"SD:"
 #define NASTAVENI	DRIVE "/nastaveni.txt"
 #define LOG		DRIVE "/log.txt"
+#define NASTAVENI_NOVE	DRIVE "/nastaveni.new"	// zapis po mapovani, pak prejmenovani
 
 #define PLYN_MRTVA	30		// mrtve pasmo plynu kolem stredu (jako v Pythonu)
 
@@ -51,7 +54,8 @@ CKernel::CKernel (void)
 	m_nRamcuZaS (0),
 	m_nRamcuPred (0),
 	m_nRamcuCas (0),
-	m_nLinkaCas (0)
+	m_nLinkaCas (0),
+	m_nMapHlas (-1)
 {
 	memset (m_LinkaPred, 0, sizeof m_LinkaPred);
 	m_ActLED.Blink (1, 300, 100);		// "zije" - hned po nacteni kernelu
@@ -121,6 +125,16 @@ void CKernel::Run (void)
 	{
 		m_Logger.Write (Zdroj, LogError, "FAT oddil nejde namontovat");
 		Chyba (ChybaKarta);
+	}
+
+	// Mapovani zapisuje nastaveni.new a pak ho prejmenuje. Kdyby mezitim
+	// vypadlo napajeni, dokoncit to ted.
+	{
+		FILINFO Info;
+		if (f_stat (NASTAVENI, &Info) != FR_OK && f_stat (NASTAVENI_NOVE, &Info) == FR_OK)
+		{
+			f_rename (NASTAVENI_NOVE, NASTAVENI);
+		}
 	}
 
 	// nastaveni.txt - co chybi nebo je spatne, nahradi se vychozi hodnotou
@@ -193,6 +207,10 @@ void CKernel::Run (void)
 	if (m_bDiag)
 	{
 		Udalost ("log = ano - zapisuji log.txt kazde 2 s");
+	}
+	if (m_Nast.bMapovat)
+	{
+		Mapuj (Z);		// nevraci se - na konci restart
 	}
 
 	boolean bRamcePred = FALSE, bFailsafePred = FALSE;
@@ -356,6 +374,257 @@ void CKernel::Run (void)
 
 		m_Timer.MsDelay (1);
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Mapovani kanalu ([diagnostika] mapovat = ano)
+//
+// Postupne dokola hraje zvuk kazde funkce, dokud uzivatel jasne nepohne
+// nejakym ovladacem (aspon 30 % rozsahu kalibrace, 3 ramce po sobe). Kanal
+// s nejvetsi vychylkou se priradi funkci, nasleduji 3 s ticha a dalsi zvuk.
+// Prvni je hlasitost (stoupajici tony): jeji kanal pak hned ridi hlasitost
+// dalsich zvuku a uz se na zadnou dalsi funkci nepriradi. Zaroven je to
+// kontrola, ze SBus vubec chodi.
+// Kdyz vyjde jeden kanal u dvou funkci, zaznou tri hluboke tony a cele se to
+// opakuje. Jinak se kanaly zapisou do nastaveni.txt, mapovani se vypne
+// (mapovat = ne) a Raspberry se restartuje.
+//
+// Ovladac, kterym uz se v tomto kole pohnulo, se smi vratit do vychozi
+// polohy - pocita se jen pohyb pryc od polohy na zacatku kola.
+// ---------------------------------------------------------------------------
+
+#define MAP_PRAH_PROC	30	// jasny pohyb: aspon tolik % rozsahu min..max
+#define MAP_RAMCU	3	// ...po tolik ramcu po sobe (cca 30 ms)
+#define MAP_TICHO_MS	3000	// ticho po prirazeni kanalu
+
+void CKernel::MapCekej (unsigned nMs)
+{
+	unsigned nZac = Ms ();
+	static unsigned nDiagCas = 0;
+	do
+	{
+		m_SBus.Poll ();
+		unsigned nTed = Ms ();
+		SledujVypadky (nTed);
+		// LED: dve kratka bliknuti za sekundu = mapovani
+		unsigned f = nTed % 1000;
+		boolean bLed = f < 60 || (f >= 200 && f < 260);
+		bLed ? m_ActLED.On () : m_ActLED.Off ();
+		// hlasitost uz namapovana: ridi hlasitost mapovani
+		if (m_nMapHlas >= 0 && m_SBus.MaSignal ())
+		{
+			unsigned nHlas = Procenta (m_SBus.m_Kanal[m_nMapHlas], m_Nast);
+			if (nHlas < 10) nHlas = 10;	// uplne ztlumene zvuky by nebylo slyset
+			if (nHlas != m_nHlasitost)
+			{
+				m_nHlasitost = nHlas;
+				m_V.fHlasitost = nHlas / 100.0f;
+				m_Mixer.Vstupy (m_V);
+			}
+		}
+		if (m_bDiag && nTed - nDiagCas >= 2000)
+		{
+			nDiagCas = nTed;
+			ZapisDiag ();
+			m_SBus.m_Rozbor.Preskoc ();
+		}
+		m_Timer.MsDelay (1);
+	}
+	while (Ms () - nZac < nMs);
+}
+
+void CKernel::Mapuj (const TZvukyMixeru &Z)
+{
+	// poradi a zvuky; hlasitost prvni (nema zvuk - hraji stoupajici tony),
+	// motor_stop se vynechava (stejny kanal jako start), motor_run = plyn
+	struct TKrok { TFunkce Fce; const s16 *pData; unsigned nVzorku; const char *pZvuk; };
+	TKrok Kroky[] =
+	{
+		{FceHlasitost,	0,		0,		"tony"},
+		{FceMotor,	Z.pStart,	Z.nStart,	"motor_start"},
+		{FcePlyn,	Z.pBeh,		Z.nBeh,		"motor_run"},
+		{FceVez,	Z.pVez,		Z.nVez,		"turret"},
+		{FceKulomet,	Z.pKulomet,	Z.nKulomet,	"machinegun"},
+		{FceDelo,	Z.pDelo,	Z.nDelo,	"cannon"},
+		{FcePozadi,	Z.pPozadi,	Z.nPozadi,	"background"},
+	};
+	const unsigned KROKU = sizeof Kroky / sizeof Kroky[0];
+
+	// tony: hlasitost = stoupajici stupnice; chybejici zvuk = tolik pipnuti,
+	// kolikaty je v poradi; chyba (stejny kanal dvakrat) = tri hluboke tony
+	static const unsigned Stupnice[] = {440, 554, 659, 880};
+	static const unsigned Pip[] = {880, 880, 880, 880, 880, 880, 880};
+	static const unsigned Chyba3[] = {220, 220, 220};
+	for (unsigned k = 0; k < KROKU; k++)
+	{
+		if (Kroky[k].pData != 0) continue;
+		if (Kroky[k].Fce == FceHlasitost)
+			Kroky[k].pData = CMixer::VyrobTony (Stupnice, 4, 140, 40, 700, &Kroky[k].nVzorku);
+		else
+			Kroky[k].pData = CMixer::VyrobTony (Pip, k + 1, 150, 150, 1200, &Kroky[k].nVzorku);
+	}
+	unsigned nChyba = 0;
+	const s16 *pChyba = CMixer::VyrobTony (Chyba3, 3, 400, 200, 0, &nChyba);
+
+	memset (&m_V, 0, sizeof m_V);
+	m_V.fHlasitost = 1.0f;		// kanal hlasitosti jeste nezname - plna (x celkova)
+	m_nHlasitost = 100;
+	m_Mixer.Vstupy (m_V);
+	m_Mixer.Mapovani (0, 0);
+
+	int nPrah = (m_Nast.nMax - m_Nast.nMin) * MAP_PRAH_PROC / 100;
+	if (nPrah < 50) nPrah = 50;
+	CString s;
+	s.Format ("MAPOVANI KANALU: jasny pohyb = aspon %d (%u %% rozsahu %d..%d)",
+		  nPrah, MAP_PRAH_PROC, m_Nast.nMin, m_Nast.nMax);
+	Udalost (s);
+	auto Abs = [] (int x) { return x < 0 ? -x : x; };
+
+	for (unsigned nKolo = 1; ; nKolo++)
+	{
+		// vychozi poloha vsech ovladacu na zacatku kola
+		while (!m_SBus.MaSignal ()) MapCekej (10);
+		u16 Klid[SBUS_KANALU];
+		memcpy (Klid, m_SBus.m_Kanal, sizeof Klid);
+		s.Format ("mapovani: kolo %u", nKolo);
+		Udalost (s);
+
+		unsigned Kanal[FUNKCI];
+		for (unsigned i = 0; i < FUNKCI; i++) Kanal[i] = m_Nast.Kanal[i];
+
+		for (unsigned k = 0; k < KROKU; k++)
+		{
+			const TKrok &K = Kroky[k];
+			m_Mixer.Mapovani (K.pData, K.nVzorku);
+			s.Format ("mapovani: hraje %s (%s), cekam na pohyb", K.pZvuk, NazevFunkce[K.Fce]);
+			Udalost (s);
+
+			u16 Zaklad[SBUS_KANALU];
+			boolean bZaklad = FALSE;
+			unsigned Nad[SBUS_KANALU] = {0};
+			unsigned nRamec = m_SBus.m_nRamcu;
+			int nVybrany = -1;
+			while (nVybrany < 0)
+			{
+				MapCekej (1);
+				if (!m_SBus.MaSignal ())
+				{
+					for (unsigned c = 0; c < SBUS_KANALU; c++) Nad[c] = 0;
+					continue;
+				}
+				if (m_SBus.m_nRamcu == nRamec) continue;
+				nRamec = m_SBus.m_nRamcu;
+				const u16 *ch = m_SBus.m_Kanal;
+				if (!bZaklad)
+				{
+					memcpy (Zaklad, ch, sizeof Zaklad);	// poloha pri zacatku zvuku
+					bZaklad = TRUE;
+					continue;
+				}
+				int nNejvic = 0;
+				for (unsigned c = 0; c < SBUS_KANALU; c++)
+				{
+					// kanal hlasitosti ridi hlasitost - jinam se nepriradi
+					if (K.Fce != FceHlasitost && (int) c == m_nMapHlas) { Nad[c] = 0; continue; }
+					int d = Abs (ch[c] - Zaklad[c]);
+					// pohyb pryc od zakladu i od polohy na zacatku kola
+					if (d >= nPrah && Abs (ch[c] - Klid[c]) >= nPrah) Nad[c]++;
+					else Nad[c] = 0;
+					if (Nad[c] >= MAP_RAMCU && d > nNejvic) { nNejvic = d; nVybrany = c; }
+				}
+			}
+			m_Mixer.Mapovani (0, 0);
+			Kanal[K.Fce] = nVybrany + 1;
+			if (K.Fce == FceHlasitost) m_nMapHlas = nVybrany;
+			s.Format ("mapovani: %s -> CH%d (%u -> %u)", NazevFunkce[K.Fce], nVybrany + 1,
+				  Zaklad[nVybrany], m_SBus.m_Kanal[nVybrany]);
+			Udalost (s);
+			MapCekej (MAP_TICHO_MS);
+		}
+
+		// kontrola duplicit
+		CString Dupl;
+		for (unsigned i = 0; i < FUNKCI; i++)
+		{
+			for (unsigned j = i + 1; j < FUNKCI; j++)
+			{
+				if (Kanal[i] == Kanal[j])
+				{
+					CString t; t.Format ("%sCH%u: %s a %s", Dupl.GetLength () ? "; " : "",
+							     Kanal[i], NazevFunkce[i], NazevFunkce[j]);
+					Dupl.Append (t);
+				}
+			}
+		}
+		if (Dupl.GetLength () == 0)
+		{
+			s.Format ("mapovani hotovo: motor CH%u, plyn CH%u, vez CH%u, kulomet CH%u, delo CH%u, pozadi CH%u, hlasitost CH%u",
+				  Kanal[FceMotor], Kanal[FcePlyn], Kanal[FceVez], Kanal[FceKulomet],
+				  Kanal[FceDelo], Kanal[FcePozadi], Kanal[FceHlasitost]);
+			Udalost (s);
+			if (!UlozMapovani (Kanal))
+			{
+				Udalost ("mapovani: nastaveni.txt nejde zapsat");
+				if (m_bDiag) ZapisDiag ();
+				Chyba (ChybaKarta);
+			}
+			Udalost ("mapovani: zapsano do nastaveni.txt (mapovat = ne), restart");
+			if (m_bDiag) ZapisDiag ();
+			f_mount (0, DRIVE, 0);
+			m_Timer.MsDelay (300);
+			reboot ();
+		}
+
+		s.Format ("mapovani: stejny kanal u vic funkci (%s) - znovu od zacatku", (const char *) Dupl);
+		Udalost (s);
+		if (pChyba != 0)
+		{
+			m_Mixer.Mapovani (pChyba, nChyba);
+			MapCekej (nChyba * 1000 / 44100 - 30);	// jednou cele
+			m_Mixer.Mapovani (0, 0);
+		}
+		MapCekej (MAP_TICHO_MS);
+	}
+}
+
+boolean CKernel::UlozMapovani (const unsigned *pKanal)
+{
+	FIL Soubor;
+	if (f_open (&Soubor, NASTAVENI, FA_READ | FA_OPEN_EXISTING) != FR_OK)
+	{
+		// soubor neni (jelo se s vychozimi hodnotami) - vyrobit novy
+		char Nic[1] = "";
+		static char Novy[1024];
+		unsigned n = UpravNastaveni (Nic, 0, pKanal, Novy, sizeof Novy);
+		UINT nZaps;
+		if (n == 0 || f_open (&Soubor, NASTAVENI, FA_WRITE | FA_CREATE_ALWAYS) != FR_OK) return FALSE;
+		boolean bOK = f_write (&Soubor, Novy, n, &nZaps) == FR_OK && nZaps == n;
+		return f_close (&Soubor) == FR_OK && bOK;
+	}
+	unsigned nVel = f_size (&Soubor);
+	char *pIn = new char[nVel + 1];
+	unsigned nMax = nVel + 1024;
+	char *pOut = new char[nMax];
+	UINT nPrec = 0;
+	boolean bOK = pIn != 0 && pOut != 0 && f_read (&Soubor, pIn, nVel, &nPrec) == FR_OK && nPrec == nVel;
+	f_close (&Soubor);
+	unsigned n = bOK ? UpravNastaveni (pIn, nVel, pKanal, pOut, nMax) : 0;
+	bOK = n > 0;
+	// novy soubor vedle, pak vymenit - vypadek napajeni nenecha pul souboru
+	if (bOK && f_open (&Soubor, NASTAVENI_NOVE, FA_WRITE | FA_CREATE_ALWAYS) == FR_OK)
+	{
+		UINT nZaps = 0;
+		bOK = f_write (&Soubor, pOut, n, &nZaps) == FR_OK && nZaps == n;
+		bOK = f_close (&Soubor) == FR_OK && bOK;
+		bOK = bOK && f_unlink (NASTAVENI) == FR_OK && f_rename (NASTAVENI_NOVE, NASTAVENI) == FR_OK;
+	}
+	else
+	{
+		bOK = FALSE;
+	}
+	delete [] pIn;
+	delete [] pOut;
+	return bOK;
 }
 
 CString CKernel::Prehled (void)
