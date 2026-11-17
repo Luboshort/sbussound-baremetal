@@ -38,6 +38,7 @@ struct TNastaveni
 	int nMin, nMax, nStred;		// kalibrace
 	int nStredPlyn, nStredVez;	// stred pak (kdyz neni zadan, nStred)
 	TParPrevodovky Prev;		// [prevodovka]
+	boolean	  bLog;			// [diagnostika] log = ano: kazde 2 s log.txt
 	unsigned nOprav;		// kolik veci bylo spatne a nahrazeno
 };
 

@@ -99,10 +99,19 @@ Kliknutím na obrázek se otevře PDF v plném rozlišení.
 | 1 dlouhé + 6 krátkých | nejde spustit zvukový výstup |
 | 1 dlouhé + 7 krátkých | nejde nastavit sériový port pro SBus |
 
-Chyby se zároveň ohlásí stejným počtem pípnutí (když zvuk funguje). Když je na
-kartě soubor `diag.txt` (stačí prázdný), zapisuje se každé 2 s `log.txt`
-s průběhem načtení, SBus kanály a časováním zvuku – jen pro ladění, v provozu
-ho na kartě nenechávej.
+Chyby se zároveň ohlásí stejným počtem pípnutí (když zvuk funguje).
+
+## Log pro nastavování
+
+Když je v `nastaveni.txt` v sekci `[diagnostika]` `log = ano` (na stránce
+`nastaveni.html` karta **Log**), zapisuje se každé 2 s na kartu `log.txt`:
+hodnoty všech kanálů, jak se načetlo nastavení a zvuky, časování zvuku.
+Stránka ho po otevření karty umí zobrazit.
+
+Je to jen pro nastavování a hledání chyb – vypnutí napájení právě během zápisu
+může poškodit soubory na kartě. Po nastavení dej zpět `log = ne`, pak se na
+kartu nic nezapisuje a napájení jde vypnout kdykoli. (Dřívější soubor
+`diag.txt` se už nepoužívá, stránka ho při uložení smaže.)
 
 ## Sestavení u sebe
 

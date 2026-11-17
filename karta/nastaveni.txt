@@ -6,7 +6,7 @@
 #  Upravuj v obyčejném textovém editoru a ukládej jako prostý text
 #  (v TextEditu: Formát -> Převést na prostý text).
 #  Co chybí nebo je špatně, nahradí se výchozí hodnotou a zapíše
-#  se do log.txt (když je na kartě diag.txt).
+#  se do log.txt (když je zapnutý log, sekce [diagnostika] na konci).
 
 
 [vystup]
@@ -65,3 +65,12 @@ navrat       = 250    # ms, jak rychle se otáčky vrátí po řazení, 40 až 8
 propad       = 50     # %, o kolik otáčky navíc klesnou při řazení nahoru, 0 až 60
 zpatecka     = 40     # %, nejvyšší rychlost couvání, 10 až 100
 max_rychlost = 2.25   # rychlost přehrávání motor_run při plných otáčkách, 1,2 až 3,0
+
+
+[diagnostika]
+
+# Zapisovat log.txt na kartu: ano | ne
+# Jen pro nastavování a hledání chyb - každé 2 s se přepíše log.txt.
+# Vypnutí napájení během zápisu může poškodit soubory na kartě.
+# Po nastavení dej zpět ne: pak se na kartu nic nezapisuje.
+log = ne

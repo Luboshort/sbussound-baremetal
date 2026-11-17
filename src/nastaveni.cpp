@@ -105,7 +105,7 @@ static boolean ZnamyKlic (const char *pKlic)
 	{
 		"vystup.zarizeni", "vystup.reproduktor", "vystup.hlasitost",
 		"kalibrace.min", "kalibrace.max", "kalibrace.stred",
-		"kalibrace.stred_plyn", "kalibrace.stred_vez", 0
+		"kalibrace.stred_plyn", "kalibrace.stred_vez", "diagnostika.log", 0
 	};
 	for (unsigned i = 0; Zname[i]; i++)
 	{
@@ -291,6 +291,16 @@ void NactiNastaveni (const CIni &Ini, boolean bSouborOK, TNastaveni *pNast,
 			s.Format ("%s = %s je mimo kalibraci, beru stred %d", Stredy[i], p, pNast->nStred);
 			Oprava (s);
 		}
+	}
+
+	// [diagnostika] - nepovinne, kdyz chybi, log se nezapisuje
+	pNast->bLog = FALSE;
+	p = Ini.Hodnota ("diagnostika.log");
+	if (p != 0)
+	{
+		if (strcmp (p, "ano") == 0 || strcmp (p, "1") == 0) pNast->bLog = TRUE;
+		else if (strcmp (p, "ne") == 0 || strcmp (p, "0") == 0) pNast->bLog = FALSE;
+		else { s.Format ("diagnostika.log = %s neznam (ano nebo ne), beru ne", p); Oprava (s); }
 	}
 }
 

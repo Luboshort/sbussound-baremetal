@@ -60,6 +60,7 @@ them); the comments are written in the language the page is switched to.
 | `[kanaly]` | channel for `motor` (engine), `plyn` (throttle), `vez` (turret), `kulomet` (machine gun), `delo` (cannon), `pozadi` (ambient), `hlasitost` (volume) |
 | `[kalibrace]` | `min`, `stred` (centre), `max`; optional `stred_plyn`, `stred_vez` |
 | `[prevodovka]` | gearbox: `stupnu` (gears), `pomer` (ratio), `rozjezd`, `dobeh`, `navrat`, `propad`, `zpatecka` (reverse), `max_rychlost` |
+| `[diagnostika] log` | write `log.txt`: `ano` (yes) or `ne` (no) |
 
 ## Wiring
 
@@ -113,10 +114,19 @@ Click an image to open the full-resolution PDF.
 | 1 long + 6 short | the sound output cannot start |
 | 1 long + 7 short | the serial port for SBus cannot be set up |
 
-Errors are also announced by the same number of beeps (when sound works). When
-the card holds a file named `diag.txt` (an empty one will do), `log.txt` is
-written every 2 s with the loading progress, SBus channels and audio timing –
-for debugging only, don't leave it on the card in normal use.
+Errors are also announced by the same number of beeps (when sound works).
+
+## Log for setting up
+
+When `nastaveni.txt` has `log = ano` in the `[diagnostika]` section (the
+**Log** card on the `nastaveni.html` page), `log.txt` is written to the card
+every 2 s: values of all channels, how the settings and sounds loaded, audio
+timing. The page can show it after opening the card.
+
+It is for setting up and troubleshooting only – cutting the power right during
+a write can damage files on the card. When you are done, set `log = ne` again;
+then nothing is written to the card and the power can be cut at any time.
+(The former `diag.txt` file is no longer used; the page deletes it on saving.)
 
 ## Building it yourself
 

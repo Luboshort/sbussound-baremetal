@@ -224,6 +224,14 @@ input[type=range]{accent-color:var(--paka);height:22px}
 .dl-tl{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
 .dl-tl button{font-size:16px;padding:9px 20px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+.log-stav{display:flex;align-items:center;gap:10px;margin:2px 0 8px}
+#diagnostika.zapnuto{border-color:var(--mosaz)}
+#diagnostika .pozor{margin:8px 0 0;font-size:13.5px;color:var(--mosaz);display:none}
+#diagnostika.zapnuto .pozor{display:block}
+.dl-panel.siroky{width:min(860px,100%)}
+.dl-panel.siroky .dl-text{max-width:none}
+.dl-text pre{text-align:left;margin:10px 0 0;max-height:58vh;overflow:auto;padding:10px 12px;background:var(--skrin);
+  border:1px solid var(--hrana);border-radius:6px;font:12.5px/1.45 Menlo,Consolas,monospace;color:var(--text);white-space:pre-wrap;word-break:break-word}
 .jazyk{display:inline-flex;border:1px solid var(--hrana);border-radius:5px;overflow:hidden}
 .jazyk button{border:0;border-radius:0;background:transparent;padding:5px 10px;color:var(--tlum);font-size:14px}
 .jazyk button + button{border-left:1px solid var(--hrana)}
@@ -284,6 +292,18 @@ input[type=range]{accent-color:var(--paka);height:22px}
   <div class="volitelne"><input type="checkbox" id="chVez"><label for="chVez" data-i18n="stredVez"></label>
     <input class="cislo" type="number" id="kVez" min="0" max="2047"></div>
   <p class="upozorneni" id="kalChyba"></p>
+</section>
+
+<section id="diagnostika">
+  <h2 data-i18n="logNadpis">Log</h2>
+  <div class="radek"><label data-i18n="logZapisovat">Zapisovat log.txt</label>
+    <div class="prepinac" id="logPrep">
+      <button data-v="ne" data-i18n="vypnuto">vypnuto</button><button data-v="ano" data-i18n="zapnuto">zapnuto</button>
+    </div></div>
+  <p class="pozn" style="margin:4px 0 0" data-i18n="logPozn"></p>
+  <p class="pozor" data-i18n="logPozor"></p>
+  <div class="radek" style="justify-content:flex-start;margin-bottom:0"><button id="btnLog" disabled data-i18n="logZobrazit">Zobrazit log.txt</button>
+    <span class="pozn" id="logInfo" style="margin:0"></span></div>
 </section>
 </div>
 
@@ -409,6 +429,12 @@ const T = {
   kalNadpis:"Kalibrace", kalPozn:"Rozsah hodnot, které posílá vysílač. FrSky typicky 172 až 1811.",
   minimum:"minimum", stred:"střed", maximum:"maximum",
   stredPlyn:"Vlastní střed páky plynu", stredVez:"Vlastní střed páky věže",
+  logNadpis:"Log", logZapisovat:"Zapisovat log.txt", vypnuto:"vypnuto", zapnuto:"zapnuto",
+  logPozn:"Jen pro nastavování a hledání chyb. Raspberry pak každé 2 s přepisuje na kartě soubor log.txt: hodnoty všech kanálů, jak se načetlo nastavení a zvuky, časování zvuku.",
+  logPozor:"Když je log zapnutý, vypnutí napájení právě během zápisu může poškodit soubory na kartě a stálé zapisování kartu opotřebovává. Po nastavení log vypni. Vypnutý log na kartu nic nezapisuje, napájení pak jde vypnout kdykoli.",
+  logZobrazit:"Zobrazit log.txt", logNeni:"log.txt na kartě není", logZ:"z karty {k}",
+  logNadpisDl:"log.txt z karty", logStary:"Log ukazuje stav z posledního běhu Raspberry s touto kartou.",
+  nLog:"log „{v}“ neznám (ano nebo ne), beru ne",
   prevNadpis:"Převodovka", prevPozn:"Posuvníky rovnou slyšíš v simulátoru vpravo. Simulátor hraje zvuky motoru vybrané nahoře.",
   p_stupnu:"Počet stupňů", p_pomer:"Poměr mezi stupni", p_rozjezd:"Rozjezd na plnou rychlost", p_dobeh:"Doběh do zastavení",
   p_navrat:"Jak rychle se otáčky vrátí", p_propad:"Propad otáček při řazení", p_zpatecka:"Nejvyšší rychlost zpátečky", p_max_rychlost:"Nejvyšší rychlost přehrávání",
@@ -497,6 +523,12 @@ const T = {
   kalNadpis:"Calibration", kalPozn:"The range of values the transmitter sends. FrSky typically 172 to 1811.",
   minimum:"minimum", stred:"centre", maximum:"maximum",
   stredPlyn:"Own centre of the throttle stick", stredVez:"Own centre of the turret stick",
+  logNadpis:"Log", logZapisovat:"Write log.txt", vypnuto:"off", zapnuto:"on",
+  logPozn:"For setting up and troubleshooting only. The Raspberry Pi then rewrites log.txt on the card every 2 s: values of all channels, how the settings and sounds loaded, audio timing.",
+  logPozor:"With the log on, cutting the power right during a write can damage files on the card, and constant writing wears the card. Switch the log off when you are done. With the log off nothing is written to the card, so the power can be cut at any time.",
+  logZobrazit:"Show log.txt", logNeni:"no log.txt on the card", logZ:"from card {k}",
+  logNadpisDl:"log.txt from the card", logStary:"The log shows the state from the last run of the Raspberry Pi with this card.",
+  nLog:"log “{v}” unknown (ano or ne), using ne",
   prevNadpis:"Gearbox", prevPozn:"You hear the sliders straight away in the simulator on the right. It plays the engine sounds chosen above.",
   p_stupnu:"Number of gears", p_pomer:"Ratio between gears", p_rozjezd:"Time to full speed", p_dobeh:"Time to a standstill",
   p_navrat:"How fast the revs recover", p_propad:"Extra rev drop on upshift", p_zpatecka:"Top reverse speed", p_max_rychlost:"Top playback rate",
@@ -602,6 +634,7 @@ function vychozi(){
     kanaly:{},
     kalibrace:{min:172, stred:992, max:1811, stred_plyn:null, stred_vez:null},
     prevodovka:{},
+    diagnostika:{log:false},
   };
   for (const f of FUNKCE) s.kanaly[f.k] = f.ch;
   for (const p of PREVOD) s.prevodovka[p.k] = p.v;
@@ -674,6 +707,9 @@ function nactiIni(text){
     if (!isNaN(n) && n >= p.min - 1e-9 && n <= p.max + 1e-9 && (!p.cele || Number.isInteger(n))) s.prevodovka[p.k] = n;
     else pozn.push(t("nPrev", {k:p.k, v, a:p.min, b:p.max, d:p.v}));
   }
+  v = vem("diagnostika.log");
+  if (v === "ano" || v === "1") s.diagnostika.log = true;
+  else if (v != null && v !== "ne" && v !== "0") pozn.push(t("nLog", {v}));
   for (const k of Object.keys(hodnoty)) pozn.push(t("nNeznama", {k}));
   return {s, pozn};
 }
@@ -689,7 +725,7 @@ const KOMENTARE = {
  cz:{
   nadpis:"SBusSound - nastavení", ulozeno:"Uloženo editorem {kdy}.",
   uvod:["Řádek má tvar:  název = hodnota", "Vše za znakem # je komentář. Velikost písmen nevadí.",
-        "Co chybí nebo je špatně, nahradí se výchozí hodnotou a zapíše", "se do log.txt (když je na kartě diag.txt)."],
+        "Co chybí nebo je špatně, nahradí se výchozí hodnotou a zapíše", "se do log.txt (když je zapnutý log, sekce [diagnostika])."],
   zarizeni:["Kam jde zvuk:", "  i2s   = modul GY-PCM5102 (PCM5102A)", "          BCK -> GPIO18 (pin 12), LCK -> GPIO19 (pin 35),",
             "          DIN -> GPIO21 (pin 40), SCK modulu na GND", "  jack  = 3,5mm jack přímo na Raspberry"],
   repro:["Do kterého kanálu výstupu hrát: oba | levy | pravy"],
@@ -705,11 +741,13 @@ const KOMENTARE = {
   p_dobeh:"s z plné rychlosti do zastavení, 1 až 12", p_navrat:"ms, jak rychle se otáčky vrátí po řazení, 40 až 800",
   p_propad:"%, o kolik otáčky navíc klesnou při řazení nahoru, 0 až 60", p_zpatecka:"%, nejvyšší rychlost couvání, 10 až 100",
   p_max_rychlost:"rychlost přehrávání motor_run při plných otáčkách, 1,2 až 3,0",
+  diag:["Zapisovat log.txt na kartu: ano | ne", "Jen pro nastavování a hledání chyb - každé 2 s se přepíše log.txt.",
+        "Vypnutí napájení během zápisu může poškodit soubory na kartě.", "Po nastavení dej zpět ne: pak se na kartu nic nezapisuje."],
  },
  en:{
   nadpis:"SBusSound - settings", ulozeno:"Saved by the editor {kdy}.",
   uvod:["Each line reads:  name = value", "Everything after # is a comment. Letter case does not matter.",
-        "Anything missing or wrong is replaced by its default and written", "to log.txt (when diag.txt is on the card)."],
+        "Anything missing or wrong is replaced by its default and written", "to log.txt (when the log is on, section [diagnostika])."],
   zarizeni:["Where the sound goes:", "  i2s   = GY-PCM5102 module (PCM5102A)", "          BCK -> GPIO18 (pin 12), LCK -> GPIO19 (pin 35),",
             "          DIN -> GPIO21 (pin 40), module SCK to GND", "  jack  = 3.5 mm jack on the Raspberry"],
   repro:["Which output channel to play: oba (both) | levy (left) | pravy (right)"],
@@ -725,6 +763,8 @@ const KOMENTARE = {
   p_dobeh:"s from full speed to a standstill, 1 to 12", p_navrat:"ms, how fast the revs recover after a shift, 40 to 800",
   p_propad:"%, extra rev drop on upshift, 0 to 60", p_zpatecka:"%, top reverse speed, 10 to 100",
   p_max_rychlost:"playback rate of motor_run at full revs, 1.2 to 3.0",
+  diag:["Write log.txt to the card: ano (yes) | ne (no)", "For setting up and troubleshooting only - log.txt is rewritten every 2 s.",
+        "Cutting the power during a write can damage files on the card.", "Set it back to ne when done: then nothing is written to the card."],
  }
 };
 
@@ -776,6 +816,12 @@ ${c.stred_vez != null ? "" : "# "}stred_vez  = ${c.stred_vez != null ? c.stred_v
 
 ${kom(K.prev)}
 ${PREVOD.map(x => prv(x.k)).join("\n")}
+
+
+[diagnostika]
+
+${kom(K.diag)}
+log = ${s.diagnostika.log ? "ano" : "ne"}
 `;
 }
 
@@ -946,7 +992,8 @@ let zmeneno = false;
 let karta = null;          // FileSystemDirectoryHandle (Chrome, Edge)
 let kartaJmeno = "";
 let poznamkyNacteni = [];
-let posledniText = null;   // nastaveni.txt z karty - poznamky se pri zmene jazyka prelozi znovu
+let posledniText = null;
+let logText = null;        // log.txt z karty (posledni beh Raspberry)   // nastaveni.txt z karty - poznamky se pri zmene jazyka prelozi znovu
 const zvuky = {};          // jmeno -> {buf:AudioBuffer, wav:Uint8Array|null, zdroj, chyba}
 let ctx = null;
 
@@ -974,7 +1021,8 @@ function zmena(){ zmeneno = true; obnovStav(); }
    prvni = zruseni (Esc). Predvybrane (Enter) je tlacitko s fokus, jinak hlavni. */
 let dialogKonec = null;
 const dialogOtevren = () => dialogKonec !== null;
-function dialog({ikona = "ok", nadpis, text, tlacitka}){
+function dialog({ikona = "ok", nadpis, text, tlacitka, siroky = false}){
+  document.querySelector("#dialog .dl-panel").classList.toggle("siroky", siroky);
   const znak = {ok:"✓", pozor:"!", chyba:"✕"}[ikona];
   $("dlIkona").className = "dl-ikona " + ikona; $("dlIkona").textContent = znak;
   $("dlNadpis").textContent = nadpis;
@@ -1226,7 +1274,19 @@ function obnovPrevodovku(){
   }
 }
 
-function obnovVse(){ obnovKanaly(); obnovVystup(); obnovKalibraci(); obnovPrevodovku(); for (const jm of Object.keys(SLOTY)) vykresliVlnu(jm); obnovSim(); obnovStav(); }
+function obnovLog(){
+  const zap = !!S.diagnostika.log;
+  $("logPrep").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.v === "ano") === zap)));
+  $("diagnostika").classList.toggle("zapnuto", zap);
+  $("btnLog").disabled = logText == null;
+  $("logInfo").textContent = logText != null ? t("logZ", {k:kartaJmeno}) : kartaJmeno ? t("logNeni") : "";
+}
+$("logPrep").querySelectorAll("button").forEach(b => b.onclick = () => { S.diagnostika.log = b.dataset.v === "ano"; obnovLog(); zmena(); });
+$("btnLog").onclick = () => dialog({ikona:"ok", nadpis:t("logNadpisDl"), siroky:true,
+  text:`<p class="tlum">${t("logStary")}</p><pre>${esc(logText || "")}</pre>`,
+  tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
+
+function obnovVse(){ obnovKanaly(); obnovVystup(); obnovKalibraci(); obnovPrevodovku(); obnovLog(); for (const jm of Object.keys(SLOTY)) vykresliVlnu(jm); obnovSim(); obnovStav(); }
 
 /* ---------- karta: otevreni ---------- */
 async function nactiText(soubor){ return new TextDecoder("utf-8").decode(await soubor.arrayBuffer()); }
@@ -1237,6 +1297,8 @@ async function nactiZeSouboru(najdi){
   const f = await najdi("nastaveni.txt");
   if (f){ posledniText = await nactiText(f); const r = nactiIni(posledniText); S = r.s; poznamkyNacteni = r.pozn; }
   else { posledniText = null; S = vychozi(); poznamkyNacteni = []; }
+  const fl = await najdi("log.txt");
+  logText = fl ? await nactiText(fl) : null;
   let nacteno = 0;
   const chybi = [];
   for (const jm of Object.keys(SLOTY)){
@@ -1310,6 +1372,7 @@ $("btnUlozit").onclick = async () => {
         for (const jm of nove) await zapis(s, jm + ".wav", zvuky[jm].wav);
       }
       await zapis(karta, "nastaveni.txt", new TextEncoder().encode(text));
+      try{ await karta.removeEntry("diag.txt"); }catch(e){}	// stary prepinac logu, uz se nepouziva
       posledniText = text; poznamkyNacteni = [];
       const popis = nove.map(jm => `<li>sounds/${jm}.wav <small>${zvuky[jm].zdroj === "upraveno" ? t("dlUpraveno") : t("dlNovyZvuk")}, ${fmt(zvuky[jm].buf.duration, 1)} s</small></li>`);
       for (const jm of nove){ zvuky[jm].wav = null; zvuky[jm].zdroj = "karta"; vykresliVlnu(jm); }

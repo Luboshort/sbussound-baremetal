@@ -16,15 +16,16 @@
 //   rychle blikani (4x za sekundu)  = zadny SBus signal nebo failsafe
 //   1 dlouhe + N kratkych bliknuti  = chyba N (viz kernel.h), zaroven N pipnuti
 //
-// Kdyz je na karte soubor diag.txt, zapisuje se kazde 2 s na kartu log.txt.
+// Kdyz je v nastaveni.txt [diagnostika] log = ano, zapisuje se kazde 2 s na
+// kartu log.txt. Jen pro ladeni: vypnuti napajeni behem zapisu muze poskodit
+// soubory na karte.
 //
 #include "kernel.h"
 #include <circle/util.h>
 
-#define VERZE		"krok 5c"
+#define VERZE		"krok 6"
 #define DRIVE		"SD:"
 #define NASTAVENI	DRIVE "/nastaveni.txt"
-#define DIAG		DRIVE "/diag.txt"
 #define LOG		DRIVE "/log.txt"
 
 #define PLYN_MRTVA	30		// mrtve pasmo plynu kolem stredu (jako v Pythonu)
@@ -113,9 +114,6 @@ void CKernel::Run (void)
 		Chyba (ChybaKarta);
 	}
 
-	FILINFO Info;
-	m_bDiag = f_stat (DIAG, &Info) == FR_OK;
-
 	// nastaveni.txt - co chybi nebo je spatne, nahradi se vychozi hodnotou
 	boolean bNastOK = m_Ini.Nacti (NASTAVENI);
 	char Opravy[1024];
@@ -135,6 +133,7 @@ void CKernel::Run (void)
 	}
 	m_Logger.Write (Zdroj, bNastOK && m_Nast.nOprav == 0 ? LogNotice : LogWarning, "%s",
 			(const char *) m_NastStav);
+	m_bDiag = m_Nast.bLog;
 	m_Mixer.Vystup (m_Nast.nHlasitost, m_Nast.Strana);
 	MezePrepinace (m_Nast, &m_PrepMotor);
 	MezePrepinace (m_Nast, &m_PrepKulomet);
@@ -184,7 +183,7 @@ void CKernel::Run (void)
 	Udalost ("start, cekam na SBus");
 	if (m_bDiag)
 	{
-		Udalost ("diag.txt nalezen - zapisuji log.txt kazde 2 s");
+		Udalost ("log = ano - zapisuji log.txt kazde 2 s");
 	}
 
 	boolean bRamcePred = FALSE, bFailsafePred = FALSE;
