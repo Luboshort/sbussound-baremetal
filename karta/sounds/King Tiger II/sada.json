@@ -1,0 +1,30 @@
+{
+  "verze": 1,
+  "rezim": "tank",
+  "kanaly": {
+    "motor": 9,
+    "plyn": 10,
+    "vez": 11,
+    "kulomet": 7,
+    "delo": 5,
+    "pozadi": 8,
+    "hlasitost": 6
+  },
+  "kalibrace": {
+    "min": 174,
+    "stred": 995,
+    "max": 1815,
+    "stred_plyn": null,
+    "stred_vez": null
+  },
+  "prevodovka": {
+    "stupnu": 3,
+    "pomer": 1.6,
+    "rozjezd": 5,
+    "dobeh": 3,
+    "navrat": 250,
+    "propad": 50,
+    "zpatecka": 40,
+    "max_rychlost": 2.25
+  }
+}

@@ -56,7 +56,9 @@ Engine ani `nastaveni.txt` se tím nemění.
 Tlačítko **Uložit sadu** uloží současné zvuky do podsložky `sounds/<název
 sady>/`, **Načíst sadu** nabídne tyto podsložky a zvuky vybrané sady
 nakopíruje do `sounds/` místo současných – engine hraje vždy jen soubory
-přímo ve `sounds/`. Na kartě je v základu sada **King Tiger II** se stejnými
+přímo ve `sounds/`. Spolu se zvuky se do sady uloží i `sada.json` s typem
+modelu (Tank/Truck), kanály, kalibrací a převodovkou; po načtení sady se
+stránka přepne a tyto hodnoty se zapíšou do `nastaveni.txt`. Na kartě je v základu sada **King Tiger II** se stejnými
 zvuky jako ve `sounds/`. Volby stránky (Tank/Truck, jazyk, poslední sada) se
 ukládají na kartu do `nastaveni_stranky.json`.
 

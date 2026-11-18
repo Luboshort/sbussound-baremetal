@@ -59,7 +59,9 @@ machine gun **Horn 1** and the cannon **Horn 2**. The engine and
 **Save set** stores the current sounds in a subfolder `sounds/<set name>/`,
 **Load set** offers these subfolders and copies the chosen set's sounds into
 `sounds/` in place of the current ones – the engine always plays only the files
-directly in `sounds/`. The card comes with the **King Tiger II** set holding
+directly in `sounds/`. Together with the sounds the set stores `sada.json` with
+the model type (Tank/Truck), channels, calibration and gearbox; loading the set
+switches the page over and writes these values to `nastaveni.txt`. The card comes with the **King Tiger II** set holding
 the same sounds as `sounds/`. The page's choices (Tank/Truck, language, last
 set) are kept on the card in `nastaveni_stranky.json`.
 

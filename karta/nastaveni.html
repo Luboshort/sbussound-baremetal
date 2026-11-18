@@ -624,7 +624,13 @@ const T = {
   dlSadyNadpis:"Načíst sadu zvuků",
   dlSadyText:"<p>Vyber sadu. Její zvuky se nakopírují do složky sounds na kartě místo současných a engine pak hraje je.</p>",
   dlSadyZadne:"<p>Ve složce sounds na kartě zatím není žádná sada. Vytvoříš ji tlačítkem Uložit sadu.</p>",
-  dlSadyPocet:"{n} ze 7 zvuků",
+  dlSadyPocet:"{n} ze 7 zvuků", dlSadyNast:"{r}, s nastavením",
+  dlNactenaNast:"<p>Ze sady se nastavil typ modelu <b>{r}</b>, kanály, kalibrace a převodovka a zapsaly se do nastaveni.txt.</p>",
+  dlNactenaNastSafari:"<p>Ze sady se nastavil typ modelu <b>{r}</b>, kanály, kalibrace a převodovka. Na kartu je zapíše tlačítko Stáhnout pro kartu.</p>",
+  dlNactenaNastNeulozeno:"<p>Ze sady se nastavil typ modelu <b>{r}</b>, kanály, kalibrace a převodovka. Na kartu je zapíše tlačítko Uložit na kartu.</p>",
+  dlNactenaOpravy:"<p class=\"tlum\">Některé hodnoty v sadě byly mimo rozsah, zůstaly původní: {s}.</p>",
+  dlSadaKonfig:"nastavení sady: typ modelu, kanály, kalibrace, převodovka",
+  sOpravaKanal:"kanál {k}", sOpravaKal:"kalibrace", sOpravaPrev:"převodovka {k}",
   dlSadaZahoditNadpis:"Zahodit neuložené zvuky?",
   dlSadaZahoditText:"<p>Některé zvuky jsou vybrané nebo upravené, ale nejsou uložené na kartě ani v sadě. Načtením sady se ztratí.</p>",
   dlSadaZahodit:"Zahodit a načíst sadu",
@@ -756,7 +762,13 @@ const T = {
   dlSadyNadpis:"Load a sound set",
   dlSadyText:"<p>Choose a set. Its sounds are copied into the sounds folder on the card in place of the current ones, and the engine then plays them.</p>",
   dlSadyZadne:"<p>There is no set in the sounds folder on the card yet. Create one with Save set.</p>",
-  dlSadyPocet:"{n} of 7 sounds",
+  dlSadyPocet:"{n} of 7 sounds", dlSadyNast:"{r}, with settings",
+  dlNactenaNast:"<p>The set has set the model type <b>{r}</b>, channels, calibration and gearbox, and they were written to nastaveni.txt.</p>",
+  dlNactenaNastSafari:"<p>The set has set the model type <b>{r}</b>, channels, calibration and gearbox. Download for card writes them to the card.</p>",
+  dlNactenaNastNeulozeno:"<p>The set has set the model type <b>{r}</b>, channels, calibration and gearbox. Save to card writes them to the card.</p>",
+  dlNactenaOpravy:"<p class=\"tlum\">Some values in the set were out of range and kept their previous value: {s}.</p>",
+  dlSadaKonfig:"set settings: model type, channels, calibration, gearbox",
+  sOpravaKanal:"channel {k}", sOpravaKal:"calibration", sOpravaPrev:"gearbox {k}",
   dlSadaZahoditNadpis:"Discard unsaved sounds?",
   dlSadaZahoditText:"<p>Some sounds are chosen or edited but not saved to the card or to a set. Loading a set will lose them.</p>",
   dlSadaZahodit:"Discard and load set",
@@ -1158,6 +1170,44 @@ function platnyNazevSady(n){
   n = String(n || "").trim();
   if (!n || n.length > 64 || n.startsWith(".") || /[\/\\:*?"<>|\x00-\x1f]/.test(n) || /[. ]$/.test(n)) return null;
   return n;
+}
+
+// sada.json ve slozce sady: typ modelu a nastaveni, ktere k zvukum patri.
+const KONFIG_SADY = "sada.json";
+function konfigSady(s){
+  return {verze:1, rezim:REZIM, kanaly:Object.assign({}, s.kanaly),
+          kalibrace:Object.assign({}, s.kalibrace), prevodovka:Object.assign({}, s.prevodovka)};
+}
+// Vrati kopii nastaveni s hodnotami ze sady. Co je mimo meze enginu, zustane
+// puvodni a prida se do pozn (klice, prelozi je volajici).
+function pouzijKonfigSady(s, k){
+  const n = JSON.parse(JSON.stringify(s)), pozn = [];
+  if (!k || typeof k !== "object") return {s:n, rezim:null, pozn};
+  const rezim = k.rezim === "truck" || k.rezim === "tank" ? k.rezim : null;
+  const cela = (x, a, b) => Number.isInteger(x) && x >= a && x <= b;
+  if (k.kanaly && typeof k.kanaly === "object"){
+    for (const f of FUNKCE){
+      if (!(f.k in k.kanaly)) continue;
+      if (cela(k.kanaly[f.k], 1, 16)) n.kanaly[f.k] = k.kanaly[f.k]; else pozn.push({typ:"kanal", k:f.k});
+    }
+  }
+  const c = k.kalibrace;
+  if (c && typeof c === "object"){
+    if ([c.min, c.stred, c.max].every(x => cela(x, 0, 2047)) && c.min < c.stred && c.stred < c.max && c.max - c.min >= 200){
+      n.kalibrace.min = c.min; n.kalibrace.stred = c.stred; n.kalibrace.max = c.max;
+      for (const x of ["stred_plyn", "stred_vez"])
+        n.kalibrace[x] = Number.isInteger(c[x]) && c[x] > c.min && c[x] < c.max ? c[x] : null;
+    } else pozn.push({typ:"kal"});
+  }
+  if (k.prevodovka && typeof k.prevodovka === "object"){
+    for (const p of PREVOD){
+      if (!(p.k in k.prevodovka)) continue;
+      const v = k.prevodovka[p.k];
+      if (typeof v === "number" && v >= p.min - 1e-9 && v <= p.max + 1e-9 && (!p.cele || Number.isInteger(v))) n.prevodovka[p.k] = v;
+      else pozn.push({typ:"prev", k:p.k});
+    }
+  }
+  return {s:n, rezim, pozn};
 }
 
 /* ---------- WAV a ZIP ---------- */
@@ -1924,10 +1974,12 @@ $("btnNactiSadu").onclick = async () => {
     const sady = await seznamSad();
     const pocty = await Promise.all(sady.map(async n => {
       let k = 0; for (const jm of Object.keys(SLOTY)) if (await ctecka.najdi(`sounds/${n}/${jm}.wav`)) k++;
-      return k;
+      let r = null;
+      try{ const f = await ctecka.najdi(`sounds/${n}/${KONFIG_SADY}`); if (f) r = JSON.parse(await nactiText(f)).rezim === "truck" ? "Truck" : "Tank"; }catch(e){}
+      return t("dlSadyPocet", {n:k}) + (r ? " · " + t("dlSadyNast", {r}) : "");
     }));
     const seznam = sady.length
-      ? `<div class="dl-sady">${sady.map((n, i) => `<button data-v="${esc(n)}"${n === aktivniSada ? ' class="aktivni"' : ""}>${esc(n)}<small>${t("dlSadyPocet", {n:pocty[i]})}</small></button>`).join("")}</div>`
+      ? `<div class="dl-sady">${sady.map((n, i) => `<button data-v="${esc(n)}"${n === aktivniSada ? ' class="aktivni"' : ""}>${esc(n)}<small>${pocty[i]}</small></button>`).join("")}</div>`
       : "";
     const vyber = await dialog({ikona:"pozor", nadpis:t("dlSadyNadpis"),
       text:(sady.length ? t("dlSadyText") : t("dlSadyZadne")) + seznam,
@@ -1963,12 +2015,35 @@ async function nactiSadu(nazev){
     vykresliVlnu(jm);
   }
   aktivniSada = nazev; sadaUpravena = false;
+  // nastaveni sady: typ modelu, kanaly, kalibrace, prevodovka
+  let konfig = null;
+  try{ const f = await ctecka.najdi(`sounds/${nazev}/${KONFIG_SADY}`); if (f) konfig = JSON.parse(await nactiText(f)); }catch(e){ konfig = null; }
+  let textNast = "";
+  if (konfig){
+    const v = pouzijKonfigSady(S, konfig);
+    S = v.s;
+    if (v.rezim){ nastavRezim(v.rezim); try{ localStorage.setItem("rezim", REZIM); }catch(e){} }
+    const opravy = v.pozn.map(x => x.typ === "kanal" ? t("sOpravaKanal", {k:x.k}) : x.typ === "kal" ? t("sOpravaKal") : t("sOpravaPrev", {k:x.k}));
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    prekresli();
+    const rez = REZIM === "truck" ? "Truck" : "Tank";
+    let zapsano = false;
+    if (primo && kontrola(S).length === 0){
+      const text = vyrobIni(S, kdy());
+      await zapisSoubor(karta, "nastaveni.txt", new TextEncoder().encode(text));
+      posledniText = text; poznamkyNacteni = []; zapsano = true;
+    }
+    textNast = t(zapsano ? "dlNactenaNast" : primo ? "dlNactenaNastNeulozeno" : "dlNactenaNastSafari", {r:rez}) +
+               (opravy.length ? t("dlNactenaOpravy", {s:esc(opravy.join(", "))}) : "");
+    if (zapsano) zmeneno = Object.keys(zvuky).some(k => zvuky[k].wav);
+    else zmeneno = true;
+  }
   if (!primo && nactene.length) zmena();
   obnovSadu(); obnovSim(); obnovStav();
   if (primo) await zapisStranku();
   await dialog({ikona:nactene.length ? "ok" : "chyba", nadpis:t("dlNactenaNadpis", {s:nazev}),
     text:`<ul>${nactene.map(jm => `<li>sounds/${jm}.wav <small>${t("s_" + jm)}, ${fmt(zvuky[jm].buf.duration, 1)} s</small></li>`).join("")}</ul>` +
-      (primo ? t("dlNactenaText") : t("dlNactenaSafari")) + (chybi.length ? t("dlNactenaChybi", {s:chybi.join(", ")}) : ""),
+      (primo ? t("dlNactenaText") : t("dlNactenaSafari")) + (chybi.length ? t("dlNactenaChybi", {s:chybi.join(", ")}) : "") + textNast,
     tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
 }
 
@@ -2003,17 +2078,19 @@ $("btnUlozSadu").onclick = async () => {
     if (await zapisPovolen()){
       const dir = await (await karta.getDirectoryHandle("sounds", {create:true})).getDirectoryHandle(nazev, {create:true});
       for (const jm of sloty) await zapisSoubor(dir, jm + ".wav", bajtyZvuku(zvuky[jm]));
+      await zapisSoubor(dir, KONFIG_SADY, new TextEncoder().encode(JSON.stringify(konfigSady(S), null, 2) + "\n"));
       for (const jm of Object.keys(SLOTY)) if (!sloty.includes(jm)){ try{ await dir.removeEntry(jm + ".wav"); }catch(e){} }
       aktivniSada = nazev; sadaUpravena = false; obnovSadu();
       await zapisStranku();
       await dialog({ikona:"ok", nadpis:t("dlUlozenaSadaNadpis", {s:nazev}),
-        text:`<ul>${sloty.map(jm => `<li>sounds/${esc(nazev)}/${jm}.wav</li>`).join("")}</ul>${nove ? t("dlSadaNeulozenoHlavni") : ""}`,
+        text:`<ul>${sloty.map(jm => `<li>sounds/${esc(nazev)}/${jm}.wav</li>`).join("")}<li>sounds/${esc(nazev)}/${KONFIG_SADY} <small>${t("dlSadaKonfig")}</small></li></ul>${nove ? t("dlSadaNeulozenoHlavni") : ""}`,
         tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
       return;
     }
     // Safari: ZIP se sadou
     aktivniSada = nazev; sadaUpravena = false; obnovSadu();
     const soubory = sloty.map(jm => ({jmeno:`sounds/${nazev}/${jm}.wav`, data:bajtyZvuku(zvuky[jm])}));
+    soubory.push({jmeno:`sounds/${nazev}/${KONFIG_SADY}`, data:new TextEncoder().encode(JSON.stringify(konfigSady(S), null, 2) + "\n")});
     soubory.push({jmeno:STRANKA, data:new TextEncoder().encode(textStranky())});
     const zip = "SBusSound_sada_" + nazev.replace(/\s+/g, "_") + ".zip";
     const a = document.createElement("a");
@@ -2021,7 +2098,7 @@ $("btnUlozSadu").onclick = async () => {
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 20000);
     await dialog({ikona:"ok", nadpis:t("dlSadaZipNadpis", {z:zip}),
-      text:`<ul>${sloty.map(jm => `<li>sounds/${esc(nazev)}/${jm}.wav</li>`).join("")}</ul>${t("dlSadaZipText", {s:esc(nazev)})}`,
+      text:`<ul>${sloty.map(jm => `<li>sounds/${esc(nazev)}/${jm}.wav</li>`).join("")}<li>sounds/${esc(nazev)}/${KONFIG_SADY} <small>${t("dlSadaKonfig")}</small></li></ul>${t("dlSadaZipText", {s:esc(nazev)})}`,
       tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
   }catch(e){
     if (e.name !== "AbortError") hlaska(t("nejdeSada", {e:e.message}), true);
@@ -2519,7 +2596,7 @@ $("uvOtevrit").focus();
 
 })();
 
-if (typeof module !== "undefined") module.exports = {nastavRezim, platnyNazevSady, T_TRUCK, vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD, T, nastavJazyk,
+if (typeof module !== "undefined") module.exports = {konfigSady, pouzijKonfigSady, nastavRezim, platnyNazevSady, T_TRUCK, vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD, T, nastavJazyk,
   kNule, smazUsek, ponechUsek, tichoUsek, nabehUsek, dobehUsek, zesilUsek, normalizujUsek, bezDC, plynulaSmycka, spicka};
 </script>
 </body>
