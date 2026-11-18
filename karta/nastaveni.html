@@ -5,25 +5,101 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SBusSound – nastavení karty</title>
 <style>
+/* Vzhled TANK (vychozi): olivova pancerova deska, mosaz, cervena paka. */
 :root{
   --skrin:#2B3029;
   --deska:#353B32;
   --deska-2:#3E4539;
   --hrana:#4E574A;
+  --hrana-2:#454D41;
+  --jamka:#252A22;
+  --jamka-2:#2E332B;
+  --lista:#262A24;
+  --hover:#4A5244;
+  --nadpis:#EEF1EA;
   --text:#D8DDD1;
   --tlum:#939C8D;
+  --tlum-2:#7D8578;
   --mosaz:#C8A23C;
   --mosaz-tma:#7A6327;
+  --akcent-text:#2B2614;
+  --akcent-slaby:rgba(200,162,60,.28);
   --paka:#B3402B;
+  --paka-hrana:#8C3221;
+  --paka-hover:#C44B33;
+  --paka-text:#FFF4EF;
   --zelen:#7FA35E;
   --chyba:#E0775F;
+  --stitek-1:#4A4430;
+  --stitek-2:#3A3524;
+  --stitek-text:#B9A66A;
+  --info-bg:rgba(38,43,35,.88);
+  --clona:rgba(22,25,20,.84);
+  --hlaska:#3F4A37;
+  --hlaska-hrana:#67784F;
+  --vlna:#8E9A84;
+  --vlna-nova:#C8A23C;
+  --budik:#E3DCC8;
+  --budik-ryska:#23271F;
+  --budik-text:#4A5142;
+  --budik-rucka:#B3402B;
+  --budik-cerv:rgba(179,64,43,.75);
+  --graf-v:#C8A23C;
+  --graf-o:#B3402B;
+  --pismo:"Avenir Next Condensed","Avenir Next","Roboto Condensed","Arial Narrow",Arial,sans-serif;
+  --pismo-nadpis:"Stencil","Stencil Std","Avenir Next Condensed","Arial Narrow",sans-serif;
+  --nyt:radial-gradient(circle at 45% 40%, #737C68 0 1.3px, #2A2F27 2.2px, transparent 2.9px);
+}
+/* Vzhled TRUCK: grafit a chrom, jantar smerovek, cervena koncovych svetel. */
+body.truck{
+  --skrin:#1D2024;
+  --deska:#2A2E34;
+  --deska-2:#353A42;
+  --hrana:#4A5059;
+  --hrana-2:#3D424A;
+  --jamka:#1A1D21;
+  --jamka-2:#24282D;
+  --lista:#16181B;
+  --hover:#424851;
+  --nadpis:#F3F5F7;
+  --text:#DDE1E6;
+  --tlum:#98A0AA;
+  --tlum-2:#7A818B;
+  --mosaz:#F2A51A;
+  --mosaz-tma:#8C5F0E;
+  --akcent-text:#2A1B02;
+  --akcent-slaby:rgba(242,165,26,.28);
+  --paka:#C8372D;
+  --paka-hrana:#8F241D;
+  --paka-hover:#DA4236;
+  --paka-text:#FFF3F1;
+  --zelen:#6FB37A;
+  --chyba:#F07A62;
+  --stitek-1:#3A3F47;
+  --stitek-2:#25292F;
+  --stitek-text:#C9CDD3;
+  --info-bg:rgba(29,32,36,.9);
+  --clona:rgba(14,16,18,.86);
+  --hlaska:#2F3640;
+  --hlaska-hrana:#5C6673;
+  --vlna:#8F98A3;
+  --vlna-nova:#F2A51A;
+  --budik:#15171A;
+  --budik-ryska:#E8EBEE;
+  --budik-text:#9AA2AC;
+  --budik-rucka:#F2A51A;
+  --budik-cerv:rgba(200,55,45,.85);
+  --graf-v:#F2A51A;
+  --graf-o:#E2574C;
+  --pismo:"Avenir Next Condensed","Avenir Next","Roboto Condensed","Arial Narrow",Arial,sans-serif;
+  --pismo-nadpis:"DIN Condensed","DIN Alternate","Bahnschrift SemiCondensed","Avenir Next Condensed","Arial Narrow",sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{
   background:var(--skrin);
   color:var(--text);
-  font-family:"Avenir Next Condensed","Avenir Next","Roboto Condensed","Arial Narrow",Arial,sans-serif;
+  font-family:var(--pismo);
   font-size:15px;line-height:1.4;
   font-variant-numeric:tabular-nums;
 }
@@ -34,9 +110,9 @@ button,input,select{font:inherit;color:inherit}
 .lista{
   position:sticky;top:0;z-index:10;
   display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-  padding:10px 18px;background:#262A24;border-bottom:1px solid var(--hrana);
+  padding:10px 18px;background:var(--lista);border-bottom:1px solid var(--hrana);
 }
-.lista h1{margin:0;font-size:21px;font-weight:600;letter-spacing:.01em;color:#EEF1EA}
+.lista h1{margin:0;font-size:21px;font-weight:600;letter-spacing:.01em;color:var(--nadpis)}
 .lista h1 span{color:var(--tlum);font-weight:500}
 .stav{flex:1 1 220px;font-size:14px;color:var(--tlum);min-width:0}
 .stav b{color:var(--text);font-weight:600}
@@ -48,10 +124,10 @@ button{
   background:var(--deska-2);border:1px solid var(--hrana);border-radius:5px;
   padding:6px 13px;cursor:pointer;letter-spacing:.01em;
 }
-button:hover{background:#4A5244}
+button:hover{background:var(--hover)}
 button:disabled{opacity:.4;cursor:not-allowed}
-button.hlavni{background:var(--paka);border-color:#8C3221;color:#FFF4EF}
-button.hlavni:hover{background:#C44B33}
+button.hlavni{background:var(--paka);border-color:var(--paka-hrana);color:var(--paka-text)}
+button.hlavni:hover{background:var(--paka-hover)}
 button.tichy{background:transparent}
 
 /* ---------- mrizka ---------- */
@@ -67,23 +143,23 @@ main{
   main{grid-template-columns:1fr;grid-template-areas:"kanaly" "prava" "prevod"}
 }
 section{background:var(--deska);border:1px solid var(--hrana);border-radius:8px;padding:14px 16px}
-section h2{margin:0 0 2px;font-size:17px;font-weight:600;color:#EEF1EA}
+section h2{margin:0 0 2px;font-size:17px;font-weight:600;color:var(--nadpis)}
 section .pozn{margin:0 0 12px;font-size:13.5px;color:var(--tlum);max-width:68ch}
 #kanaly{grid-area:kanaly}
 #prevod{grid-area:prevod}
 
 /* ---------- kanaly a zvuky ---------- */
 .funkce{display:grid;grid-template-columns:118px 92px minmax(0,1fr);gap:4px 12px;
-  padding:9px 0;border-top:1px solid #434B3F;align-items:center}
+  padding:9px 0;border-top:1px solid var(--hrana-2);align-items:center}
 .funkce:first-of-type{border-top:0}
-.funkce .nazev{font-size:16px;font-weight:600;color:#EEF1EA}
+.funkce .nazev{font-size:16px;font-weight:600;color:var(--nadpis)}
 .funkce .nazev small{display:block;font-size:12.5px;font-weight:400;color:var(--tlum)}
 .stitek{
   display:flex;align-items:center;border:1px solid var(--mosaz-tma);border-radius:6px;
-  background:linear-gradient(#4A4430,#3A3524);height:44px;overflow:hidden;
+  background:linear-gradient(var(--stitek-1),var(--stitek-2));height:44px;overflow:hidden;
 }
 .stitek.dup{border-color:var(--chyba)}
-.stitek span{font-size:12px;color:#B9A66A;padding:0 2px 0 8px}
+.stitek span{font-size:12px;color:var(--stitek-text);padding:0 2px 0 8px}
 .stitek input{
   width:100%;min-width:0;background:transparent;border:0;text-align:center;
   font-size:28px;font-weight:600;color:var(--mosaz);padding:0 4px 0 0;
@@ -94,17 +170,17 @@ section .pozn{margin:0 0 12px;font-size:13.5px;color:var(--tlum);max-width:68ch}
 .zvuk{display:grid;grid-template-columns:96px minmax(80px,1fr) auto auto auto;gap:8px;align-items:center;min-width:0}
 .zvuk .jm{font-size:13.5px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .zvuk .jm small{display:block;font-size:12px;color:var(--tlum)}
-.vlna{position:relative;height:34px;border-radius:4px;background:#2A2F27;border:1px solid #444C40;overflow:hidden;min-width:0}
+.vlna{position:relative;height:34px;border-radius:4px;background:var(--jamka);border:1px solid var(--hrana-2);overflow:hidden;min-width:0}
 .vlna canvas{width:100%;height:100%;display:block}
 .vlna .info{position:absolute;left:4px;bottom:3px;font-size:11.5px;line-height:1.3;color:var(--tlum);
-  background:rgba(38,43,35,.88);padding:0 5px;border-radius:3px;white-space:nowrap;pointer-events:none}
+  background:var(--info-bg);padding:0 5px;border-radius:3px;white-space:nowrap;pointer-events:none}
 .vlna.novy{border-color:var(--mosaz-tma)}
 .vlna.novy .info{color:var(--mosaz)}
-.vlna.prazdna .info{color:#7D8578;left:50%;transform:translateX(-50%);bottom:auto;top:8px;background:none}
+.vlna.prazdna .info{color:var(--tlum-2);left:50%;transform:translateX(-50%);bottom:auto;top:8px;background:none}
 .vlna.chyba{border-color:var(--chyba)}
 .vlna.chyba .info{color:var(--chyba)}
 .hrat{width:36px;padding:6px 0;text-align:center}
-.hrat.hraje{background:var(--mosaz);color:#2B2614;border-color:var(--mosaz)}
+.hrat.hraje{background:var(--mosaz);color:var(--akcent-text);border-color:var(--mosaz)}
 .bezzvuku{font-size:13px;color:var(--tlum)}
 @media (max-width:620px){
   .funkce{grid-template-columns:minmax(0,1fr) 92px}
@@ -125,12 +201,12 @@ section .pozn{margin:0 0 12px;font-size:13.5px;color:var(--tlum);max-width:68ch}
 .prepinac{display:inline-flex;border:1px solid var(--hrana);border-radius:5px;overflow:hidden}
 .prepinac button{border:0;border-radius:0;background:transparent;padding:5px 11px;color:var(--tlum)}
 .prepinac button + button{border-left:1px solid var(--hrana)}
-.prepinac button[aria-pressed="true"]{background:var(--mosaz);color:#2B2614}
+.prepinac button[aria-pressed="true"]{background:var(--mosaz);color:var(--akcent-text)}
 .posuv{display:flex;align-items:center;gap:10px;flex:1;max-width:240px}
 .posuv input{flex:1}
 input[type=range]{accent-color:var(--paka);height:22px}
 .hodnota{color:var(--mosaz);font-weight:600;min-width:52px;text-align:right}
-.cislo{width:78px;background:#2A2F27;border:1px solid #4A5245;border-radius:4px;padding:4px 7px;text-align:right}
+.cislo{width:78px;background:var(--jamka);border:1px solid var(--hrana-2);border-radius:4px;padding:4px 7px;text-align:right}
 .cislo.spatne{border-color:var(--chyba)}
 .kal{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 4px}
 .kal label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--tlum)}
@@ -145,17 +221,17 @@ input[type=range]{accent-color:var(--paka);height:22px}
 @media (max-width:560px){.parametry{grid-template-columns:1fr}}
 .par label{display:flex;justify-content:space-between;font-size:14px;color:var(--tlum)}
 .par input{width:100%}
-.sim{background:#2E332B;border:1px solid #474F42;border-radius:8px;padding:12px}
+.sim{background:var(--jamka-2);border:1px solid var(--hrana-2);border-radius:8px;padding:12px}
 .sim-horni{display:flex;gap:14px;align-items:center}
 #budik{flex:0 0 auto}
 .ukazatele{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
 .stupen{display:flex;align-items:baseline;gap:10px}
 .stupen .c{font-size:44px;font-weight:600;line-height:.95;color:var(--mosaz);min-width:46px;text-align:center;
   border:1px solid var(--mosaz-tma);border-radius:5px;padding:3px 2px;transition:background .12s}
-.stupen .c.radi{background:rgba(200,162,60,.28)}
+.stupen .c.radi{background:var(--akcent-slaby)}
 .stupen .p{font-size:13px;color:var(--tlum)}
 .pruh .h{display:flex;justify-content:space-between;font-size:12.5px;color:var(--tlum)}
-.pruh .d{height:8px;background:#22261F;border:1px solid #474F42;border-radius:2px;overflow:hidden;margin-top:2px}
+.pruh .d{height:8px;background:var(--jamka);border:1px solid var(--hrana-2);border-radius:2px;overflow:hidden;margin-top:2px}
 .pruh .v{height:100%;width:0;background:var(--mosaz)}
 .pruh.vzad .v{background:#7E8CA0}
 .paka-plynu{margin:10px 0 2px}
@@ -164,47 +240,47 @@ input[type=range]{accent-color:var(--paka);height:22px}
 .paka-plynu.ne{opacity:.4}
 .sim-tl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
 .sim-tl label{font-size:13px;color:var(--tlum)}
-#graf{width:100%;height:56px;display:block;margin-top:10px;background:#22261F;border:1px solid #474F42;border-radius:4px}
+#graf{width:100%;height:56px;display:block;margin-top:10px;background:var(--jamka);border:1px solid var(--hrana-2);border-radius:4px}
 
 /* ---------- hlaska ---------- */
 #hlaska{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:20;
   max-width:min(640px,92vw);padding:9px 14px;border-radius:6px;font-size:14.5px;
-  background:#3F4A37;border:1px solid #67784F;box-shadow:0 6px 24px rgba(0,0,0,.5);
+  background:var(--hlaska);border:1px solid var(--hlaska-hrana);box-shadow:0 6px 24px rgba(0,0,0,.5);
   transition:opacity .3s;opacity:0;pointer-events:none}
 #hlaska.ukaz{opacity:1}
 #hlaska.chyba{background:#4E2E26;border-color:#94513F}
 /* ---------- editor zvuku ---------- */
 .editor{position:fixed;inset:0;z-index:30;display:none;align-items:center;justify-content:center;
-  background:rgba(22,25,20,.78);padding:16px}
+  background:var(--clona);padding:16px}
 .editor.otevren{display:flex}
 .ed-panel{width:min(1120px,100%);max-height:100%;overflow:auto;background:var(--deska);
   border:1px solid var(--hrana);border-radius:10px;padding:14px 16px;box-shadow:0 18px 60px rgba(0,0,0,.55)}
 .ed-hlava{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:10px}
-.ed-hlava h2{margin:0;font-size:19px;font-weight:600;color:#EEF1EA}
+.ed-hlava h2{margin:0;font-size:19px;font-weight:600;color:var(--nadpis)}
 .ed-hlava h2 small{font-size:14px;font-weight:400;color:var(--tlum);margin-left:6px}
 .ed-cas{flex:1;text-align:right;font-size:14px;color:var(--tlum);white-space:nowrap}
 .ed-cas b{color:var(--mosaz);font-weight:600}
-.ed-plocha{position:relative;border:1px solid #474F42;border-radius:6px;background:#22261F;overflow:hidden;
+.ed-plocha{position:relative;border:1px solid var(--hrana-2);border-radius:6px;background:var(--jamka);overflow:hidden;
   touch-action:none;cursor:text}
 #edVlna{display:block;width:100%;height:230px}
-#edPrehled{display:block;width:100%;height:38px;margin-top:6px;border:1px solid #474F42;border-radius:4px;
-  background:#22261F;cursor:pointer;touch-action:none}
+#edPrehled{display:block;width:100%;height:38px;margin-top:6px;border:1px solid var(--hrana-2);border-radius:4px;
+  background:var(--jamka);cursor:pointer;touch-action:none}
 .ed-radek{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}
 .ed-radek .mezera{flex:1}
 .ed-skupina{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:6px 8px;
-  border:1px solid #434B3F;border-radius:6px;background:#30352D}
+  border:1px solid var(--hrana-2);border-radius:6px;background:var(--jamka-2)}
 .ed-skupina > span{font-size:13px;color:var(--tlum);margin-right:2px}
 .ed-skupina label{font-size:13.5px;color:var(--tlum);display:flex;align-items:center;gap:5px}
-.ed-skupina select{background:#2A2F27;border:1px solid #4A5245;border-radius:4px;padding:3px 4px}
+.ed-skupina select{background:var(--jamka);border:1px solid var(--hrana-2);border-radius:4px;padding:3px 4px}
 .ed-skupina input[type=range]{width:120px}
 #edPrehrat{min-width:96px}
-#edPrehrat.hraje{background:var(--mosaz);color:#2B2614;border-color:var(--mosaz)}
+#edPrehrat.hraje{background:var(--mosaz);color:var(--akcent-text);border-color:var(--mosaz)}
 .ed-napoveda{margin:8px 0 0;font-size:12.5px;color:var(--tlum)}
 @media (max-width:620px){#edVlna{height:180px}.ed-cas{text-align:left}}
 
 /* ---------- dialog uprostred okna ---------- */
 .dialog{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
-  background:rgba(18,21,16,.8);padding:20px}
+  background:var(--clona);padding:20px}
 .dialog.otevren{display:flex}
 .dl-panel{width:min(520px,100%);background:var(--deska);border:1px solid var(--hrana);border-radius:12px;
   padding:26px 28px 22px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.6)}
@@ -213,7 +289,7 @@ input[type=range]{accent-color:var(--paka);height:22px}
 .dl-ikona.ok{background:rgba(127,163,94,.18);border:2px solid var(--zelen);color:var(--zelen)}
 .dl-ikona.pozor{background:rgba(200,162,60,.15);border:2px solid var(--mosaz);color:var(--mosaz)}
 .dl-ikona.chyba{background:rgba(224,119,95,.15);border:2px solid var(--chyba);color:var(--chyba)}
-.dl-panel h2{margin:0 0 8px;font-size:25px;font-weight:600;color:#EEF1EA;line-height:1.2}
+.dl-panel h2{margin:0 0 8px;font-size:25px;font-weight:600;color:var(--nadpis);line-height:1.2}
 .dl-text{font-size:16px;color:var(--text);max-width:44ch;margin:0 auto}
 .dl-text p{margin:.5em 0}
 .dl-text .tlum{color:var(--tlum);font-size:14.5px}
@@ -226,12 +302,12 @@ input[type=range]{accent-color:var(--paka);height:22px}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 /* ---------- uvodni okno a pretazeni karty ---------- */
 .uvod{position:fixed;inset:0;z-index:9;display:none;align-items:center;justify-content:center;
-  background:rgba(24,28,22,.88);padding:90px 20px 20px}
+  background:var(--clona);padding:90px 20px 20px}
 .uvod.otevren{display:flex}
 .uv-panel{width:min(600px,100%);background:var(--deska);border:1px solid var(--hrana);border-radius:14px;
   padding:34px 36px 24px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.55)}
 .uv-panel svg{display:block;margin:0 auto 14px}
-.uv-panel h2{margin:0 0 8px;font-size:30px;font-weight:600;color:#EEF1EA;line-height:1.15}
+.uv-panel h2{margin:0 0 8px;font-size:30px;font-weight:600;color:var(--nadpis);line-height:1.15}
 .uv-panel p{margin:0 auto 20px;max-width:46ch;font-size:16.5px}
 .uv-panel .velke{font-size:19px;padding:12px 30px;border-radius:7px}
 .uv-pretah{margin:22px 0 14px;padding:16px 14px;border:2px dashed var(--hrana);border-radius:10px;color:var(--tlum);font-size:15px}
@@ -253,18 +329,77 @@ input[type=range]{accent-color:var(--paka);height:22px}
 .dl-panel.siroky .dl-text{max-width:none}
 .dl-text pre{text-align:left;margin:10px 0 0;max-height:58vh;overflow:auto;padding:10px 12px;background:var(--skrin);
   border:1px solid var(--hrana);border-radius:6px;font:12.5px/1.45 Menlo,Consolas,monospace;color:var(--text);white-space:pre-wrap;word-break:break-word}
+/* ---------- typ modelu: tematicke prvky ---------- */
+.lista h1{display:flex;align-items:center;gap:10px;font-family:var(--pismo-nadpis)}
+.lista h1 span{font-family:var(--pismo)}
+.ikona{display:block;flex:0 0 auto}
+.ikona-truck{display:none}
+body.truck .ikona-tank{display:none}
+body.truck .ikona-truck{display:block}
+section h2,.dl-panel h2,.uv-panel h2{font-family:var(--pismo-nadpis)}
+/* tank: sablonove pismo, nyty v rozich pancerovych desek, maskovani v pozadi */
+body:not(.truck) .lista h1,body:not(.truck) section h2,body:not(.truck) .dl-panel h2,body:not(.truck) .uv-panel h2{font-weight:400;letter-spacing:.05em}
+body:not(.truck) section,body:not(.truck) .dl-panel,body:not(.truck) .uv-panel,body:not(.truck) .ed-panel{
+  background-image:var(--nyt),var(--nyt),var(--nyt),var(--nyt);background-repeat:no-repeat;background-size:8px 8px;
+  background-position:5px 5px,right 5px top 5px,left 5px bottom 5px,right 5px bottom 5px}
+body:not(.truck){background-image:
+  radial-gradient(ellipse 420px 240px at 10% 20%,rgba(78,90,58,.32),transparent 70%),
+  radial-gradient(ellipse 360px 300px at 85% 35%,rgba(24,28,22,.5),transparent 70%),
+  radial-gradient(ellipse 480px 260px at 55% 88%,rgba(82,76,52,.26),transparent 70%),
+  radial-gradient(ellipse 300px 200px at 30% 62%,rgba(20,24,18,.4),transparent 70%);background-attachment:fixed}
+body:not(.truck) .lista{background:linear-gradient(#2E3329,var(--lista));border-bottom:2px solid #1C1F1A;
+  box-shadow:inset 0 -1px 0 #4E574A}
+/* truck: chromova hrana, jantarova stredova cara silnice, pristrojovka */
+body.truck .lista{background:linear-gradient(#24272C,var(--lista));border-bottom:0}
+body.truck .lista::after{content:"";position:absolute;left:0;right:0;bottom:-5px;height:5px;
+  background:#2B2F34 repeating-linear-gradient(90deg,var(--mosaz) 0 34px,transparent 34px 62px) 0 2px/100% 2px no-repeat}
+body.truck section,body.truck .dl-panel,body.truck .uv-panel,body.truck .ed-panel{
+  border-top:2px solid #9AA3AE;box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 1px 0 rgba(0,0,0,.4)}
+body.truck .lista h1,body.truck section h2{letter-spacing:.02em}
+body.truck{background-image:linear-gradient(180deg,#22252A 0,var(--skrin) 340px)}
+body.truck .stitek input{text-shadow:0 0 8px rgba(242,165,26,.35)}
+body.truck main{padding-top:22px}
+/* ---------- sada zvuku ---------- */
+.sada{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 10px;margin:0 0 6px;
+  border:1px solid var(--hrana-2);border-radius:6px;background:var(--jamka-2)}
+.sada > span:first-child{color:var(--tlum);font-size:14px}
+.sada b{color:var(--mosaz);font-weight:600;font-size:16px}
+.sada .mezera{flex:1}
+.sada small{color:var(--tlum);font-size:13px}
+.dl-sady{display:flex;flex-direction:column;gap:6px;margin:14px auto 0;max-width:380px;max-height:46vh;overflow:auto}
+.dl-sady button{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:16px;padding:9px 14px;text-align:left}
+.dl-sady button small{color:var(--tlum);font-size:13px}
+.dl-sady button.aktivni{border-color:var(--mosaz)}
+.dl-vstup{display:block;width:100%;max-width:360px;margin:14px auto 0;padding:9px 12px;font-size:17px;
+  background:var(--jamka);border:1px solid var(--hrana);border-radius:6px;text-align:center}
+.dl-vstup:focus{border-color:var(--mosaz);outline:0}
+.dl-chyba{color:var(--chyba);font-size:14px;min-height:1.2em;margin:6px 0 0}
 .jazyk{display:inline-flex;border:1px solid var(--hrana);border-radius:5px;overflow:hidden}
 .jazyk button{border:0;border-radius:0;background:transparent;padding:5px 10px;color:var(--tlum);font-size:14px}
 .jazyk button + button{border-left:1px solid var(--hrana)}
-.jazyk button[aria-pressed="true"]{background:var(--deska-2);color:#EEF1EA}
+.jazyk button[aria-pressed="true"]{background:var(--deska-2);color:var(--nadpis)}
+.rezim button[aria-pressed="true"]{background:var(--mosaz);color:var(--akcent-text)}
 </style>
 </head>
 <body>
 
 <div class="lista">
-  <h1>SBusSound <span data-i18n="podtitul">nastavení karty</span></h1>
+  <h1><svg class="ikona ikona-tank" width="46" height="24" viewBox="0 0 46 24" aria-hidden="true">
+      <path d="M17 6h13l3 4H15z" fill="var(--mosaz)"/><path d="M30 7.2h15v2.2H30z" fill="var(--mosaz)"/>
+      <path d="M4 11h37l3 4H1z" fill="var(--mosaz)"/>
+      <rect x="2" y="15.5" width="41" height="7" rx="3.5" fill="none" stroke="var(--mosaz)" stroke-width="1.6"/>
+      <g fill="var(--mosaz)"><circle cx="7" cy="19" r="1.7"/><circle cx="13.5" cy="19" r="1.7"/><circle cx="20" cy="19" r="1.7"/><circle cx="26.5" cy="19" r="1.7"/><circle cx="33" cy="19" r="1.7"/><circle cx="39" cy="19" r="1.7"/></g>
+    </svg><svg class="ikona ikona-truck" width="46" height="24" viewBox="0 0 46 24" aria-hidden="true">
+      <path d="M2 4h24v13H2z" fill="none" stroke="var(--mosaz)" stroke-width="1.6"/>
+      <path d="M27 7h9l5 6v4H27z" fill="var(--mosaz)"/><path d="M30 8.5h5l3 3.8h-8z" fill="var(--lista)"/>
+      <path d="M1 17h43v2H1z" fill="var(--mosaz)"/>
+      <g fill="var(--lista)" stroke="var(--mosaz)" stroke-width="1.6"><circle cx="8" cy="20" r="3"/><circle cx="15" cy="20" r="3"/><circle cx="36" cy="20" r="3"/></g>
+    </svg>SBusSound <span data-i18n="podtitul">nastavení karty</span></h1>
   <div class="stav" id="stav"></div>
   <div class="akce">
+    <div class="jazyk rezim" role="group" data-i18n-aria="rezimAria">
+      <button data-rezim="tank">Tank</button><button data-rezim="truck">Truck</button>
+    </div>
     <div class="jazyk" role="group" aria-label="Jazyk / Language">
       <button data-jazyk="cz" lang="cs">CZ</button><button data-jazyk="en" lang="en">EN</button>
     </div>
@@ -279,6 +414,9 @@ input[type=range]{accent-color:var(--paka);height:22px}
 <section id="kanaly">
   <h2 data-i18n="kanalyNadpis">Kanály a zvuky</h2>
   <p class="pozn" data-i18n="kanalyPozn"></p>
+  <div class="sada"><span data-i18n="sadaZvuku">Sada zvuků</span><b id="sadaJm"></b><small id="sadaStav"></small>
+    <span class="mezera"></span>
+    <button id="btnNactiSadu" data-i18n="nactiSadu">Načíst sadu</button><button id="btnUlozSadu" data-i18n="ulozSadu">Uložit sadu</button></div>
   <div id="funkce"></div>
   <p class="upozorneni" id="dupl"></p>
   <input type="file" id="soubor" accept="audio/*,.wav,.mp3,.m4a,.aac,.flac,.ogg,.oga,.opus,.aif,.aiff,.caf,.webm" hidden>
@@ -480,6 +618,29 @@ const T = {
   uvodNadpis:"Otevři SD kartu", uvodText:"Vlož kartu ze SBusSound do počítače a vyber ji. Načte se nastavení i všechny zvuky.",
   uvodPretah:"Nebo kartu přetáhni kamkoli do okna – z plochy nebo z postranního panelu Finderu.",
   uvodBez:"Pokračovat bez karty", pretahText:"Pusť kartu", pretahniSlozku:"Přetáhni kartu nebo složku, ne jednotlivý soubor.",
+  rezimAria:"Typ modelu",
+  sadaZvuku:"Sada zvuků", sadaZadna:"zatím žádná", sadaUpravena:"upravená",
+  nactiSadu:"Načíst sadu", ulozSadu:"Uložit sadu", sadaBezKarty:"Nejdřív otevři SD kartu.",
+  dlSadyNadpis:"Načíst sadu zvuků",
+  dlSadyText:"<p>Vyber sadu. Její zvuky se nakopírují do složky sounds na kartě místo současných a engine pak hraje je.</p>",
+  dlSadyZadne:"<p>Ve složce sounds na kartě zatím není žádná sada. Vytvoříš ji tlačítkem Uložit sadu.</p>",
+  dlSadyPocet:"{n} ze 7 zvuků",
+  dlSadaZahoditNadpis:"Zahodit neuložené zvuky?",
+  dlSadaZahoditText:"<p>Některé zvuky jsou vybrané nebo upravené, ale nejsou uložené na kartě ani v sadě. Načtením sady se ztratí.</p>",
+  dlSadaZahodit:"Zahodit a načíst sadu",
+  dlNactenaNadpis:"Načtena sada {s}",
+  dlNactenaText:"<p>Zvuky jsou nakopírované do složky sounds na kartě. Engine je použije po příštím zapnutí.</p>",
+  dlNactenaSafari:"<p>Zvuky jsou načtené ve stránce. Na kartu je dostaneš tlačítkem Stáhnout pro kartu.</p>",
+  dlNactenaChybi:"<p class=\"tlum\">V sadě chybí {s} – zůstávají současné.</p>",
+  dlUlozSaduNadpis:"Uložit sadu zvuků",
+  dlUlozSaduText:"<p>Současné zvuky se uloží do složky sounds/<i>název sady</i> na kartě. Kdykoli je pak vrátíš tlačítkem Načíst sadu.</p>",
+  sadaNazev:"Název sady", sadaSpatnyNazev:"Zadej název bez znaků / \\ : * ? \" < > | a bez tečky na začátku.",
+  dlPrepsatSaduNadpis:"Přepsat sadu {s}?", dlPrepsatSaduText:"<p>Sada s tímto názvem už na kartě je. Její zvuky se nahradí současnými.</p>",
+  dlPrepsat:"Přepsat sadu",
+  dlUlozenaSadaNadpis:"Uložena sada {s}",
+  dlSadaNeulozenoHlavni:"<p class=\"tlum\">Engine zatím hraje dosavadní zvuky ze složky sounds. Nové tam zapíše tlačítko Uložit na kartu.</p>",
+  dlSadaZipNadpis:"Staženo {z}", dlSadaZipText:"<p>Obsah ZIPu nakopíruj do kořene karty. Sada pak bude ve složce sounds/{s}.</p>",
+  sadaZadneZvuky:"Není co uložit – nejdřív vyber zvuky.", nejdeSada:"Se sadou se nepodařilo pracovat: {e}",
   nastavovaniNadpis:"Nastavování", mapZapnout:"Mapovat kanály",
   mapPozn:"Kanály vysílače se přiřadí samy: Raspberry po zapnutí přehrává zvuky jeden po druhém a ty u každého pohneš ovladačem, který ho má ovládat.",
   mapPozor:"Po uložení vlož kartu do tanku, zapni vysílač a pak Raspberry. Místo jízdy začne mapování (LED bliká dvakrát za sekundu):",
@@ -589,6 +750,29 @@ const T = {
   uvodNadpis:"Open the SD card", uvodText:"Put the SBusSound card into your computer and choose it. The settings and all sounds will load.",
   uvodPretah:"Or drag the card anywhere into this window – from the desktop or the Finder sidebar.",
   uvodBez:"Continue without a card", pretahText:"Drop the card", pretahniSlozku:"Drag the card or a folder, not a single file.",
+  rezimAria:"Model type",
+  sadaZvuku:"Sound set", sadaZadna:"none yet", sadaUpravena:"edited",
+  nactiSadu:"Load set", ulozSadu:"Save set", sadaBezKarty:"Open the SD card first.",
+  dlSadyNadpis:"Load a sound set",
+  dlSadyText:"<p>Choose a set. Its sounds are copied into the sounds folder on the card in place of the current ones, and the engine then plays them.</p>",
+  dlSadyZadne:"<p>There is no set in the sounds folder on the card yet. Create one with Save set.</p>",
+  dlSadyPocet:"{n} of 7 sounds",
+  dlSadaZahoditNadpis:"Discard unsaved sounds?",
+  dlSadaZahoditText:"<p>Some sounds are chosen or edited but not saved to the card or to a set. Loading a set will lose them.</p>",
+  dlSadaZahodit:"Discard and load set",
+  dlNactenaNadpis:"Loaded set {s}",
+  dlNactenaText:"<p>The sounds are copied into the sounds folder on the card. The engine uses them at the next power-up.</p>",
+  dlNactenaSafari:"<p>The sounds are loaded in the page. Get them onto the card with Download for card.</p>",
+  dlNactenaChybi:"<p class=\"tlum\">The set has no {s} – the current ones stay.</p>",
+  dlUlozSaduNadpis:"Save a sound set",
+  dlUlozSaduText:"<p>The current sounds are saved into the sounds/<i>set name</i> folder on the card. You can bring them back any time with Load set.</p>",
+  sadaNazev:"Set name", sadaSpatnyNazev:"Enter a name without / \\ : * ? \" < > | and not starting with a dot.",
+  dlPrepsatSaduNadpis:"Overwrite set {s}?", dlPrepsatSaduText:"<p>A set with this name is already on the card. Its sounds will be replaced with the current ones.</p>",
+  dlPrepsat:"Overwrite set",
+  dlUlozenaSadaNadpis:"Saved set {s}",
+  dlSadaNeulozenoHlavni:"<p class=\"tlum\">The engine still plays the previous sounds from the sounds folder. Save to card writes the new ones there.</p>",
+  dlSadaZipNadpis:"Downloaded {z}", dlSadaZipText:"<p>Copy the contents of the ZIP to the root of the card. The set will then be in the sounds/{s} folder.</p>",
+  sadaZadneZvuky:"Nothing to save – choose some sounds first.", nejdeSada:"Could not work with the set: {e}",
   nastavovaniNadpis:"Setup", mapZapnout:"Map channels",
   mapPozn:"The transmitter channels are assigned automatically: after power-up the Raspberry Pi plays the sounds one by one and for each you move the control that should drive it.",
   mapPozor:"After saving, put the card into the tank, switch on the transmitter and then the Raspberry Pi. Instead of driving, mapping starts (the LED blinks twice a second):",
@@ -663,13 +847,37 @@ const T = {
   nNeznama:"unknown entry {k} – left out when saving",
  }
 };
+// Truck: jine nazvy funkci (vez = smer/blinkr, kulomet = klakson 1, delo = klakson 2).
+// Klice zustavaji stejne - engine i nastaveni.txt se nemeni.
+const T_TRUCK = {
+ cz:{
+  f_vez:"Směr", fp_vez:"blinkr, páka vlevo / vpravo", s_turret:"blinkr",
+  f_kulomet:"Klakson 1", s_machinegun:"klakson 1",
+  f_delo:"Klakson 2", fp_delo:"zazní celý při přepnutí", s_cannon:"klakson 2",
+  stredVez:"Vlastní střed páky směru", kChybaStredVez:"Vlastní střed směru musí ležet mezi minimem a maximem.",
+ },
+ en:{
+  f_vez:"Direction", fp_vez:"turn signal, stick left / right", s_turret:"turn signal",
+  f_kulomet:"Horn 1", s_machinegun:"horn 1",
+  f_delo:"Horn 2", fp_delo:"plays in full on each flick", s_cannon:"horn 2",
+  stredVez:"Own centre of the direction stick", kChybaStredVez:"The own direction centre must lie between minimum and maximum.",
+ }
+};
+T_TRUCK.cz.mapPostup = T.cz.mapPostup.map(x => x.replace("věž, kulomet, výstřel (přepínač děla)", "směr (blinkr), klakson 1, klakson 2"));
+T_TRUCK.en.mapPostup = T.en.mapPostup.map(x => x.replace("turret, machine gun, shot (cannon switch)", "direction (turn signal), horn 1, horn 2"));
+let REZIM = (() => { try{ return localStorage.getItem("rezim") === "truck" ? "truck" : "tank"; }catch(e){ return "tank"; } })();
+function nastavRezim(r){ REZIM = r === "truck" ? "truck" : "tank"; }
+function tx(k){
+  if (REZIM === "truck" && T_TRUCK[LANG][k] !== undefined) return T_TRUCK[LANG][k];
+  return T[LANG][k] !== undefined ? T[LANG][k] : T.cz[k];
+}
 let LANG = (() => {
   try{ const l = localStorage.getItem("lang"); if (l === "cz" || l === "en") return l; }catch(e){}
   try{ return /^(cs|sk)/i.test(navigator.language || "") ? "cz" : "en"; }catch(e){ return "cz"; }
 })();
 function nastavJazyk(l){ LANG = l === "en" ? "en" : "cz"; }
 function t(k, p){
-  let s = T[LANG][k]; if (s === undefined) s = T.cz[k]; if (s === undefined) s = k;
+  let s = tx(k); if (s === undefined) s = k;
   if (p) for (const x in p) s = s.split("{" + x + "}").join(p[x]);
   return s;
 }
@@ -855,9 +1063,15 @@ const KOMENTARE = {
  }
 };
 
+const KOMENTARE_TRUCK = {
+ cz:{k_vez:"páka směru (blinkr)", k_kulomet:"přepínač klaksonu 1", k_delo:"přepínač klaksonu 2 (zazní celý při přepnutí)",
+     stredy:["Nepovinné: skutečný střed páky plynu a směru, když se liší", "od hodnoty \"stred\" výše."]},
+ en:{k_vez:"direction stick (turn signal)", k_kulomet:"horn 1 switch", k_delo:"horn 2 switch (plays in full on each flick)",
+     stredy:["Optional: the real centre of the throttle and direction stick, when it", "differs from \"stred\" above."]},
+};
 // Vyrobi nastaveni.txt ve stejne podobe jako vzorovy soubor.
 function vyrobIni(s, kdy){
-  const K = KOMENTARE[LANG], k = s.kanaly, c = s.kalibrace, p = s.prevodovka;
+  const K = Object.assign({}, KOMENTARE[LANG], REZIM === "truck" ? KOMENTARE_TRUCK[LANG] : {}), k = s.kanaly, c = s.kalibrace, p = s.prevodovka;
   const pad = (x, n) => (x + " ".repeat(n)).slice(0, Math.max(n, String(x).length));
   const kom = (radky) => radky.map(r => "# " + r).join("\n");
   const kan = (f) => `${pad(f, 9)} = ${pad(String(k[f]), 5)} # ${K["k_" + f]}`;
@@ -937,6 +1151,13 @@ function duplicity(s){
   const podle = {};
   for (const f of FUNKCE) (podle[s.kanaly[f.k]] ||= []).push(f.k);
   return Object.entries(podle).filter(([, n]) => n.length > 1).map(([c, n]) => ({ch:Number(c), funkce:n}));
+}
+
+// Nazev slozky sady: neprazdny, bez znaku zakazanych ve FAT a bez tecky na zacatku.
+function platnyNazevSady(n){
+  n = String(n || "").trim();
+  if (!n || n.length > 64 || n.startsWith(".") || /[\/\\:*?"<>|\x00-\x1f]/.test(n) || /[. ]$/.test(n)) return null;
+  return n;
 }
 
 /* ---------- WAV a ZIP ---------- */
@@ -1083,13 +1304,23 @@ let karta = null;          // FileSystemDirectoryHandle (Chrome, Edge)
 let kartaJmeno = "";
 let poznamkyNacteni = [];
 let posledniText = null;
-let logText = null;        // log.txt z karty (posledni beh Raspberry)   // nastaveni.txt z karty - poznamky se pri zmene jazyka prelozi znovu
-const zvuky = {};          // jmeno -> {buf:AudioBuffer, wav:Uint8Array|null, zdroj, chyba}
+let logText = null;
+let ctecka = null;         // otevrena karta: {najdi(cesta) -> File|null, slozky(cesta) -> [nazvy]}
+let aktivniSada = "";      // posledni nactena nebo ulozena sada
+let sadaUpravena = false;  // zvuky se od te doby zmenily
+const STRANKA = "nastaveni_stranky.json";	// volby stranky na karte (engine ho necte)        // log.txt z karty (posledni beh Raspberry)   // nastaveni.txt z karty - poznamky se pri zmene jazyka prelozi znovu
+const zvuky = {};          // jmeno -> {buf:AudioBuffer, wav:Uint8Array|null (neulozeny), bajty:Uint8Array (soubor z karty), zdroj, chyba}
 let ctx = null;
 
 const $ = (id) => document.getElementById(id);
 const esc = x => String(x).replace(/[&<>"]/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;"}[c]));
 
+const B = {};
+function nactiBarvy(){
+  const cs = getComputedStyle(document.body);
+  for (const k of ["vlna", "vlna-nova", "budik", "budik-ryska", "budik-text", "budik-rucka", "budik-cerv", "graf-v", "graf-o", "paka", "mosaz", "tlum"])
+    B[k] = cs.getPropertyValue("--" + k).trim();
+}
 function audio(){
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
   if (ctx.state === "suspended") ctx.resume();
@@ -1129,14 +1360,22 @@ function dialog({ikona = "ok", nadpis, text, tlacitka, siroky = false}){
       obal.appendChild(el);
     }
     dialog.zruseni = tlacitka[0].v;
+    // tlacitka primo v textu (napr. seznam sad): data-v je vracena hodnota
+    $("dlText").querySelectorAll("button[data-v]").forEach(el => el.onclick = () => dialogKonec(el.dataset.v));
+    // vstup: Enter = hlavni tlacitko
+    const vstup = $("dlText").querySelector("input");
+    const hlavni = tlacitka.find(b => b.hlavni);
+    dialog.enter = vstup && hlavni ? hlavni.v : undefined;
     $("dialog").classList.add("otevren");
-    (obal.querySelector("[data-fokus]") || obal.querySelector(".hlavni") || obal.lastChild).focus();
+    if (vstup){ vstup.focus(); vstup.select(); }
+    else (obal.querySelector("[data-fokus]") || obal.querySelector(".hlavni") || obal.lastChild).focus();
   });
 }
 document.addEventListener("keydown", e => {
   if (!dialogOtevren()) return;
   if (e.key === "Escape"){ e.preventDefault(); e.stopImmediatePropagation(); dialogKonec(dialog.zruseni); }
-  else if (e.key === " " && e.target.tagName !== "BUTTON"){ e.preventDefault(); e.stopImmediatePropagation(); }
+  else if (e.key === "Enter" && e.target.tagName === "INPUT" && dialog.enter !== undefined){ e.preventDefault(); e.stopImmediatePropagation(); dialogKonec(dialog.enter); }
+  else if (e.key === " " && e.target.tagName !== "BUTTON" && e.target.tagName !== "INPUT"){ e.preventDefault(); e.stopImmediatePropagation(); }
   else e.stopImmediatePropagation();		// klavesy editoru pod dialogem nefunguji
 }, true);
 
@@ -1166,18 +1405,53 @@ function prelozStatiku(){
   document.querySelectorAll("[data-i18n-title]").forEach(el => el.title = t(el.dataset.i18nTitle));
   document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
   document.querySelectorAll("[data-jazyk]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.jazyk === LANG)));
+  document.querySelectorAll("[data-rezim]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.rezim === REZIM)));
+  document.body.classList.toggle("truck", REZIM === "truck");
+  nactiBarvy();
 }
-function zmenJazyk(l){
-  nastavJazyk(l);
-  try{ localStorage.setItem("lang", LANG); }catch(e){}
+// Prekresli vse, co zavisi na jazyku nebo typu modelu.
+function prekresli(){
   if (posledniText != null) poznamkyNacteni = nactiIni(posledniText).pozn;	// jen preklad poznamek
-  clearTimeout(hlaskaCas); $("hlaska").className = ""; $("hlaska").textContent = "";	// hlaska je v puvodnim jazyce
   prelozStatiku();
   vykresliFunkce(); vykresliPrevodovku();
   obnovVse();
   if (edOtevren()){ edTitulek(); edDbText(); edObnov(); }
 }
+function zmenRezim(r){
+  nastavRezim(r);
+  try{ localStorage.setItem("rezim", REZIM); }catch(e){}
+  prekresli();
+  zapisStranku();
+}
+function zmenJazyk(l){
+  nastavJazyk(l);
+  try{ localStorage.setItem("lang", LANG); }catch(e){}
+  clearTimeout(hlaskaCas); $("hlaska").className = ""; $("hlaska").textContent = "";	// hlaska je v puvodnim jazyce
+  prekresli();
+  zapisStranku();
+}
 document.querySelectorAll("[data-jazyk]").forEach(b => b.onclick = () => zmenJazyk(b.dataset.jazyk));
+document.querySelectorAll("[data-rezim]").forEach(b => b.onclick = () => zmenRezim(b.dataset.rezim));
+
+/* ---------- volby stranky na karte ---------- */
+function textStranky(){
+  return JSON.stringify({rezim:REZIM, jazyk:LANG, sada:aktivniSada, sadaUpravena}, null, 2) + "\n";
+}
+// Zapise jen kdyz uz je zapis na kartu povoleny - kvuli prepinaci se nikoho neptame.
+async function zapisStranku(){
+  if (!karta) return;
+  try{
+    if (karta.queryPermission && (await karta.queryPermission({mode:"readwrite"})) !== "granted") return;
+    const w = await (await karta.getFileHandle(STRANKA, {create:true})).createWritable();
+    await w.write(new TextEncoder().encode(textStranky())); await w.close();
+  }catch(e){}
+}
+function obnovSadu(){
+  $("sadaJm").textContent = aktivniSada || t("sadaZadna");
+  $("sadaJm").style.color = aktivniSada ? "" : "var(--tlum)";
+  $("sadaStav").textContent = aktivniSada && sadaUpravena ? "· " + t("sadaUpravena") : "";
+}
+function upravenaSada(){ if (aktivniSada && !sadaUpravena){ sadaUpravena = true; obnovSadu(); } }
 
 /* ---------- kanaly a zvuky ---------- */
 function vykresliFunkce(){
@@ -1240,7 +1514,7 @@ function vykresliVlnu(jm){
   $("up_" + jm).disabled = !(z && z.buf);
   if (!z || !z.buf){ info.textContent = z && z.chyba ? t("nejdePrecist") : t("chybiVyber"); return; }
   const d = z.buf.getChannelData(0), krok = d.length / w;
-  g.fillStyle = z.wav ? "#C8A23C" : "#8E9A84";
+  g.fillStyle = z.wav ? B["vlna-nova"] : B.vlna;
   for (let x = 0; x < w; x++){
     let mn = 1, mx = -1;
     const a = Math.floor(x * krok), b = Math.min(d.length, Math.floor((x + 1) * krok) + 1);
@@ -1285,7 +1559,7 @@ async function vyberZvuk(jm, f){
     if (buf.duration > 600) hlaska(t("delsi10", {f:f.name}), true);
     const pripona = (f.name.split(".").pop() || "").toUpperCase();
     zvuky[jm] = {buf, wav:vyrobWav(buf.getChannelData(0), 44100), zdroj:pripona || "?", chyba:null};
-    vykresliVlnu(jm); zmena(); obnovSim();
+    vykresliVlnu(jm); zmena(); obnovSim(); upravenaSada();
     hlaska(t("vybranZvuk", {f:f.name, jm, d:fmt(buf.duration, 1)}));
   }catch(err){
     hlaska(t("nejdeZvuk", {f:f.name}), true);
@@ -1371,7 +1645,7 @@ function obnovLog(){
   $("castLog").classList.toggle("zapnuto", zap);
   $("castMap").classList.toggle("zapnuto", map);
   $("diagnostika").classList.toggle("zapnuto", zap || map);
-  $("mapPostup").innerHTML = T[LANG].mapPostup.map(x => `<li>${esc(x)}</li>`).join("");
+  $("mapPostup").innerHTML = tx("mapPostup").map(x => `<li>${esc(x)}</li>`).join("");
   $("btnLog").disabled = logText == null;
   $("logInfo").textContent = logText != null ? t("logZ", {k:kartaJmeno}) : kartaJmeno ? t("logNeni") : "";
 }
@@ -1381,14 +1655,30 @@ $("btnLog").onclick = () => dialog({ikona:"ok", nadpis:t("logNadpisDl"), siroky:
   text:`<p class="tlum">${t("logStary")}</p><pre>${esc(logText || "")}</pre>`,
   tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
 
-function obnovVse(){ obnovKanaly(); obnovVystup(); obnovKalibraci(); obnovPrevodovku(); obnovLog(); for (const jm of Object.keys(SLOTY)) vykresliVlnu(jm); obnovSim(); obnovStav(); }
+function obnovVse(){ obnovSadu(); obnovKanaly(); obnovVystup(); obnovKalibraci(); obnovPrevodovku(); obnovLog(); for (const jm of Object.keys(SLOTY)) vykresliVlnu(jm); obnovSim(); obnovStav(); }
 
 /* ---------- karta: otevreni ---------- */
 async function nactiText(soubor){ return new TextDecoder("utf-8").decode(await soubor.arrayBuffer()); }
 
-async function nactiZeSouboru(najdi){
-  // najdi(cesta) -> File | null ; cesta napr. "nastaveni.txt", "sounds/turret.wav"
+async function nactiZeSouboru(c){
+  // c.najdi(cesta) -> File | null ; cesta napr. "nastaveni.txt", "sounds/turret.wav"
+  // c.slozky(cesta) -> nazvy podslozek
+  ctecka = c;
+  const najdi = c.najdi;
   zastavNahled(); vypniSim();
+  // volby stranky z karty: typ modelu, jazyk, sada
+  aktivniSada = ""; sadaUpravena = false;
+  const fs = await najdi(STRANKA);
+  if (fs){
+    try{
+      const v = JSON.parse(await nactiText(fs));
+      if (v.rezim === "tank" || v.rezim === "truck"){ nastavRezim(v.rezim); try{ localStorage.setItem("rezim", REZIM); }catch(e){} }
+      if (v.jazyk === "cz" || v.jazyk === "en"){ nastavJazyk(v.jazyk); try{ localStorage.setItem("lang", LANG); }catch(e){} }
+      if (typeof v.sada === "string") aktivniSada = platnyNazevSady(v.sada) || "";
+      sadaUpravena = !!v.sadaUpravena && !!aktivniSada;
+    }catch(e){}
+  }
+  prelozStatiku(); vykresliFunkce(); vykresliPrevodovku();
   const f = await najdi("nastaveni.txt");
   if (f){ posledniText = await nactiText(f); const r = nactiIni(posledniText); S = r.s; poznamkyNacteni = r.pozn; }
   else { posledniText = null; S = vychozi(); poznamkyNacteni = []; }
@@ -1399,7 +1689,10 @@ async function nactiZeSouboru(najdi){
   for (const jm of Object.keys(SLOTY)){
     const z = await najdi("sounds/" + jm + ".wav");
     if (!z){ zvuky[jm] = {buf:null, wav:null, chyba:null}; chybi.push(jm); continue; }
-    try{ zvuky[jm] = {buf:await dekoduj(await z.arrayBuffer()), wav:null, zdroj:"karta", chyba:null}; nacteno++; }
+    try{
+      const ab = await z.arrayBuffer(), bajty = new Uint8Array(ab.slice(0));	// dekodovani buffer odpoji
+      zvuky[jm] = {buf:await dekoduj(ab), wav:null, bajty, zdroj:"karta", chyba:null}; nacteno++;
+    }
     catch(e){ zvuky[jm] = {buf:null, wav:null, chyba:true}; }
   }
   zmeneno = false;
@@ -1420,12 +1713,23 @@ function skryjUvod(){ $("uvod").classList.remove("otevren"); }
 // Chrome, Edge: karta jako FileSystemDirectoryHandle (z vyberu i z pretazeni) - uklada se rovnou na ni
 async function otevriHandle(d){
   karta = d; kartaJmeno = d.name;
-  await nactiZeSouboru(async cesta => {
-    try{
-      let h = d; const casti = cesta.split("/");
-      for (const c of casti.slice(0, -1)) h = await h.getDirectoryHandle(c);
-      return await (await h.getFileHandle(casti[casti.length - 1])).getFile();
-    }catch(e){ return null; }
+  await nactiZeSouboru({
+    najdi: async cesta => {
+      try{
+        let h = d; const casti = cesta.split("/");
+        for (const c of casti.slice(0, -1)) h = await h.getDirectoryHandle(c);
+        return await (await h.getFileHandle(casti[casti.length - 1])).getFile();
+      }catch(e){ return null; }
+    },
+    slozky: async cesta => {
+      const v = [];
+      try{
+        let h = d;
+        for (const c of cesta.split("/")) h = await h.getDirectoryHandle(c);
+        for await (const [n, x] of h.entries()) if (x.kind === "directory" && !n.startsWith(".")) v.push(n);
+      }catch(e){}
+      return v;
+    },
   });
   skryjUvod();
 }
@@ -1441,18 +1745,27 @@ async function otevriEntry(koren){
     }));
     return seznamy.get(d);
   };
-  await nactiZeSouboru(async cesta => {
-    try{
-      let d = koren; const casti = cesta.toLowerCase().split("/");
-      for (let i = 0; i < casti.length; i++){
-        const e = (await cti(d)).find(x => x.name.toLowerCase() === casti[i]);
-        if (!e) return null;
-        if (i === casti.length - 1) return e.isFile ? await new Promise((ok, chyba) => e.file(ok, chyba)) : null;
-        if (!e.isDirectory) return null;
-        d = e;
-      }
-    }catch(e){ return null; }
+  const polozka = async cesta => {
+    let d = koren; const casti = cesta.toLowerCase().split("/");
+    for (let i = 0; i < casti.length; i++){
+      const e = (await cti(d)).find(x => x.name.toLowerCase() === casti[i]);
+      if (!e || i === casti.length - 1) return e || null;
+      if (!e.isDirectory) return null;
+      d = e;
+    }
     return null;
+  };
+  await nactiZeSouboru({
+    najdi: async cesta => {
+      try{ const e = await polozka(cesta); return e && e.isFile ? await new Promise((ok, chyba) => e.file(ok, chyba)) : null; }
+      catch(e){ return null; }
+    },
+    slozky: async cesta => {
+      try{
+        const d = await polozka(cesta);
+        return d && d.isDirectory ? (await cti(d)).filter(x => x.isDirectory && !x.name.startsWith(".")).map(x => x.name) : [];
+      }catch(e){ return []; }
+    },
   });
   skryjUvod();
 }
@@ -1475,7 +1788,19 @@ $("slozka").onchange = async e => {
   if (!soubory.length) return;
   const koren = soubory[0].webkitRelativePath.split("/")[0];
   kartaJmeno = koren; karta = null;
-  await nactiZeSouboru(async cesta => soubory.find(f => f.webkitRelativePath.toLowerCase() === (koren + "/" + cesta).toLowerCase()) || null);
+  await nactiZeSouboru({
+    najdi: async cesta => soubory.find(f => f.webkitRelativePath.toLowerCase() === (koren + "/" + cesta).toLowerCase()) || null,
+    slozky: async cesta => {
+      const pre = (koren + "/" + cesta + "/").toLowerCase(), v = new Set();
+      for (const f of soubory){
+        const p = f.webkitRelativePath;
+        if (!p.toLowerCase().startsWith(pre)) continue;
+        const zbytek = p.slice(pre.length), i = zbytek.indexOf("/");
+        if (i > 0 && !zbytek.startsWith(".")) v.add(zbytek.slice(0, i));
+      }
+      return [...v];
+    },
+  });
   skryjUvod();
 };
 
@@ -1546,10 +1871,11 @@ $("btnUlozit").onclick = async () => {
         for (const jm of nove) await zapis(s, jm + ".wav", zvuky[jm].wav);
       }
       await zapis(karta, "nastaveni.txt", new TextEncoder().encode(text));
+      await zapis(karta, STRANKA, new TextEncoder().encode(textStranky()));
       try{ await karta.removeEntry("diag.txt"); }catch(e){}	// stary prepinac logu, uz se nepouziva
       posledniText = text; poznamkyNacteni = [];
       const popis = nove.map(jm => `<li>sounds/${jm}.wav <small>${zvuky[jm].zdroj === "upraveno" ? t("dlUpraveno") : t("dlNovyZvuk")}, ${fmt(zvuky[jm].buf.duration, 1)} s</small></li>`);
-      for (const jm of nove){ zvuky[jm].wav = null; zvuky[jm].zdroj = "karta"; vykresliVlnu(jm); }
+      for (const jm of nove){ zvuky[jm].bajty = zvuky[jm].wav; zvuky[jm].wav = null; zvuky[jm].zdroj = "karta"; vykresliVlnu(jm); }
       zmeneno = false; obnovStav();
       await dialog({ikona:"ok", nadpis:t("dlUlozenoNadpis", {k:kartaJmeno}),
         text:`<ul><li>nastaveni.txt</li>${popis.join("")}</ul>${t("dlUlozenoText")}${S.diagnostika.mapovat ? t("dlMapovani") : ""}`,
@@ -1562,7 +1888,8 @@ $("btnUlozit").onclick = async () => {
     return;
   }
   // bez pristupu k souborum: ZIP ke stazeni
-  const soubory = [{jmeno:"nastaveni.txt", data:new TextEncoder().encode(text)}];
+  const soubory = [{jmeno:"nastaveni.txt", data:new TextEncoder().encode(text)},
+                   {jmeno:STRANKA, data:new TextEncoder().encode(textStranky())}];
   for (const jm of nove) soubory.push({jmeno:"sounds/" + jm + ".wav", data:zvuky[jm].wav});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(vyrobZip(soubory));
@@ -1573,6 +1900,132 @@ $("btnUlozit").onclick = async () => {
   await dialog({ikona:"ok", nadpis:t("dlZipNadpis"),
     text:`${t("dlZipVZipu")}<ul><li>nastaveni.txt</li>${nove.map(jm => `<li>sounds/${jm}.wav</li>`).join("")}</ul>${t("dlZipText")}${S.diagnostika.mapovat ? t("dlMapovani") : ""}`,
     tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
+};
+
+/* ---------- sady zvuku: podslozky ve sounds/ ---------- */
+const bajtyZvuku = z => z && z.buf ? (z.wav || z.bajty || vyrobWav(z.buf.getChannelData(0), 44100)) : null;
+async function seznamSad(){
+  const v = await ctecka.slozky("sounds");
+  v.sort((a, b) => a.localeCompare(b, LANG === "en" ? "en" : "cs"));
+  return v;
+}
+// Zapis na kartu (Chrome, Edge). Vraci FALSE, kdyz karta neni nebo zapis nepovolen.
+async function zapisPovolen(){
+  if (!karta || !window.showDirectoryPicker) return false;
+  if (karta.requestPermission && (await karta.requestPermission({mode:"readwrite"})) !== "granted") throw new Error(t("bezPovoleni"));
+  return true;
+}
+async function zapisSoubor(h, jm, data){ const w = await (await h.getFileHandle(jm, {create:true})).createWritable(); await w.write(data); await w.close(); }
+
+$("btnNactiSadu").onclick = async () => {
+  if (edOtevren()) return;
+  if (!ctecka){ hlaska(t("sadaBezKarty"), true); return; }
+  try{
+    const sady = await seznamSad();
+    const pocty = await Promise.all(sady.map(async n => {
+      let k = 0; for (const jm of Object.keys(SLOTY)) if (await ctecka.najdi(`sounds/${n}/${jm}.wav`)) k++;
+      return k;
+    }));
+    const seznam = sady.length
+      ? `<div class="dl-sady">${sady.map((n, i) => `<button data-v="${esc(n)}"${n === aktivniSada ? ' class="aktivni"' : ""}>${esc(n)}<small>${t("dlSadyPocet", {n:pocty[i]})}</small></button>`).join("")}</div>`
+      : "";
+    const vyber = await dialog({ikona:"pozor", nadpis:t("dlSadyNadpis"),
+      text:(sady.length ? t("dlSadyText") : t("dlSadyZadne")) + seznam,
+      tlacitka:[{t:t("zrusit"), v:null, hlavni:!sady.length}]});
+    if (vyber == null) return;
+    await nactiSadu(vyber);
+  }catch(e){ hlaska(t("nejdeSada", {e:e.message}), true); }
+};
+
+async function nactiSadu(nazev){
+  if (Object.keys(zvuky).some(k => zvuky[k].wav)){
+    const v = await dialog({ikona:"pozor", nadpis:t("dlSadaZahoditNadpis"), text:t("dlSadaZahoditText"),
+      tlacitka:[{t:t("dlPonechat"), v:false, hlavni:true, fokus:true}, {t:t("dlSadaZahodit"), v:true}]});
+    if (!v) return;
+  }
+  zastavNahled(); vypniSim();
+  const primo = await zapisPovolen();
+  const zvukyDir = primo ? await karta.getDirectoryHandle("sounds", {create:true}) : null;
+  const chybi = [], nactene = [];
+  for (const jm of Object.keys(SLOTY)){
+    const f = await ctecka.najdi(`sounds/${nazev}/${jm}.wav`);
+    if (!f){ chybi.push(jm); continue; }
+    const ab = await f.arrayBuffer(), bajty = new Uint8Array(ab.slice(0));
+    let buf;
+    try{ buf = await dekoduj(ab); }catch(e){ chybi.push(jm); continue; }
+    if (primo){
+      await zapisSoubor(zvukyDir, jm + ".wav", bajty);		// beze zmeny, bajt po bajtu
+      zvuky[jm] = {buf, wav:null, bajty, zdroj:"karta", chyba:null};
+    } else {
+      zvuky[jm] = {buf, wav:bajty, bajty, zdroj:nazev, chyba:null};
+    }
+    nactene.push(jm);
+    vykresliVlnu(jm);
+  }
+  aktivniSada = nazev; sadaUpravena = false;
+  if (!primo && nactene.length) zmena();
+  obnovSadu(); obnovSim(); obnovStav();
+  if (primo) await zapisStranku();
+  await dialog({ikona:nactene.length ? "ok" : "chyba", nadpis:t("dlNactenaNadpis", {s:nazev}),
+    text:`<ul>${nactene.map(jm => `<li>sounds/${jm}.wav <small>${t("s_" + jm)}, ${fmt(zvuky[jm].buf.duration, 1)} s</small></li>`).join("")}</ul>` +
+      (primo ? t("dlNactenaText") : t("dlNactenaSafari")) + (chybi.length ? t("dlNactenaChybi", {s:chybi.join(", ")}) : ""),
+    tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
+}
+
+$("btnUlozSadu").onclick = async () => {
+  if (edOtevren()) return;
+  const sloty = Object.keys(SLOTY).filter(jm => zvuky[jm] && zvuky[jm].buf);
+  if (!sloty.length){ hlaska(t("sadaZadneZvuky"), true); return; }
+  try{
+    // Chrome bez otevrene karty: nejdriv vybrat kartu
+    if (window.showDirectoryPicker && !karta){ karta = await window.showDirectoryPicker({id:"sbuskarta", mode:"readwrite"}); kartaJmeno = karta.name; obnovStav(); }
+    let nazev = aktivniSada, chyba = "";
+    for (;;){
+      const v = await dialog({ikona:"pozor", nadpis:t("dlUlozSaduNadpis"),
+        text:`${t("dlUlozSaduText")}<input class="dl-vstup" id="dlVstup" maxlength="64" aria-label="${esc(t("sadaNazev"))}" placeholder="${esc(t("sadaNazev"))}" value="${esc(nazev)}"><p class="dl-chyba">${esc(chyba)}</p>`,
+        tlacitka:[{t:t("zrusit"), v:null}, {t:t("ulozit"), v:"ok", hlavni:true}]});
+      if (v == null) return;
+      nazev = document.getElementById("dlVstup").value;
+      const platny = platnyNazevSady(nazev);
+      if (!platny){ chyba = t("sadaSpatnyNazev"); continue; }
+      nazev = platny;
+      const sady = ctecka ? await seznamSad() : [];
+      const stejna = sady.find(x => x.toLowerCase() === nazev.toLowerCase());
+      if (stejna){
+        const p = await dialog({ikona:"pozor", nadpis:t("dlPrepsatSaduNadpis", {s:stejna}), text:t("dlPrepsatSaduText"),
+          tlacitka:[{t:t("zrusit"), v:false, fokus:true}, {t:t("dlPrepsat"), v:true, hlavni:true}]});
+        if (!p){ chyba = ""; continue; }
+        nazev = stejna;
+      }
+      break;
+    }
+    const nove = Object.keys(zvuky).some(k => zvuky[k].wav);
+    if (await zapisPovolen()){
+      const dir = await (await karta.getDirectoryHandle("sounds", {create:true})).getDirectoryHandle(nazev, {create:true});
+      for (const jm of sloty) await zapisSoubor(dir, jm + ".wav", bajtyZvuku(zvuky[jm]));
+      for (const jm of Object.keys(SLOTY)) if (!sloty.includes(jm)){ try{ await dir.removeEntry(jm + ".wav"); }catch(e){} }
+      aktivniSada = nazev; sadaUpravena = false; obnovSadu();
+      await zapisStranku();
+      await dialog({ikona:"ok", nadpis:t("dlUlozenaSadaNadpis", {s:nazev}),
+        text:`<ul>${sloty.map(jm => `<li>sounds/${esc(nazev)}/${jm}.wav</li>`).join("")}</ul>${nove ? t("dlSadaNeulozenoHlavni") : ""}`,
+        tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
+      return;
+    }
+    // Safari: ZIP se sadou
+    aktivniSada = nazev; sadaUpravena = false; obnovSadu();
+    const soubory = sloty.map(jm => ({jmeno:`sounds/${nazev}/${jm}.wav`, data:bajtyZvuku(zvuky[jm])}));
+    soubory.push({jmeno:STRANKA, data:new TextEncoder().encode(textStranky())});
+    const zip = "SBusSound_sada_" + nazev.replace(/\s+/g, "_") + ".zip";
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(vyrobZip(soubory)); a.download = zip;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 20000);
+    await dialog({ikona:"ok", nadpis:t("dlSadaZipNadpis", {z:zip}),
+      text:`<ul>${sloty.map(jm => `<li>sounds/${esc(nazev)}/${jm}.wav</li>`).join("")}</ul>${t("dlSadaZipText", {s:esc(nazev)})}`,
+      tlacitka:[{t:t("ok"), v:0, hlavni:true}]});
+  }catch(e){
+    if (e.name !== "AbortError") hlaska(t("nejdeSada", {e:e.message}), true);
+  }
 };
 
 /* =====================================================================
@@ -1653,21 +2106,21 @@ window.addEventListener("resize", rozmery);
 function kresliBudik(){
   const R = 66, cx = 66, cy = 66, a0 = Math.PI * .75, roz = Math.PI * 1.5;
   bg.clearRect(0, 0, 132, 132);
-  bg.beginPath(); bg.arc(cx, cy, R - 3, 0, Math.PI * 2); bg.fillStyle = "#E3DCC8"; bg.fill();
-  bg.lineWidth = 4; bg.strokeStyle = "#1F231C"; bg.stroke();
-  bg.beginPath(); bg.arc(cx, cy, R - 12, a0 + roz * .85, a0 + roz); bg.lineWidth = 7; bg.strokeStyle = "rgba(179,64,43,.75)"; bg.stroke();
+  bg.beginPath(); bg.arc(cx, cy, R - 3, 0, Math.PI * 2); bg.fillStyle = B.budik; bg.fill();
+  bg.lineWidth = 4; bg.strokeStyle = REZIM === "truck" ? "#8C949E" : "#1F231C"; bg.stroke();
+  bg.beginPath(); bg.arc(cx, cy, R - 12, a0 + roz * .85, a0 + roz); bg.lineWidth = 7; bg.strokeStyle = B["budik-cerv"]; bg.stroke();
   for (let i = 0; i <= 10; i++){
     const a = a0 + roz * i / 10, vn = R - 8, vi = i % 5 ? R - 14 : R - 19;
     bg.beginPath(); bg.moveTo(cx + Math.cos(a) * vi, cy + Math.sin(a) * vi); bg.lineTo(cx + Math.cos(a) * vn, cy + Math.sin(a) * vn);
-    bg.lineWidth = i % 5 ? 1 : 2; bg.strokeStyle = "#23271F"; bg.stroke();
+    bg.lineWidth = i % 5 ? 1 : 2; bg.strokeStyle = B["budik-ryska"]; bg.stroke();
   }
-  bg.fillStyle = "#4A5142"; bg.font = "11px 'Avenir Next Condensed','Arial Narrow',sans-serif"; bg.textAlign = "center";
+  bg.fillStyle = B["budik-text"]; bg.font = "11px 'Avenir Next Condensed','Arial Narrow',sans-serif"; bg.textAlign = "center";
   bg.fillText(t("otacky"), cx, cy + 26);
-  if (SIM.faze === "start" || SIM.faze === "stop"){ bg.fillStyle = "#8E3322"; bg.font = "600 12px 'Avenir Next Condensed','Arial Narrow',sans-serif"; bg.fillText(SIM.faze === "start" ? t("dialStart") : t("dialStop"), cx, cy - 22); }
+  if (SIM.faze === "start" || SIM.faze === "stop"){ bg.fillStyle = REZIM === "truck" ? B.mosaz : "#8E3322"; bg.font = "600 12px 'Avenir Next Condensed','Arial Narrow',sans-serif"; bg.fillText(SIM.faze === "start" ? t("dialStart") : t("dialStop"), cx, cy - 22); }
   const a = a0 + roz * Math.max(0, Math.min(1, SIM.B.otacky));
   bg.beginPath(); bg.moveTo(cx - Math.cos(a) * 8, cy - Math.sin(a) * 8); bg.lineTo(cx + Math.cos(a) * (R - 16), cy + Math.sin(a) * (R - 16));
-  bg.lineWidth = 3; bg.lineCap = "round"; bg.strokeStyle = "#B3402B"; bg.stroke();
-  bg.beginPath(); bg.arc(cx, cy, 5, 0, Math.PI * 2); bg.fillStyle = "#23271F"; bg.fill();
+  bg.lineWidth = 3; bg.lineCap = "round"; bg.strokeStyle = B["budik-rucka"]; bg.stroke();
+  bg.beginPath(); bg.arc(cx, cy, 5, 0, Math.PI * 2); bg.fillStyle = REZIM === "truck" ? "#8C949E" : "#23271F"; bg.fill();
 }
 function kresliGraf(){
   const w = graf.clientWidth, h = 56, t0 = SIM.t - 10;
@@ -1675,7 +2128,7 @@ function kresliGraf(){
   const x = q => (q - t0) / 10 * w, y = v => h - 4 - v * (h - 8);
   gg.strokeStyle = "rgba(142,151,138,.6)"; gg.lineWidth = 1;
   for (const b of SIM.hist) if (b.r && b.t >= t0){ gg.beginPath(); gg.moveTo(x(b.t), 0); gg.lineTo(x(b.t), h); gg.stroke(); }
-  for (const [k, c] of [["v", "#C8A23C"], ["o", "#B3402B"]]){
+  for (const [k, c] of [["v", B["graf-v"]], ["o", B["graf-o"]]]){
     gg.beginPath(); gg.lineWidth = 1.6; gg.strokeStyle = c; let prvni = true;
     for (const b of SIM.hist){ if (b.t < t0) continue; if (prvni){ gg.moveTo(x(b.t), y(b[k])); prvni = false; } else gg.lineTo(x(b.t), y(b[k])); }
     gg.stroke();
@@ -1775,7 +2228,7 @@ function edUloz(){
     const b = audio().createBuffer(1, ED.d.length, ED_RATE);
     b.getChannelData(0).set(ED.d);
     zvuky[ED.jm] = {buf:b, wav:vyrobWav(ED.d, ED_RATE), zdroj:"upraveno", chyba:null};
-    vykresliVlnu(ED.jm); zmena(); obnovSim();
+    vykresliVlnu(ED.jm); zmena(); obnovSim(); upravenaSada();
     hlaska(t("edUpraven", {jm:ED.jm, d:fmt(ED.d.length / ED_RATE, 2), b:$("btnUlozit").textContent}));
   }
   zavriEditor();
@@ -2066,7 +2519,7 @@ $("uvOtevrit").focus();
 
 })();
 
-if (typeof module !== "undefined") module.exports = {vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD, T, nastavJazyk,
+if (typeof module !== "undefined") module.exports = {nastavRezim, platnyNazevSady, T_TRUCK, vychozi, nactiIni, vyrobIni, kontrola, duplicity, vyrobWav, vyrobZip, crc32, krokPrevodovky, novaPrevodovka, FUNKCE, PREVOD, T, nastavJazyk,
   kNule, smazUsek, ponechUsek, tichoUsek, nabehUsek, dobehUsek, zesilUsek, normalizujUsek, bezDC, plynulaSmycka, spicka};
 </script>
 </body>

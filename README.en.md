@@ -49,6 +49,20 @@ page, which is on the card as well (CZ/EN switch at the top right):
 The page works in Safari too, but instead of writing to the card it downloads
 a ZIP whose contents you copy to the card.
 
+The **Tank / Truck** switch at the top changes the look of the page and the
+function names: for a truck the turret becomes **Direction (turn signal)**, the
+machine gun **Horn 1** and the cannon **Horn 2**. The engine and
+`nastaveni.txt` stay the same.
+
+### Sound sets
+
+**Save set** stores the current sounds in a subfolder `sounds/<set name>/`,
+**Load set** offers these subfolders and copies the chosen set's sounds into
+`sounds/` in place of the current ones – the engine always plays only the files
+directly in `sounds/`. The card comes with the **King Tiger II** set holding
+the same sounds as `sounds/`. The page's choices (Tank/Truck, language, last
+set) are kept on the card in `nastaveni_stranky.json`.
+
 The setting names and values in `nastaveni.txt` are Czech (the engine reads
 them); the comments are written in the language the page is switched to.
 

@@ -47,6 +47,19 @@ je na kartě taky (přepínač CZ/EN vpravo nahoře):
 V Safari stránka funguje taky, jen místo zápisu na kartu stáhne ZIP, jehož
 obsah se nakopíruje na kartu.
 
+Přepínač **Tank / Truck** nahoře mění vzhled stránky a názvy funkcí: u trucku
+je z věže **Směr (blinkr)**, z kulometu **Klakson 1** a z děla **Klakson 2**.
+Engine ani `nastaveni.txt` se tím nemění.
+
+### Sady zvuků
+
+Tlačítko **Uložit sadu** uloží současné zvuky do podsložky `sounds/<název
+sady>/`, **Načíst sadu** nabídne tyto podsložky a zvuky vybrané sady
+nakopíruje do `sounds/` místo současných – engine hraje vždy jen soubory
+přímo ve `sounds/`. Na kartě je v základu sada **King Tiger II** se stejnými
+zvuky jako ve `sounds/`. Volby stránky (Tank/Truck, jazyk, poslední sada) se
+ukládají na kartu do `nastaveni_stranky.json`.
+
 ## Zapojení
 
 Podrobný popis je také na webu
