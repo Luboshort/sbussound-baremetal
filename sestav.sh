@@ -38,6 +38,9 @@ echo "=== skladam obsah karty ==="
 OUT="$KOREN/vystup/karta"
 rm -rf "$OUT" && mkdir -p "$OUT"
 cp -R "$KOREN/karta/." "$OUT/"
+# systemove soubory macOS (Icon\r vlastni ikony slozek, .DS_Store, ._*) na kartu nepatri
+# a GitHub je v artefaktu odmitne
+find "$OUT" \( -name "Icon?" -o -name ".DS_Store" -o -name "._*" \) -delete
 cp "$KOREN/src/kernel8-32.img" "$OUT/"
 FW_CACHE="$KOREN/vystup/firmware-$FW_VERZE"
 mkdir -p "$FW_CACHE"

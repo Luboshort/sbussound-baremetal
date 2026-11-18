@@ -6,3 +6,5 @@ src/*.lst
 src/*.map
 src/*.img
 .DS_Store
+Icon?
+._*
