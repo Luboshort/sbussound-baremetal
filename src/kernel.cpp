@@ -24,9 +24,10 @@
 #include "kernel.h"
 #include "mapovani.h"
 #include <circle/startup.h>
+#include <circle/machineinfo.h>
 #include <circle/util.h>
 
-#define VERZE		"krok 7"
+#define VERZE		"krok 8"
 #define DRIVE		"SD:"
 #define NASTAVENI	DRIVE "/nastaveni.txt"
 #define LOG		DRIVE "/log.txt"
@@ -780,10 +781,12 @@ void CKernel::ZapisDiag (void)
 	unsigned nMs = Ms ();
 	const TParPrevodovky &P = m_Nast.Prev;
 	Text.Format ("SBusSound bare metal, " VERZE ", sestaveno " __DATE__ " " __TIME__ "\n"
+		     "deska %s\n"
 		     "bezim %u s\n%s\n%s\n"
 		     "vystup %s, reproduktor %s, hlasitost %u %%\n"
 		     "kanaly: vez CH%u, motor CH%u, plyn CH%u, kulomet CH%u, delo CH%u, pozadi CH%u, hlasitost CH%u\n"
 		     "kalibrace %d/%d/%d, stred plynu %d, veze %d, prepinace zapinaji nad %d\n",
+		     CMachineInfo::Get ()->GetMachineName (),
 		     nMs / 1000, (const char *) m_NastStav, (const char *) m_ZvukStav,
 		     NazevZarizeni (m_Nast.Zarizeni), NazevStrany (m_Nast.Strana), m_Nast.nHlasitost,
 		     m_Nast.Kanal[FceVez], m_Nast.Kanal[FceMotor], m_Nast.Kanal[FcePlyn],
@@ -834,6 +837,13 @@ boolean CKernel::SpustVystup (void)
 {
 	if (m_pVystup == 0)
 	{
+		// Zero 2 W nema 3,5mm jack - zvuk muze jit jen do modulu DAC
+		if (m_Nast.Zarizeni == ZarizeniJack
+		    && CMachineInfo::Get ()->GetMachineModel () == MachineModelZero2W)
+		{
+			m_Nast.Zarizeni = ZarizeniI2S;
+			Udalost ("Zero 2 W nema jack - zvuk jde do I2S (GY-PCM5102)");
+		}
 		if (m_Nast.Zarizeni == ZarizeniJack)
 		{
 			m_pVystup = new CVystupPWM (&m_Interrupt, &m_Mixer);

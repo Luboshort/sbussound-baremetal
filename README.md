@@ -8,6 +8,10 @@ a zvuky okolí. Naběhne za pár sekund po zapnutí, nic se neinstaluje a kartu
 nejde „rozbít“ vypnutím napájení. Postaveno na knihovně
 [Circle](https://github.com/rsta2/circle).
 
+Funguje na **Raspberry Pi 3B+** i na levnějším **Raspberry Pi Zero 2 W / WH**
+– stejná karta, stejné zapojení (lišta GPIO je shodná). Zero 2 W nemá jack
+3,5 mm, zvuk proto jde vždy do modulu DAC (GY-PCM5102).
+
 ## Hotový obsah karty
 
 Po každém pushi ho GitHub sestaví sám: **Actions → poslední běh → Artifacts →

@@ -12,7 +12,8 @@ KOREN=$(pwd)
 CIRCLE="$KOREN/circle"
 # firmware Raspberry Pi - stejna verze, jakou doporucuje Circle
 FW_VERZE=0641c5bf25d185d5bf25d8dcafd1da6dc8fdbf68
-FW_SOUBORY="bootcode.bin start.elf fixup.dat LICENCE.broadcom"
+# bcm2710-rpi-zero-2-w.dtb: Circle ho potrebuje na Zero 2 W, Pi 3B+ ho ignoruje
+FW_SOUBORY="bootcode.bin start.elf fixup.dat bcm2710-rpi-zero-2-w.dtb LICENCE.broadcom"
 
 command -v arm-none-eabi-gcc >/dev/null || { echo "CHYBA: arm-none-eabi-gcc neni v PATH"; exit 1; }
 [ -f "$CIRCLE/configure" ] || { echo "CHYBA: chybi circle/ - spust: git submodule update --init"; exit 1; }

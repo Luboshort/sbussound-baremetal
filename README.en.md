@@ -8,6 +8,11 @@ turret, machine gun, cannon and ambient sounds. It is ready a few seconds after
 power-up, there is nothing to install, and cutting the power cannot damage the
 card. Built on the [Circle](https://github.com/rsta2/circle) library.
 
+Runs on the **Raspberry Pi 3B+** and on the cheaper **Raspberry Pi Zero 2 W /
+WH** – the same card and the same wiring (the GPIO header is identical). The
+Zero 2 W has no 3.5 mm jack, so the sound always goes to the DAC module
+(GY-PCM5102).
+
 ## Ready-made card contents
 
 GitHub builds them after every push: **Actions → latest run → Artifacts →
